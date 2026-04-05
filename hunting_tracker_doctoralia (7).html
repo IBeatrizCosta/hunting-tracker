@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hunting Tracker — Doctoralia</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg-page: #f0efe9;
+    --bg-card: #ffffff;
+    --bg-surface: #f7f6f2;
+    --bg-surface2: #eeecea;
+    --text-primary: #1a1a18;
+    --text-secondary: #6b6b67;
+    --text-tertiary: #a0a09c;
+    --border-light: rgba(0,0,0,0.08);
+    --border-mid: rgba(0,0,0,0.15);
+    --radius-md: 8px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --c-hunting: #185FA5; --c-hunting-bg: #deeef9; --c-hunting-text: #0c3d6e;
+    --c-triagem: #7C5BB5; --c-triagem-bg: #ede8f8; --c-triagem-text: #4a3470;
+    --c-step1: #B85C00;   --c-step1-bg: #fce8d5;   --c-step1-text: #7a3c00;
+    --c-step2: #0f7a60;   --c-step2-bg: #d6f2ea;   --c-step2-text: #0a5040;
+    --c-step3: #5a7a00;   --c-step3-bg: #e6f0c0;   --c-step3-text: #3a5000;
+    --c-oferta: #00796B;  --c-oferta-bg: #b2dfdb;  --c-oferta-text: #004d40;
+    --c-reprovado: #b52a2a; --c-reprovado-bg: #fde0e0; --c-reprovado-text: #7a1a1a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-page: #181816; --bg-card: #222220; --bg-surface: #2a2a28; --bg-surface2: #323230;
+      --text-primary: #f0efe9; --text-secondary: #9a9a94; --text-tertiary: #606060;
+      --border-light: rgba(255,255,255,0.07); --border-mid: rgba(255,255,255,0.13);
+      --c-hunting-bg: #0c2a45; --c-hunting-text: #7ab8e8;
+      --c-triagem-bg: #2a1f45; --c-triagem-text: #b09de0;
+      --c-step1-bg: #3d2000;   --c-step1-text: #f0a060;
+      --c-step2-bg: #0a3028;   --c-step2-text: #5de0b8;
+      --c-step3-bg: #1e2a00;   --c-step3-text: #aacc44;
+      --c-oferta-bg: #003028;  --c-oferta-text: #44d4c0;
+      --c-reprovado-bg: #3a0f0f; --c-reprovado-text: #f08080;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-page); color: var(--text-primary); min-height: 100vh; padding: 2rem 1rem 4rem; }
+  .container { max-width: 1040px; margin: 0 auto; }
+
+  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.75rem; gap: 1rem; }
+  .header-title { font-size: 20px; font-weight: 500; letter-spacing: -0.02em; }
+  .header-sub { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+  .header-pills { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .pill { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; border: 0.5px solid var(--border-mid); color: var(--text-secondary); background: var(--bg-surface); }
+
+  .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 1.25rem; }
+  .metric { background: var(--bg-card); border-radius: var(--radius-lg); padding: 14px 16px; border: 0.5px solid var(--border-light); border-top-width: 2px; }
+  .metric-blue { border-top-color: var(--c-hunting); }
+  .metric-purple { border-top-color: var(--c-triagem); }
+  .metric-red { border-top-color: var(--c-reprovado); }
+  .metric-green { border-top-color: var(--c-oferta); }
+  .metric-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .metric-value { font-size: 26px; font-weight: 500; letter-spacing: -0.03em; }
+  .metric-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 3px; }
+
+  .card { background: var(--bg-card); border-radius: var(--radius-lg); border: 0.5px solid var(--border-light); padding: 1.25rem; margin-bottom: 1rem; }
+  .section-title { font-size: 11px; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+
+  .pyramid-wrap { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+  .pyramid-stage { position: relative; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md); cursor: default; transition: filter 0.15s, transform 0.15s; height: 44px; }
+  .pyramid-stage:hover { filter: brightness(0.95); transform: scaleX(1.01); }
+  .pyramid-stage-inner { display: flex; align-items: center; gap: 10px; z-index: 1; }
+  .pyramid-stage-label { font-size: 12px; font-weight: 500; }
+  .pyramid-stage-count { font-size: 18px; font-weight: 500; letter-spacing: -0.02em; }
+  .pyramid-stage-pct { font-size: 11px; opacity: 0.7; }
+  .fs-hunting { background: var(--c-hunting-bg); } .fs-hunting * { color: var(--c-hunting-text); }
+  .fs-triagem { background: var(--c-triagem-bg); } .fs-triagem * { color: var(--c-triagem-text); }
+  .fs-step1   { background: var(--c-step1-bg);   } .fs-step1   * { color: var(--c-step1-text);   }
+  .fs-step2   { background: var(--c-step2-bg);   } .fs-step2   * { color: var(--c-step2-text);   }
+  .fs-step3   { background: var(--c-step3-bg);   } .fs-step3   * { color: var(--c-step3-text);   }
+  .fs-oferta  { background: var(--c-oferta-bg);  } .fs-oferta  * { color: var(--c-oferta-text);  }
+
+  .pyramid-tip { position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%); background: var(--bg-card); border: 0.5px solid var(--border-mid); border-radius: var(--radius-md); padding: 10px 14px; min-width: 200px; max-width: 280px; pointer-events: none; opacity: 0; transition: opacity 0.18s; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  .pyramid-stage:hover .pyramid-tip { opacity: 1; }
+  .pyramid-tip-title { font-size: 11px; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 7px; }
+  .pyramid-tip-desc { font-size: 11px; color: var(--text-tertiary); margin-bottom: 7px; border-bottom: 0.5px solid var(--border-light); padding-bottom: 7px; }
+  .pyramid-tip-item { font-size: 12px; color: var(--text-primary); padding: 2px 0; }
+  .pyramid-tip-item span { font-size: 11px; color: var(--text-tertiary); }
+  .pyramid-tip-empty { font-size: 12px; color: var(--text-tertiary); font-style: italic; }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 1rem; }
+  .tab { font-size: 13px; padding: 6px 16px; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+  .tab.active { background: var(--bg-surface2); color: var(--text-primary); font-weight: 500; }
+  .tab:hover:not(.active) { background: var(--bg-surface); }
+
+  input, select, textarea { width: 100%; font-size: 13px; padding: 8px 10px; border: 0.5px solid var(--border-mid); border-radius: var(--radius-md); background: var(--bg-card); color: var(--text-primary); outline: none; transition: border-color 0.15s; font-family: inherit; }
+  input:focus, select:focus, textarea:focus { border-color: var(--c-hunting); }
+  textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+  .btn { font-size: 13px; padding: 8px 18px; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); background: var(--bg-surface); color: var(--text-primary); cursor: pointer; transition: all 0.15s; }
+  .btn:hover { background: var(--bg-surface2); }
+  .btn-primary { background: var(--text-primary); color: var(--bg-card); border-color: var(--text-primary); }
+  .btn-primary:hover { opacity: 0.82; }
+  .btn-ai { background: var(--c-hunting-bg); color: var(--c-hunting-text); border-color: var(--c-hunting); font-weight: 500; }
+  .btn-ai:hover { opacity: 0.85; }
+  .btn-ai:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-icon { font-size: 12px; padding: 4px 8px; border-radius: var(--radius-md); border: 0.5px solid var(--border-light); background: transparent; color: var(--text-tertiary); cursor: pointer; transition: all 0.15s; }
+  .btn-icon:hover { background: var(--bg-surface2); color: var(--text-primary); }
+  .btn-icon-del:hover { background: var(--c-reprovado-bg); color: var(--c-reprovado-text); border-color: var(--c-reprovado); }
+
+  .filters { display: flex; gap: 8px; margin-bottom: 12px; }
+  .filters select { flex: 1; }
+  .table-wrap { border: 0.5px solid var(--border-light); border-radius: var(--radius-md); overflow: hidden; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { font-size: 11px; font-weight: 500; color: var(--text-secondary); padding: 9px 12px; text-align: left; border-bottom: 0.5px solid var(--border-light); background: var(--bg-surface); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+  td { padding: 9px 12px; border-bottom: 0.5px solid var(--border-light); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg-surface); }
+  .empty { text-align: center; padding: 2.5rem; color: var(--text-tertiary); font-size: 13px; }
+
+  .badge { display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 500; }
+  .badge-hunting      { background: var(--c-hunting-bg);   color: var(--c-hunting-text);   }
+  .badge-triagem      { background: var(--c-triagem-bg);   color: var(--c-triagem-text);   }
+  .badge-step1        { background: var(--c-step1-bg);     color: var(--c-step1-text);     }
+  .badge-step2        { background: var(--c-step2-bg);     color: var(--c-step2-text);     }
+  .badge-step3        { background: var(--c-step3-bg);     color: var(--c-step3-text);     }
+  .badge-oferta       { background: var(--c-oferta-bg);    color: var(--c-oferta-text);    }
+  .badge-reprovado    { background: var(--c-reprovado-bg); color: var(--c-reprovado-text); }
+  .badge-semresposta  { background: #f0ede4; color: #6b5e3a; }
+  .badge-seminteresse { background: #f5e8d0; color: #7a4f1a; }
+  .badge-emanalise    { background: #e8eef5; color: #2a4a6b; }
+  .badge-foradoperfil { background: #f5e8e8; color: #7a2a2a; }
+  .badge-declinou     { background: #ede8f5; color: #4a2a7a; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg-card); border-radius: var(--radius-xl); border: 0.5px solid var(--border-mid); padding: 1.75rem; width: 560px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+  .modal-title { font-size: 16px; font-weight: 500; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+  .close-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 22px; line-height: 1; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-group { margin-bottom: 0; }
+  .form-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; display: block; }
+  .date-hint { font-size: 11px; color: var(--text-tertiary); margin-top: 4px; }
+  .field-section { margin-bottom: 14px; }
+  .field-section-title { font-size: 11px; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 0.5px solid var(--border-light); }
+
+  .ai-section { background: var(--c-hunting-bg); border: 0.5px solid var(--c-hunting); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 16px; }
+  .ai-section-title { font-size: 12px; font-weight: 500; color: var(--c-hunting-text); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .ai-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
+  .ai-tab { font-size: 12px; padding: 5px 12px; border-radius: var(--radius-md); border: 0.5px solid var(--c-hunting); background: transparent; color: var(--c-hunting-text); cursor: pointer; transition: all 0.15s; }
+  .ai-tab.active { background: var(--c-hunting); color: #fff; }
+  .ai-input-panel { display: none; }
+  .ai-input-panel.active { display: block; }
+  .ai-divider { border: none; border-top: 0.5px solid var(--border-light); margin: 16px 0; }
+  .ai-status { font-size: 12px; color: var(--c-hunting-text); margin-top: 8px; min-height: 18px; }
+
+  .drop-zone { border: 1.5px dashed var(--c-hunting); border-radius: var(--radius-md); padding: 20px; text-align: center; cursor: pointer; transition: background 0.15s; background: rgba(255,255,255,0.4); }
+  .drop-zone:hover, .drop-zone.drag-over { background: rgba(24,95,165,0.08); }
+  .drop-zone-text { font-size: 13px; color: var(--c-hunting-text); font-weight: 500; }
+  .drop-zone-sub { font-size: 11px; color: var(--c-hunting-text); opacity: 0.7; margin-top: 4px; }
+  .drop-zone-file { font-size: 12px; color: var(--c-hunting-text); margin-top: 8px; font-weight: 500; }
+  #pdf-input { display: none; }
+
+  .chart-bar-wrap { display: flex; flex-direction: column; gap: 9px; }
+  .chart-bar-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+  .chart-bar-label { width: 85px; color: var(--text-secondary); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+  .chart-bar-track { flex: 1; background: var(--bg-surface2); border-radius: 4px; height: 16px; overflow: hidden; }
+  .chart-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+  .chart-bar-val { width: 28px; color: var(--text-primary); font-weight: 500; text-align: right; }
+
+  @media (max-width: 640px) {
+    .metrics { grid-template-columns: repeat(2,1fr); }
+    .form-row { grid-template-columns: 1fr; }
+    .pyramid-tip { left: auto; right: calc(100% + 12px); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div>
+      <div class="header-title">Hunting Tracker</div>
+      <div class="header-sub">Doctoralia · B2B Commercial</div>
+      <div class="header-pills">
+        <span class="pill">Coordenador Closer B2B</span>
+        <span class="pill">Coordenador SDR B2B</span>
+        <span class="pill">Brasil</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="openModal()">+ Candidato</button>
+  </div>
+  <div id="sync-status" style="font-size:11px;color:var(--text-tertiary);margin-bottom:1rem;">⟳ Conectando ao banco de dados...</div>
+
+  <div class="metrics" id="metrics"></div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('lista',this)">Candidatos</button>
+      <button class="tab" onclick="switchTab('dados',this)">Funil & Dados</button>
+    </div>
+
+    <div id="lista" class="panel active">
+      <div class="filters">
+        <select id="filter-vaga" onchange="renderTable()">
+          <option value="">Todas as vagas</option>
+          <option value="Closer">Coordenador Closer</option>
+          <option value="SDR">Coordenador SDR</option>
+        </select>
+        <select id="filter-etapa" onchange="renderTable()">
+          <option value="">Todas as etapas</option>
+          <option value="Hunting">Hunting</option>
+          <option value="Sem resposta">Sem resposta</option>
+          <option value="Sem interesse">Sem interesse</option>
+          <option value="Triagem">Triagem</option>
+          <option value="Em análise">Em análise</option>
+          <option value="Fora do perfil">Fora do perfil</option>
+          <option value="Step 1 TA">Step 1 — TA</option>
+          <option value="Step 2 Lucas">Step 2 — Lucas</option>
+          <option value="Step 2 Raysa">Step 2 — Raysa</option>
+          <option value="Step 3 Case">Step 3 — Business Case</option>
+          <option value="Step 4 Align">Step 4 — Alinhamento</option>
+          <option value="Oferta">Oferta</option>
+          <option value="Declinou">Declinou</option>
+          <option value="Reprovado">Reprovado</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Cargo atual</th>
+              <th>Empresa</th>
+              <th>Vaga</th>
+              <th>Etapa</th>
+              <th>Cidade</th>
+              <th>Pretensão</th>
+              <th>1º Contato</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="dados" class="panel">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+        <div>
+          <div class="section-title" style="margin-bottom:12px;">funil — coordenador closer</div>
+          <div class="pyramid-wrap" id="pyramid-closer"></div>
+        </div>
+        <div>
+          <div class="section-title" style="margin-bottom:12px;">funil — coordenador sdr</div>
+          <div class="pyramid-wrap" id="pyramid-sdr"></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+        <div>
+          <div class="section-title">origem</div>
+          <div class="chart-bar-wrap" id="origin-chart"></div>
+        </div>
+        <div>
+          <div class="section-title">pretensão salarial — closer</div>
+          <div class="chart-bar-wrap" id="salary-closer-chart"></div>
+          <div id="salary-closer-avg" style="font-size:12px;color:var(--text-secondary);margin-top:8px;"></div>
+        </div>
+        <div>
+          <div class="section-title">pretensão salarial — sdr</div>
+          <div class="chart-bar-wrap" id="salary-sdr-chart"></div>
+          <div id="salary-sdr-avg" style="font-size:12px;color:var(--text-secondary);margin-top:8px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modal-title-text">Novo candidato</span>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+
+    <!-- AI — only shown when adding new -->
+    <div id="ai-block">
+      <div class="ai-section">
+        <div class="ai-section-title">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M5 8.5l2 2 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Analisar perfil com IA
+        </div>
+        <div class="ai-tabs">
+          <button class="ai-tab active" onclick="switchAiTab('linkedin',this)">Texto LinkedIn</button>
+          <button class="ai-tab" onclick="switchAiTab('pdf',this)">Upload CV (PDF)</button>
+        </div>
+        <div class="ai-input-panel active" id="ai-panel-linkedin">
+          <label class="form-label" style="color:var(--c-hunting-text);margin-bottom:6px;">Cole o texto copiado do perfil LinkedIn</label>
+          <textarea id="f-linkedin-text" placeholder="Selecione tudo no perfil LinkedIn (Ctrl+A), copie e cole aqui..." rows="3"></textarea>
+        </div>
+        <div class="ai-input-panel" id="ai-panel-pdf">
+          <input type="file" id="pdf-input" accept="application/pdf" onchange="handlePdfSelect(event)" />
+          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('pdf-input').click()"
+            ondragover="event.preventDefault();this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="handlePdfDrop(event)">
+            <div class="drop-zone-text">Arraste o PDF aqui ou clique para selecionar</div>
+            <div class="drop-zone-sub">Currículo em PDF — conteúdo lido automaticamente</div>
+            <div class="drop-zone-file" id="pdf-filename"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
+          <button class="btn btn-ai" id="btn-analyze" onclick="analyzeProfile()">Analisar perfil</button>
+          <div class="ai-status" id="ai-status"></div>
+        </div>
+      </div>
+      <div class="ai-divider"></div>
+    </div>
+
+    <!-- Fields -->
+    <div class="field-section">
+      <div class="field-section-title">Identificação</div>
+      <div class="form-row" style="margin-bottom:12px;">
+        <div class="form-group"><label class="form-label">Nome</label><input type="text" id="f-nome" placeholder="Nome completo" /></div>
+        <div class="form-group"><label class="form-label">Cidade</label><input type="text" id="f-cidade" placeholder="Ex: São Paulo" /></div>
+      </div>
+      <div class="form-row" style="margin-bottom:0;">
+        <div class="form-group"><label class="form-label">Cargo atual</label><input type="text" id="f-cargo" placeholder="Ex: Coordenador de Vendas" /></div>
+        <div class="form-group"><label class="form-label">Empresa atual</label><input type="text" id="f-empresa" placeholder="Ex: TOTVS" /></div>
+      </div>
+    </div>
+
+    <div class="field-section">
+      <div class="field-section-title">Processo</div>
+      <div class="form-row" style="margin-bottom:12px;">
+        <div class="form-group"><label class="form-label">Vaga</label>
+          <select id="f-vaga">
+            <option value="Closer">Coordenador Closer</option>
+            <option value="SDR">Coordenador SDR</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Origem</label>
+          <select id="f-origem">
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Indicação">Indicação</option>
+            <option value="CV Recebido">CV Recebido</option>
+            <option value="Job Board">Job Board</option>
+            <option value="Inbound">Inbound</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom:0;">
+        <div class="form-group"><label class="form-label">Etapa atual</label>
+          <select id="f-etapa">
+            <optgroup label="— Hunting">
+              <option value="Hunting">Hunting</option>
+              <option value="Sem resposta">Sem resposta</option>
+              <option value="Sem interesse">Sem interesse</option>
+            </optgroup>
+            <optgroup label="— Triagem">
+              <option value="Triagem">Triagem</option>
+              <option value="Em análise">Em análise</option>
+              <option value="Fora do perfil">Fora do perfil</option>
+            </optgroup>
+            <optgroup label="— Processo">
+              <option value="Step 1 TA">Step 1 — TA</option>
+              <option value="Step 2 Lucas">Step 2 — Lucas (Closer) / Raysa (SDR)</option>
+              <option value="Step 2 Raysa">Step 2 — Raysa (SDR)</option>
+              <option value="Step 3 Case">Step 3 — Business Case</option>
+              <option value="Step 4 Align">Step 4 — Alinhamento</option>
+              <option value="Oferta">Oferta</option>
+            </optgroup>
+            <optgroup label="— Encerrado">
+              <option value="Declinou">Declinou</option>
+              <option value="Reprovado">Reprovado</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Data do 1º contato</label>
+          <input type="date" id="f-data" />
+          <div class="date-hint">Padrão: hoje.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-section">
+      <div class="field-section-title">Financeiro & Extra</div>
+      <div class="form-row" style="margin-bottom:12px;">
+        <div class="form-group"><label class="form-label">Pretensão salarial</label><input type="text" id="f-salario" placeholder="Ex: R$ 8.000" /></div>
+        <div class="form-group"><label class="form-label">LinkedIn URL</label><input type="text" id="f-linkedin-url" placeholder="URL do perfil" /></div>
+      </div>
+      <div class="form-group"><label class="form-label">Observação</label><input type="text" id="f-obs" placeholder="Notas adicionais" /></div>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="modal-save-btn" onclick="saveCandidate()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCU7iNFy2PaSd4Yn8mdE7uhni3av2kier0",
+  authDomain: "hunting-tracker-doctoralia.firebaseapp.com",
+  projectId: "hunting-tracker-doctoralia",
+  storageBucket: "hunting-tracker-doctoralia.firebasestorage.app",
+  messagingSenderId: "982665320800",
+  appId: "1:982665320800:web:65dab33e2fe0b94235e605"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const colRef = collection(db, 'candidates');
+
+let candidates = [];
+let currentPdfBase64 = null;
+let currentAiTab = 'linkedin';
+let editingId = null;
+
+// Real-time listener — updates UI whenever Firestore changes
+onSnapshot(colRef, (snapshot) => {
+  candidates = snapshot.docs.map(d => ({ ...d.data(), _docId: d.id }));
+  const el = document.getElementById('sync-status');
+  if (el) { el.textContent = `● Sincronizado · ${candidates.length} candidatos`; el.style.color = 'var(--c-step2-text)'; }
+  renderAll();
+}, (err) => {
+  const el = document.getElementById('sync-status');
+  if (el) { el.textContent = '✕ Erro de conexão — verifique o Firebase'; el.style.color = 'var(--c-reprovado-text)'; }
+});
+
+window.openModal    = openModal;
+window.closeModal   = closeModal;
+window.saveCandidate= saveCandidate;
+window.deleteCandidate = deleteCandidate;
+window.switchTab    = switchTab;
+window.switchAiTab  = switchAiTab;
+window.analyzeProfile = analyzeProfile;
+window.renderTable  = renderTable;
+window.handlePdfSelect = handlePdfSelect;
+window.handlePdfDrop   = handlePdfDrop;
+
+const STAGES_CLOSER = [
+  { key:'Hunting',        label:'Hunting',       tip:'Perfil identificado e abordado',   cls:'fs-hunting' },
+  { key:'Triagem',        label:'Triagem',        tip:'Análise de currículo pela TA',     cls:'fs-triagem' },
+  { key:'Step 1 TA',      label:'Step 1',         tip:'Entrevista com TA (Bibica)',        cls:'fs-step1'   },
+  { key:'Step 2 Lucas',   label:'Step 2',         tip:'Entrevista com Lucas (HM)',         cls:'fs-step2'   },
+  { key:'Step 3 Case',    label:'Step 3',         tip:'Business Case',                     cls:'fs-step3'   },
+  { key:'Step 4 Align',   label:'Step 4',         tip:'Alinhamento final',                 cls:'fs-step3'   },
+  { key:'Oferta',         label:'Oferta',         tip:'Proposta enviada ao candidato',     cls:'fs-oferta'  },
+];
+const STAGES_SDR = [
+  { key:'Hunting',        label:'Hunting',       tip:'Perfil identificado e abordado',   cls:'fs-hunting' },
+  { key:'Triagem',        label:'Triagem',        tip:'Análise de currículo pela TA',     cls:'fs-triagem' },
+  { key:'Step 1 TA',      label:'Step 1',         tip:'Entrevista com TA (Bibica)',        cls:'fs-step1'   },
+  { key:'Step 2 Raysa',   label:'Step 2',         tip:'Entrevista com Raysa (HM)',         cls:'fs-step2'   },
+  { key:'Step 3 Case',    label:'Step 3',         tip:'Business Case',                     cls:'fs-step3'   },
+  { key:'Step 4 Align',   label:'Step 4',         tip:'Alinhamento final',                 cls:'fs-step3'   },
+  { key:'Oferta',         label:'Oferta',         tip:'Proposta enviada ao candidato',     cls:'fs-oferta'  },
+];
+const STAGES = STAGES_CLOSER;
+const BADGE = {
+  'Hunting':'badge-hunting','Triagem':'badge-triagem',
+  'Step 1':'badge-step1','Step 2':'badge-step2','Step 3':'badge-step3',
+  'Oferta':'badge-oferta','Reprovado':'badge-reprovado',
+  'Sem resposta':'badge-semresposta','Sem interesse':'badge-seminteresse',
+  'Em análise':'badge-emanalise','Fora do perfil':'badge-foradoperfil',
+  'Declinou':'badge-declinou'
+};
+
+function todayISO() { return new Date().toISOString().split('T')[0]; }
+function formatDate(iso) { if (!iso) return '-'; const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
+
+// Status indicator
+function setStatus(msg, color) {
+  const el = document.getElementById('sync-status');
+  if (el) { el.textContent = msg; el.style.color = color || 'var(--text-tertiary)'; }
+}
+
+function openModal(docId) {
+  editingId = docId || null;
+  const isEdit = !!editingId;
+  document.getElementById('modal-title-text').textContent = isEdit ? 'Editar candidato' : 'Novo candidato';
+  document.getElementById('modal-save-btn').textContent = isEdit ? 'Salvar' : 'Adicionar';
+  document.getElementById('ai-block').style.display = isEdit ? 'none' : '';
+
+  if (isEdit) {
+    const c = candidates.find(x => x._docId === docId);
+    if (!c) return;
+    document.getElementById('f-nome').value    = c.nome || '';
+    document.getElementById('f-cidade').value  = c.cidade !== '-' ? c.cidade : '';
+    document.getElementById('f-cargo').value   = c.cargo  !== '-' ? c.cargo  : '';
+    document.getElementById('f-empresa').value = c.empresa!== '-' ? c.empresa: '';
+    document.getElementById('f-salario').value = c.salario!== '-' ? c.salario: '';
+    document.getElementById('f-linkedin-url').value = c.linkedin || '';
+    document.getElementById('f-obs').value     = c.obs || '';
+    document.getElementById('f-data').value    = c.dataContato || todayISO();
+    setSelect('f-vaga',   c.vaga);
+    setSelect('f-origem', c.origem);
+    setSelect('f-etapa',  c.etapa);
+  } else {
+    clearForm();
+    document.getElementById('f-data').value = todayISO();
+  }
+  document.getElementById('modal').classList.add('open');
+}
+
+function setSelect(id, val) {
+  const sel = document.getElementById(id);
+  for (let i=0;i<sel.options.length;i++) {
+    if (sel.options[i].value === val || sel.options[i].value.startsWith(val)) { sel.selectedIndex=i; break; }
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  editingId = null;
+  currentPdfBase64 = null;
+  document.getElementById('pdf-filename').textContent = '';
+  document.getElementById('ai-status').textContent = '';
+  document.getElementById('ai-status').style.color = '';
+}
+
+function clearForm() {
+  ['f-nome','f-cidade','f-cargo','f-empresa','f-salario','f-linkedin-url','f-obs','f-linkedin-text'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+}
+
+function deleteCandidate(id) {
+  const c = candidates.find(x => x._docId === id);
+  if (!c) return;
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;display:flex;align-items:center;justify-content:center;';
+  overlay.innerHTML = `
+    <div style="background:var(--bg-card);border-radius:var(--radius-lg);border:0.5px solid var(--border-mid);padding:1.5rem;width:360px;max-width:90vw;">
+      <div style="font-size:15px;font-weight:500;margin-bottom:8px;">Remover candidato</div>
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:1.25rem;">Tem certeza que quer remover <strong>${c.nome}</strong>? Essa ação não pode ser desfeita.</div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn" id="del-cancel">Cancelar</button>
+        <button class="btn" style="background:var(--c-reprovado-bg);color:var(--c-reprovado-text);border-color:var(--c-reprovado);" id="del-confirm">Remover</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('del-cancel').onclick = () => document.body.removeChild(overlay);
+  document.getElementById('del-confirm').onclick = async () => {
+    await deleteDoc(doc(db, 'candidates', id));
+    document.body.removeChild(overlay);
+  };
+}
+
+function switchAiTab(tab, el) {
+  currentAiTab = tab;
+  document.querySelectorAll('.ai-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ai-input-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('ai-panel-'+tab).classList.add('active');
+}
+
+function handlePdfSelect(e) { const f=e.target.files[0]; if(f) loadPdf(f); }
+function handlePdfDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag-over');
+  const f=e.dataTransfer.files[0];
+  if(f&&f.type==='application/pdf') loadPdf(f);
+}
+function loadPdf(file) {
+  document.getElementById('pdf-filename').textContent = file.name;
+  const r=new FileReader();
+  r.onload=(e)=>{ currentPdfBase64=e.target.result.split(',')[1]; };
+  r.readAsDataURL(file);
+}
+
+const AI_PROMPT = `Você é um assistente de recrutamento da Doctoralia Brasil. Analise o perfil/currículo e extraia as informações em JSON.
+
+Vagas abertas:
+- Coordenador Closer B2B: lidera time de closers, experiência em liderança de vendas consultivas B2B, SaaS preferencial, Salesforce/Outreach
+- Coordenador SDR B2B: lidera time de SDRs outbound, experiência em pré-vendas B2B, forte orientação a dados, SaaS preferencial
+
+Responda APENAS com JSON válido, sem texto adicional, sem markdown:
+{
+  "nome": "nome completo",
+  "cidade": "cidade e estado, ou '-'",
+  "cargo": "cargo atual",
+  "empresa": "empresa atual",
+  "vaga": "Closer ou SDR",
+  "obs": "1 frase: experiência relevante e principal diferencial para a vaga sugerida"
+}`;
+
+async function analyzeProfile() {
+  const btn=document.getElementById('btn-analyze');
+  const status=document.getElementById('ai-status');
+  btn.disabled=true; btn.textContent='Analisando...'; status.textContent='Processando...'; status.style.color='';
+  try {
+    let messages;
+    if (currentAiTab==='pdf') {
+      if (!currentPdfBase64) { status.textContent='Selecione um PDF primeiro.'; btn.disabled=false; btn.textContent='Analisar perfil'; return; }
+      messages=[{ role:'user', content:[
+        { type:'document', source:{ type:'base64', media_type:'application/pdf', data:currentPdfBase64 } },
+        { type:'text', text:AI_PROMPT }
+      ]}];
+    } else {
+      const text=document.getElementById('f-linkedin-text').value.trim();
+      if (!text) { status.textContent='Cole o texto do perfil primeiro.'; btn.disabled=false; btn.textContent='Analisar perfil'; return; }
+      messages=[{ role:'user', content:AI_PROMPT+'\n\nPerfil:\n'+text }];
+    }
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages })
+    });
+    const data=await res.json();
+    const raw=data.content?.find(b=>b.type==='text')?.text||'';
+    const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    if (parsed.nome)    document.getElementById('f-nome').value    = parsed.nome;
+    if (parsed.cidade)  document.getElementById('f-cidade').value  = parsed.cidade;
+    if (parsed.cargo)   document.getElementById('f-cargo').value   = parsed.cargo;
+    if (parsed.empresa) document.getElementById('f-empresa').value = parsed.empresa;
+    if (parsed.obs)     document.getElementById('f-obs').value     = parsed.obs;
+    if (parsed.vaga)    setSelect('f-vaga', parsed.vaga);
+    document.getElementById('f-origem').value = currentAiTab==='pdf' ? 'CV Recebido' : 'LinkedIn';
+    status.textContent='Campos preenchidos! Revise e ajuste se necessário.';
+    status.style.color='var(--c-step2-text)';
+  } catch(e) {
+    status.textContent='Erro na análise. Preencha manualmente.';
+    status.style.color='var(--c-reprovado-text)';
+  }
+  btn.disabled=false; btn.textContent='Analisar perfil';
+}
+
+async function saveCandidate() {
+  const nome=document.getElementById('f-nome').value.trim();
+  if (!nome) { alert('Informe o nome'); return; }
+  const etapaRaw=document.getElementById('f-etapa').value;
+  const etapa = etapaRaw.includes(' —') ? etapaRaw.split(' —')[0] : etapaRaw;
+  const data = {
+    nome,
+    cargo:    document.getElementById('f-cargo').value.trim()||'-',
+    empresa:  document.getElementById('f-empresa').value.trim()||'-',
+    vaga:     document.getElementById('f-vaga').value,
+    origem:   document.getElementById('f-origem').value,
+    etapa,
+    cidade:   document.getElementById('f-cidade').value.trim()||'-',
+    salario:  document.getElementById('f-salario').value.trim()||'-',
+    linkedin: document.getElementById('f-linkedin-url').value.trim(),
+    obs:      document.getElementById('f-obs').value.trim(),
+    dataContato: document.getElementById('f-data').value || todayISO()
+  };
+  const btn = document.getElementById('modal-save-btn');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+  try {
+    if (editingId) {
+      await updateDoc(doc(db, 'candidates', editingId), data);
+    } else {
+      await addDoc(colRef, data);
+    }
+    closeModal();
+  } catch(e) {
+    alert('Erro ao salvar. Tente novamente.');
+  }
+  btn.disabled = false;
+}
+
+function switchTab(id, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  if (id==='dados') renderDados();
+}
+
+function renderMetrics() {
+  const total=candidates.length, active=candidates.filter(c=>c.etapa!=='Reprovado').length;
+  const reprovados=candidates.filter(c=>c.etapa==='Reprovado').length, ofertas=candidates.filter(c=>c.etapa==='Oferta').length;
+  const conv=total>0?Math.round((ofertas/total)*100):0;
+  document.getElementById('metrics').innerHTML=`
+    <div class="metric metric-blue"><div class="metric-label">Total mapeados</div><div class="metric-value">${total}</div></div>
+    <div class="metric metric-purple"><div class="metric-label">Em processo</div><div class="metric-value">${active}</div></div>
+    <div class="metric metric-red"><div class="metric-label">Reprovados</div><div class="metric-value">${reprovados}</div></div>
+    <div class="metric metric-green"><div class="metric-label">Conversão geral</div><div class="metric-value">${conv}%</div><div class="metric-sub">hunting → oferta</div></div>`;
+}
+
+function renderTable() {
+  const fv=document.getElementById('filter-vaga').value, fe=document.getElementById('filter-etapa').value;
+  const list=candidates.filter(c=>(!fv||c.vaga===fv)&&(!fe||c.etapa===fe)).slice().reverse();
+  const tbody=document.getElementById('tbody');
+  if(!list.length){tbody.innerHTML=`<tr><td colspan="9" class="empty">Nenhum candidato ainda</td></tr>`;return;}
+  tbody.innerHTML=list.map(c=>`<tr>
+    <td style="font-weight:500;white-space:nowrap">${c.nome}</td>
+    <td style="color:var(--text-secondary);font-size:12px;white-space:nowrap">${c.cargo||'-'}</td>
+    <td style="color:var(--text-secondary);font-size:12px;white-space:nowrap">${c.empresa||'-'}</td>
+    <td style="color:var(--text-secondary);font-size:12px">${c.vaga}</td>
+    <td><span class="badge ${BADGE[c.etapa]||''}">${c.etapa}</span></td>
+    <td style="color:var(--text-secondary);font-size:12px">${c.cidade}</td>
+    <td style="color:var(--text-secondary);font-size:12px">${c.salario||'-'}</td>
+    <td style="color:var(--text-tertiary);font-size:12px">${formatDate(c.dataContato)}</td>
+    <td style="white-space:nowrap">
+      <button class="btn-icon" onclick="openModal('${c._docId}')" title="Editar">✏️</button>
+      <button class="btn-icon btn-icon-del" onclick="deleteCandidate('${c._docId}')" title="Remover">✕</button>
+    </td>
+  </tr>`).join('');
+}
+
+function buildPyramid(containerId, stages, vagaFilter) {
+  const cands = vagaFilter ? candidates.filter(c=>c.vaga===vagaFilter) : candidates;
+  const counts = stages.map(s=>cands.filter(c=>c.etapa===s.key).length);
+  const minW=36, maxW=100;
+  document.getElementById(containerId).innerHTML = stages.map((s,i)=>{
+    const widthPct = maxW - ((maxW-minW)/(stages.length-1))*i;
+    const stageCands = cands.filter(c=>c.etapa===s.key);
+    const prev = i>0?counts[i-1]:null;
+    const conv = (prev!==null&&prev>0)?Math.round((counts[i]/prev)*100):null;
+    const namesHtml = stageCands.length
+      ? stageCands.map(c=>`<div class="pyramid-tip-item">· ${c.nome} <span>${c.empresa&&c.empresa!=='-'?'@ '+c.empresa:''}</span></div>`).join('')
+      : `<div class="pyramid-tip-empty">Nenhum candidato</div>`;
+    return `<div class="pyramid-stage ${s.cls}" style="width:${widthPct}%;min-width:100px;">
+      <div class="pyramid-tip"><div class="pyramid-tip-title">${s.label}</div><div class="pyramid-tip-desc">${s.tip}</div>${namesHtml}</div>
+      <div class="pyramid-stage-inner">
+        <span class="pyramid-stage-label">${s.label}</span>
+        <span class="pyramid-stage-count">${counts[i]}</span>
+        ${conv!==null?`<span class="pyramid-stage-pct">${conv}%</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function parseSalario(str) {
+  if (!str || str==='-') return null;
+  const n = parseFloat(str.replace(/[^\d,\.]/g,'').replace(',','.'));
+  return isNaN(n) ? null : n;
+}
+
+function buildSalaryChart(containerId, avgId, vagaFilter) {
+  const cands = candidates.filter(c=>c.vaga===vagaFilter && parseSalario(c.salario)!==null);
+  const empty = '<div style="font-size:12px;color:var(--text-tertiary);padding:4px 0">Sem dados ainda</div>';
+  if (!cands.length) { document.getElementById(containerId).innerHTML=empty; document.getElementById(avgId).textContent=''; return; }
+  const vals = cands.map(c=>parseSalario(c.salario));
+  const avg = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+  const max = Math.max(...vals);
+  const bc = ['#185FA5','#7C5BB5','#B85C00','#0f7a60','#5a7a00','#00796B'];
+  const bar=(label,val,mx,color)=>`<div class="chart-bar-row"><div class="chart-bar-label" style="width:100px;font-size:11px;">${label}</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.round((val/mx)*100)}%;background:${color}"></div></div><div class="chart-bar-val" style="font-size:11px;">R$${val.toLocaleString('pt-BR')}</div></div>`;
+  document.getElementById(containerId).innerHTML = cands.map((c,i)=>bar(c.nome.split(' ')[0], parseSalario(c.salario), max, bc[i%bc.length])).join('');
+  document.getElementById(avgId).textContent = `Média: R$ ${avg.toLocaleString('pt-BR')}`;
+}
+
+function renderDados() {
+  buildPyramid('pyramid-closer', STAGES_CLOSER, 'Closer');
+  buildPyramid('pyramid-sdr',    STAGES_SDR,    'SDR');
+
+  const origins={};
+  candidates.forEach(c=>{ origins[c.origem]=(origins[c.origem]||0)+1; });
+  const bc=['#185FA5','#7C5BB5','#B85C00','#0f7a60','#5a7a00','#00796B'];
+  const maxO=Math.max(...Object.values(origins),1);
+  const empty='<div style="font-size:12px;color:var(--text-tertiary);padding:4px 0">Sem dados ainda</div>';
+  const bar=(label,val,max,color)=>`<div class="chart-bar-row"><div class="chart-bar-label">${label}</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.round((val/max)*100)}%;background:${color}"></div></div><div class="chart-bar-val">${val}</div></div>`;
+  document.getElementById('origin-chart').innerHTML=Object.entries(origins).map(([k,v],i)=>bar(k,v,maxO,bc[i%bc.length])).join('')||empty;
+
+  buildSalaryChart('salary-closer-chart','salary-closer-avg','Closer');
+  buildSalaryChart('salary-sdr-chart',   'salary-sdr-avg',   'SDR');
+}
+
+function renderAll(){ renderMetrics(); renderTable(); if(document.getElementById('pyramid-closer')) renderDados(); }
+</script>
+</body>
+</html>
