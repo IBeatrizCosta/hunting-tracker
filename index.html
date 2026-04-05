@@ -610,7 +610,7 @@ function analyzeProfile(){
     if(!text){ status.textContent='Cole o texto do perfil primeiro.'; btn.disabled=false; btn.textContent='Analisar perfil'; return; }
     messages=[{role:'user',content:AI_PROMPT+'\n\nPerfil:\n'+text}];
   }
-  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:messages})})
+  fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messages})})
   .then(function(r){ return r.json(); })
   .then(function(data){
     var raw=(data.content&&data.content.find(function(b){ return b.type==='text'; }))||{text:''};
