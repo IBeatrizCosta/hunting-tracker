@@ -91,7 +91,7 @@ tr:hover td { background: var(--teal-l); }
 .pyramid-wrap { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
 .pyramid-stage { position: relative; display: flex; align-items: center; padding: 0 12px; height: 42px; border-radius: var(--r); cursor: default; transition: filter 0.15s; }
 .pyramid-stage:hover { filter: brightness(0.93); }
-/* tooltip shown via JS positionTip */
+.pyramid-stage:hover .ptip { opacity: 1; }
 .ps-label { font-size: 11px; font-weight: 700; flex: 1; }
 .ps-count { font-size: 20px; font-weight: 800; letter-spacing: -0.03em; margin-right: 6px; }
 .ps-pct { font-size: 10px; opacity: 0.6; }
@@ -225,7 +225,7 @@ tr:hover td { background: var(--teal-l); }
               <th>Nome</th><th>Cargo / Empresa</th><th>Vaga</th><th>Etapa</th>
               <th>Cidade</th><th>Salário atual</th><th>Pretensão</th><th>1ª Abordagem</th>
               <th>Entrev. TA</th><th>Entrev. HM</th><th>Business Case</th>
-              <th>LinkedIn</th><th>Tempo</th><th></th>
+              <th>Tempo</th><th></th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
@@ -464,17 +464,12 @@ function positionTip(el){
   var tip = el.querySelector('.ptip');
   if(!tip) return;
   var rect = el.getBoundingClientRect();
-  var tipW = 220;
-  var left = rect.right + 14;
-  var top = rect.top + rect.height/2;
-  if(left + tipW > window.innerWidth - 20) {
-    left = rect.left - tipW - 14;
-  }
-  if(top < 60) top = 60;
+  var tipW = 200;
+  var left = rect.right + 12;
+  if(left + tipW > window.innerWidth) left = rect.left - tipW - 12;
   tip.style.left = left + 'px';
-  tip.style.top = top + 'px';
+  tip.style.top = (rect.top + rect.height/2) + 'px';
   tip.style.transform = 'translateY(-50%)';
-  tip.style.opacity = '1';
 }
 
 function exportData(){
@@ -720,7 +715,6 @@ function renderTable(){
       +'<td style="font-size:12px;color:#9a9a94">'+formatDate(c.dataTA)+'</td>'
       +'<td style="font-size:12px;color:#9a9a94">'+formatDate(c.dataHM)+'</td>'
       +'<td style="font-size:12px;color:#9a9a94">'+formatDate(c.dataCase)+'</td>'
-      +'<td>'+(c.linkedin?'<a href="'+(c.linkedin.startsWith('http')?c.linkedin:'https://'+c.linkedin)+'" target="_blank" style="color:#00C9A7;font-size:12px;text-decoration:none;font-weight:600;">Ver ↗</a>':'<span style="color:#9a9a94;font-size:12px;">—</span>')+'</td>'
       +'<td>'+alertBadge(days)+'</td>'
       +'<td style="white-space:nowrap">'
       +'<button class="btn-icon" onclick="openModal(\''+c._docId+'\')">✏️</button> '
@@ -742,7 +736,7 @@ function buildPyramid(cId,stages,vaga){
     var names=sc.length
       ? sc.map(function(c){ return '<div class="ptip-name">· '+c.nome+'<span class="ptip-sub">'+(c.empresa&&c.empresa!=='-'?' @ '+c.empresa:'')+'</span></div>'; }).join('')
       : '<div class="ptip-empty">Nenhum candidato</div>';
-    return '<div class="pyramid-stage" style="width:'+w+'%;background:'+s.bg+';color:'+s.color+';min-width:110px;" onmouseenter="positionTip(this)" onmouseleave="this.querySelector('.ptip').style.opacity='0'">'
+    return '<div class="pyramid-stage" style="width:'+w+'%;background:'+s.bg+';color:'+s.color+';min-width:110px;" onmouseenter="positionTip(this)" onmouseleave="">'
       +'<div class="ptip"><div class="ptip-title">'+s.label+'</div><div class="ptip-desc">'+s.tip+'</div>'+names+'</div>'
       +'<span class="ps-label">'+s.label+'</span>'
       +'<span class="ps-count">'+counts[i]+'</span>'
