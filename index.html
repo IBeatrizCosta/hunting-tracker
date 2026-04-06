@@ -613,8 +613,11 @@ function analyzeProfile(){
   fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messages})})
   .then(function(r){ return r.json(); })
   .then(function(data){
-    var raw=(data.content&&data.content.find(function(b){ return b.type==='text'; }))||{text:''};
-    var parsed=JSON.parse(raw.text.replace(/```json|```/g,'').trim());
+    console.log('API response:', JSON.stringify(data));
+    var block = data.content && data.content.find(function(b){ return b.type==='text'; });
+    if(!block || !block.text) throw new Error('No text block in response');
+    var raw = block.text.replace(/```json|```/g,'').trim();
+    var parsed=JSON.parse(raw);
     if(parsed.nome)    document.getElementById('f-nome').value=parsed.nome;
     if(parsed.cidade)  document.getElementById('f-cidade').value=parsed.cidade;
     if(parsed.cargo)   document.getElementById('f-cargo').value=parsed.cargo;
