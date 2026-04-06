@@ -706,7 +706,7 @@ function renderTable(){
   var fe=document.getElementById('filter-etapa').value;
   var list=candidates.filter(function(c){ return(!fv||c.vaga===fv)&&(!fe||c.etapa===fe); }).slice().sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR'); });
   var tbody=document.getElementById('tbody');
-  if(!list.length){ tbody.innerHTML='<tr><td colspan="12" class="empty">Nenhum candidato ainda</td></tr>'; return; }
+  if(!list.length){ tbody.innerHTML='<tr><td colspan="13" class="empty">Nenhum candidato ainda</td></tr>'; return; }
   tbody.innerHTML=list.map(function(c){
     var days=daysDiff(c.dataContato);
     return '<tr>'
@@ -720,8 +720,7 @@ function renderTable(){
       +'<td style="font-size:12px;color:#9a9a94">'+formatDate(c.dataTA)+'</td>'
       +'<td style="font-size:12px;color:#9a9a94">'+formatDate(c.dataHM)+'</td>'
       +'<td style="font-size:12px;color:#9a9a94">'+formatDate(c.dataCase)+'</td>'
-      +'<td>'+(c.linkedin?'<a href="'+(c.linkedin.startsWith('http')?c.linkedin:'https://'+c.linkedin)+'" target="_blank" style="color:#00C9A7;font-size:12px;text-decoration:none;font-weight:600;">Ver ↗</a>':'<span style="color:#9a9a94;font-size:12px;">—</span>')+'</td>'
-      +'<td>'+alertBadge(days)+'</td>'
+      +'<td>'+(c.linkedin?'<a href="'+(c.linkedin.startsWith('http')?c.linkedin:'https://'+c.linkedin)+'" target="_blank" style="color:#00C9A7;font-size:12px;text-decoration:none;font-weight:600;">Ver ↗</a>':'—')+'</td>'+'<td>'+alertBadge(days)+'</td>'
       +'<td style="white-space:nowrap">'
       +'<button class="btn-icon" onclick="openModal(\''+c._docId+'\')">✏️</button> '
       +'<button class="btn-icon btn-del" onclick="deleteCandidate(\''+c._docId+'\')">✕</button>'
