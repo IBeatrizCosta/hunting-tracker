@@ -21,6 +21,8 @@ body { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; background: 
 .topbar-title { font-size: 20px; font-weight: 800; color: white; letter-spacing: -0.02em; }
 .btn-new { font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: var(--r); background: var(--teal); color: var(--gd); border: none; cursor: pointer; transition: background 0.15s; }
 .btn-new:hover { background: #00E8C0; }
+.btn-export, .btn-import { font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: var(--r); background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.15s; }
+.btn-export:hover, .btn-import:hover { background: rgba(255,255,255,0.2); }
 .sync-row { display: flex; align-items: center; gap: 10px; }
 .sync-pill { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 5px; }
 .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
@@ -158,8 +160,6 @@ tr:hover td { background: var(--teal-l); }
   .ptip{left:auto;right:calc(100% + 10px);}
 }
 </style>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -174,6 +174,11 @@ tr:hover td { background: var(--teal-l); }
       <span id="sync-label">Carregando...</span>
     </div>
     <span class="updated" id="updated-label"></span>
+    <button class="btn-export" onclick="exportData()" title="Exportar candidatos">⬇ Exportar</button>
+    <label class="btn-import" title="Importar candidatos">
+      ⬆ Importar
+      <input type="file" id="import-input" accept=".json" onchange="importData(event)" style="display:none" />
+    </label>
     <button class="btn-new" onclick="openModal()">+ Candidato</button>
   </div>
 </div>
@@ -454,52 +459,49 @@ function alertBadge(days){
 }
 function parseSal(s){ if(!s||s==='-') return null; var n=parseFloat(s.replace(/[^\d,.]/g,'').replace(',','.')); return isNaN(n)?null:n; }
 
-var db = null;
-var colRef = null;
-
-function initFirebase(){
-  try {
-    firebase.initializeApp({
-      apiKey: "AIzaSyCU7iNFy2PaSd4Yn8mdE7uhni3av2kier0",
-      authDomain: "hunting-tracker-doctoralia.firebaseapp.com",
-      projectId: "hunting-tracker-doctoralia",
-      storageBucket: "hunting-tracker-doctoralia.firebasestorage.app",
-      messagingSenderId: "982665320800",
-      appId: "1:982665320800:web:65dab33e2fe0b94235e605"
-    });
-    db = firebase.firestore();
-    colRef = db.collection('candidates');
-    colRef.onSnapshot(function(snap){
-      candidates = snap.docs.map(function(d){ return Object.assign({},d.data(),{_docId:d.id}); });
-      var now = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-      document.getElementById('sync-label').textContent = candidates.length+' candidatos';
-      document.getElementById('sync-dot').style.background = '#00C9A7';
-      document.getElementById('updated-label').textContent = 'Atualizado às '+now;
-      renderAll();
-    }, function(){
-      loadLocal();
-    });
-  } catch(e){
-    loadLocal();
-  }
+function exportData(){
+  var data = JSON.stringify(candidates, null, 2);
+  var blob = new Blob([data], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'candidatos_doctoralia_' + todayISO() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
-function loadLocal(){
+function importData(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    try {
+      var imported = JSON.parse(ev.target.result);
+      if(!Array.isArray(imported)) throw new Error('Formato inválido');
+      candidates = imported;
+      localStorage.setItem('ht_doc_v2', JSON.stringify(candidates));
+      loadCandidates();
+      alert('✓ ' + imported.length + ' candidatos importados com sucesso!');
+    } catch(err) {
+      alert('Erro ao importar. Verifique se o arquivo é válido.');
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function loadCandidates(){
   var stored = JSON.parse(localStorage.getItem('ht_doc_v2')||'[]');
   candidates = stored.length > 0 ? stored : DEMO;
   var now = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('sync-label').textContent = candidates.length+' candidatos (local)';
-  document.getElementById('sync-dot').style.background = '#F59E0B';
+  document.getElementById('sync-label').textContent = candidates.length+' candidatos';
+  document.getElementById('sync-dot').style.background = '#00C9A7';
   document.getElementById('updated-label').textContent = 'Atualizado às '+now;
   renderAll();
 }
-
-function loadCandidates(){ initFirebase(); }
-
 function saveCandidates(){
-  if(colRef) return;
   localStorage.setItem('ht_doc_v2', JSON.stringify(candidates));
-  loadLocal();
+  loadCandidates();
 }
 
 function openModal(docId){
@@ -563,13 +565,9 @@ function deleteCandidate(docId){
   document.body.appendChild(ov);
   document.getElementById('del-cancel').onclick=function(){ document.body.removeChild(ov); };
   document.getElementById('del-confirm').onclick=function(){
-    if(colRef){
-      colRef.doc(docId).delete().then(function(){ document.body.removeChild(ov); });
-    } else {
-      candidates=candidates.filter(function(x){ return x._docId!==docId; });
-      saveCandidates();
-      document.body.removeChild(ov);
-    }
+    candidates=candidates.filter(function(x){ return x._docId!==docId; });
+    saveCandidates();
+    document.body.removeChild(ov);
   };
 }
 
@@ -610,14 +608,11 @@ function analyzeProfile(){
     if(!text){ status.textContent='Cole o texto do perfil primeiro.'; btn.disabled=false; btn.textContent='Analisar perfil'; return; }
     messages=[{role:'user',content:AI_PROMPT+'\n\nPerfil:\n'+text}];
   }
-  fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messages})})
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:messages})})
   .then(function(r){ return r.json(); })
   .then(function(data){
-    console.log('API response:', JSON.stringify(data));
-    var block = data.content && data.content.find(function(b){ return b.type==='text'; });
-    if(!block || !block.text) throw new Error('No text block in response');
-    var raw = block.text.replace(/```json|```/g,'').trim();
-    var parsed=JSON.parse(raw);
+    var raw=(data.content&&data.content.find(function(b){ return b.type==='text'; }))||{text:''};
+    var parsed=JSON.parse(raw.text.replace(/```json|```/g,'').trim());
     if(parsed.nome)    document.getElementById('f-nome').value=parsed.nome;
     if(parsed.cidade)  document.getElementById('f-cidade').value=parsed.cidade;
     if(parsed.cargo)   document.getElementById('f-cargo').value=parsed.cargo;
@@ -661,23 +656,8 @@ function saveCandidate(){
     data._docId=Date.now().toString();
     candidates.push(data);
   }
-  if(colRef){
-    if(editingId){
-      colRef.doc(editingId).update(data).then(function(){ closeModal(); });
-    } else {
-      colRef.add(data).then(function(){ closeModal(); });
-    }
-  } else {
-    if(editingId){
-      var idx=candidates.findIndex(function(c){ return c._docId===editingId; });
-      if(idx>-1) candidates[idx]=Object.assign({},candidates[idx],data);
-    } else {
-      data._docId=Date.now().toString();
-      candidates.push(data);
-    }
-    saveCandidates();
-    closeModal();
-  }
+  saveCandidates();
+  closeModal();
 }
 
 function switchTab(id,el){
