@@ -11,97 +11,145 @@
   --gd: #0D4F3C; --gm: #1A6B52; --teal: #00C9A7; --teal-l: #E8F8F4;
   --white: #ffffff; --bg: #F4F3EE; --surface: #EEECEA;
   --t1: #1a1a18; --t2: #5a5a56; --t3: #9a9a94;
-  --border: rgba(0,0,0,0.09); --border2: rgba(0,0,0,0.15);
+  --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.14);
   --r: 8px; --r2: 14px; --r3: 20px;
+  --FIXO-OK: 14250; --FIXO-WARN: 16000;
+  --OTE-OK: 20250; --OTE-WARN: 22000;
 }
 body { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; background: var(--bg); color: var(--t1); min-height: 100vh; padding-bottom: 4rem; }
-.topbar { background: var(--gd); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+
+/* TOPBAR */
+.topbar { background: var(--gd); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
 .topbar-eyebrow { font-size: 10px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 3px; }
 .topbar-title { font-size: 20px; font-weight: 800; color: white; letter-spacing: -0.02em; }
-.sync-row { display: flex; align-items: center; gap: 10px; }
+.sync-row { display: flex; align-items: center; gap: 8px; }
 .sync-pill { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 5px; }
 .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
 .updated { font-size: 11px; color: rgba(255,255,255,0.35); }
-.btn-new { font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: var(--r); background: var(--teal); color: var(--gd); border: none; cursor: pointer; transition: background 0.15s; }
-.btn-new:hover { background: #00E8C0; }
-.btn-top { font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: var(--r); background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.15s; }
+.btn-top { font-size: 12px; font-weight: 600; padding: 7px 13px; border-radius: var(--r); background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.18); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
 .btn-top:hover { background: rgba(255,255,255,0.2); }
-.content { max-width: 1150px; margin: 0 auto; padding: 1.5rem; }
+.btn-new { font-size: 13px; font-weight: 700; padding: 8px 18px; border-radius: var(--r); background: var(--teal); color: var(--gd); border: none; cursor: pointer; transition: background 0.15s; }
+.btn-new:hover { background: #00E8C0; }
+
+/* CONTENT */
+.content { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+
+/* METRICS */
 .metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 1.25rem; }
 .metric { border-radius: var(--r2); padding: 16px 18px; }
-.metric-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; opacity: 0.7; }
-.metric-value { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+.metric-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; opacity: 0.65; }
+.metric-value { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
 .metric-sub { font-size: 11px; margin-top: 4px; opacity: 0.6; }
-.m-teal { background: var(--teal-l); color: #085041; }
+.m-teal { background: #E1F5EE; color: #085041; }
 .m-dark { background: #0D4F3C; color: white; }
-.m-warn { background: #FEF3C7; color: #92400E; }
-.m-ok   { background: #D1FAE5; color: #065F46; }
+.m-warn { background: #FAEEDA; color: #633806; }
+.m-ok   { background: #EAF3DE; color: #27500A; }
+
+/* CARD */
 .card { background: var(--white); border-radius: var(--r2); border: 0.5px solid var(--border); padding: 1.25rem; margin-bottom: 1.25rem; }
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 1.25rem; }
+
+/* TABS */
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 1.25rem; }
 .tab { font-size: 13px; font-weight: 600; padding: 10px 18px; border: none; background: transparent; color: var(--t3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
 .tab:hover { color: var(--t1); }
 .tab.active { color: var(--gd); border-bottom-color: var(--teal); }
-.filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-.filters select { flex: 1; min-width: 140px; }
-input, select, textarea { width: 100%; font-size: 13px; padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--r); background: var(--white); color: var(--t1); outline: none; transition: border-color 0.15s; font-family: inherit; }
+
+/* FILTERS */
+.filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.filter-search { flex: 2; min-width: 160px; }
+.filter-sel { flex: 1; min-width: 120px; }
+input, select, textarea { width: 100%; font-size: 13px; padding: 8px 11px; border: 0.5px solid var(--border2); border-radius: var(--r); background: var(--white); color: var(--t1); outline: none; transition: border-color 0.15s; font-family: inherit; }
 input:focus, select:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(0,201,167,0.1); }
 textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+.btn-clear { font-size: 12px; font-weight: 500; padding: 8px 12px; border-radius: var(--r); border: 0.5px solid var(--border2); background: transparent; color: var(--t3); cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+.btn-clear:hover { background: var(--surface); color: var(--t1); }
+
+/* TABLE */
 .table-wrap { border: 0.5px solid var(--border); border-radius: var(--r2); overflow: hidden; overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { position: sticky; top: 64px; z-index: 10; }
 th { font-size: 10px; font-weight: 700; color: var(--t3); padding: 10px 12px; text-align: left; border-bottom: 0.5px solid var(--border); background: var(--bg); text-transform: uppercase; letter-spacing: 0.07em; white-space: nowrap; }
-td { padding: 10px 12px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
+td { padding: 13px 12px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--teal-l); }
+tr:hover td { background: rgba(0,201,167,0.04); }
 .empty { text-align: center; padding: 3rem; color: var(--t3); font-size: 13px; }
-.badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
-.b-hunting    { background: #E8F8F4; color: #085041; }
-.b-triagem    { background: #EDE9FE; color: #4C1D95; }
-.b-s1         { background: #DBEAFE; color: #1E3A8A; }
-.b-s2         { background: #FEF3C7; color: #92400E; }
-.b-s3         { background: #FCE7F3; color: #831843; }
-.b-s4         { background: #FFEDD5; color: #9A3412; }
-.b-oferta     { background: #D1FAE5; color: #065F46; }
-.b-reprovado  { background: #FEE2E2; color: #991B1B; }
+
+/* BADGES ETAPA */
+.badge { display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px; white-space: nowrap; }
+.b-hunting    { background: #F1EFE8; color: #5F5E5A; }
+.b-triagem    { background: #EEEDFE; color: #534AB7; }
+.b-s1         { background: #E6F1FB; color: #0C447C; }
+.b-s2         { background: #FAEEDA; color: #633806; }
+.b-s3         { background: #EEEDFE; color: #3C3489; }
+.b-s4         { background: #FAECE7; color: #712B13; }
+.b-oferta     { background: #EAF3DE; color: #27500A; }
+.b-reprovado  { background: #FCEBEB; color: #791F1F; }
 .b-declinou   { background: #F3E8FF; color: #6B21A8; }
-.b-semresp    { background: #FEF9C3; color: #854D0E; }
-.b-semint     { background: #FFE4E6; color: #9F1239; }
-.b-emanalise  { background: #E0F2FE; color: #0C4A6E; }
-.b-foradoperf { background: #F3F4F6; color: #374151; }
-.sal-ok   { background: #D1FAE5; color: #065F46; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; display: inline-block; }
-.sal-warn { background: #FEF3C7; color: #92400E; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; display: inline-block; }
-.sal-bad  { background: #FEE2E2; color: #991B1B; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; display: inline-block; }
-.alert-badge { display: inline-flex; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
-.al-ok   { background: #D1FAE5; color: #065F46; }
-.al-warn { background: #FEF3C7; color: #92400E; }
-.al-bad  { background: #FEE2E2; color: #991B1B; }
-.btn-icon { font-size: 13px; padding: 5px 9px; border-radius: var(--r); border: 0.5px solid var(--border); background: transparent; color: var(--t3); cursor: pointer; transition: all 0.15s; }
+.b-semresp    { background: #F1EFE8; color: #888780; }
+.b-semint     { background: #D3D1C7; color: #444441; }
+.b-emanalise  { background: #E6F1FB; color: #185FA5; }
+.b-foradoperf { background: #F1EFE8; color: #5F5E5A; }
+
+/* FAIXA */
+.faixa-ok   { background: #EAF3DE; color: #27500A; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; display: inline-block; white-space: nowrap; }
+.faixa-warn { background: #FAEEDA; color: #633806; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; display: inline-block; white-space: nowrap; }
+.faixa-bad  { background: #FCEBEB; color: #791F1F; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; display: inline-block; white-space: nowrap; }
+.faixa-nd   { background: #F1EFE8; color: #888780; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; display: inline-block; white-space: nowrap; }
+
+/* TEMPO */
+.tempo-ok   { background: #F1EFE8; color: #888780; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; display: inline-block; }
+.tempo-warn { background: #FAEEDA; color: #633806; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; display: inline-block; }
+.tempo-bad  { background: #FCEBEB; color: #791F1F; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; display: inline-block; }
+
+.btn-icon { font-size: 12px; padding: 5px 8px; border-radius: var(--r); border: 0.5px solid var(--border); background: transparent; color: var(--t3); cursor: pointer; transition: all 0.15s; }
 .btn-icon:hover { background: var(--teal-l); color: var(--gd); border-color: var(--teal); }
-.btn-del:hover  { background: #FEE2E2; color: #991B1B; border-color: #FCA5A5; }
+.btn-del:hover  { background: #FCEBEB; color: #791F1F; border-color: #F09595; }
+.li-icon { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background: #E6F1FB; color: #0C447C; font-size: 11px; font-weight: 800; text-decoration: none; }
+.li-icon:hover { background: #0C447C; color: white; }
+
+/* PANEL */
 .panel { display: none; }
 .panel.active { display: block; }
+
+/* PYRAMID */
 .pyramid-wrap { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
-.pyramid-stage { position: relative; display: flex; align-items: center; padding: 0 12px; height: 42px; border-radius: var(--r); cursor: default; }
+.pyramid-stage { position: relative; display: flex; align-items: center; padding: 0 14px; height: 44px; border-radius: var(--r); cursor: default; }
 .pyramid-stage:hover .ptip { opacity: 1; }
 .ps-label { font-size: 11px; font-weight: 700; flex: 1; }
-.ps-count { font-size: 20px; font-weight: 800; letter-spacing: -0.03em; margin-right: 6px; }
-.ps-pct { font-size: 10px; opacity: 0.6; }
-.ptip { position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); background: var(--white); border: 0.5px solid var(--border2); border-radius: var(--r2); padding: 10px 14px; min-width: 170px; max-width: 240px; pointer-events: none; opacity: 0; z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.12); transition: opacity 0.15s; }
+.ps-count { font-size: 20px; font-weight: 800; letter-spacing: -0.03em; margin-right: 8px; }
+.ps-pct { font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 700; }
+.pct-ok   { background: rgba(0,0,0,0.08); }
+.pct-warn { background: #FAEEDA; color: #633806; }
+.pct-bad  { background: #FCEBEB; color: #791F1F; }
+.ptip { position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); background: var(--white); border: 0.5px solid var(--border2); border-radius: var(--r2); padding: 10px 14px; min-width: 170px; max-width: 240px; pointer-events: none; opacity: 0; z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: opacity 0.15s; }
 .ptip-title { font-size: 10px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
 .ptip-desc { font-size: 10px; color: var(--t3); margin-bottom: 6px; padding-bottom: 6px; border-bottom: 0.5px solid var(--border); }
 .ptip-name { font-size: 12px; color: var(--t1); padding: 2px 0; }
 .ptip-empty { font-size: 11px; color: var(--t3); font-style: italic; }
+
+/* BARS */
 .bar-wrap { display: flex; flex-direction: column; gap: 8px; }
 .bar-row { display: flex; align-items: center; gap: 8px; }
 .bar-label { width: 70px; font-size: 11px; color: var(--t2); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
-.bar-track { flex: 1; background: var(--surface); border-radius: 3px; height: 14px; overflow: hidden; }
+.bar-track { flex: 1; background: var(--surface); border-radius: 3px; height: 12px; overflow: hidden; }
 .bar-fill { height: 100%; border-radius: 3px; background: var(--teal); }
-.bar-val { font-size: 11px; font-weight: 600; color: var(--t1); white-space: nowrap; min-width: 60px; }
+.bar-val { font-size: 11px; font-weight: 600; color: var(--t1); white-space: nowrap; min-width: 65px; }
 .no-data { font-size: 12px; color: var(--t3); font-style: italic; }
 .avg-line { font-size: 12px; color: var(--t2); margin-top: 8px; font-weight: 500; }
 .section-title { font-size: 10px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 12px; }
-.modal-bg { display: none; position: fixed; inset: 0; background: rgba(13,79,60,0.35); z-index: 200; align-items: flex-start; justify-content: center; padding-top: 30px; padding-bottom: 30px; overflow-y: auto; }
+
+/* SALARY REGION CARD */
+.reg-card { background: var(--bg); border-radius: var(--r); padding: 10px 14px; margin-bottom: 8px; border: 0.5px solid var(--border); }
+.reg-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+.reg-card-name { font-size: 12px; font-weight: 700; color: var(--t1); }
+.reg-card-sub { font-size: 11px; color: var(--t3); }
+.insight-box { background: #E1F5EE; border-left: 3px solid var(--teal); border-radius: 0 var(--r) var(--r) 0; padding: 12px 16px; margin-bottom: 12px; }
+.insight-text { font-size: 12px; color: #085041; line-height: 1.6; }
+
+/* MODAL */
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(13,79,60,0.35); z-index: 200; align-items: flex-start; justify-content: center; padding: 30px 16px; overflow-y: auto; }
 .modal-bg.open { display: flex; }
-.modal { background: var(--white); border-radius: var(--r3); border: 0.5px solid var(--border2); padding: 2rem; width: 600px; max-width: 95vw; }
+.modal { background: var(--white); border-radius: var(--r3); border: 0.5px solid var(--border2); padding: 2rem; width: 600px; max-width: 100%; }
 .modal-title { font-size: 20px; font-weight: 800; color: var(--t1); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; }
 .close-btn { background: var(--bg); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; color: var(--t2); font-size: 18px; display: flex; align-items: center; justify-content: center; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
@@ -122,22 +170,23 @@ tr:hover td { background: var(--teal-l); }
 .ai-textarea::placeholder { color: rgba(255,255,255,0.35); }
 .ai-status { font-size: 12px; color: var(--teal); margin-top: 8px; min-height: 18px; }
 .ai-divider { border: none; border-top: 0.5px solid var(--border); margin: 20px 0; }
-.drop-zone { border: 2px dashed rgba(0,201,167,0.4); border-radius: var(--r); padding: 20px; text-align: center; cursor: pointer; background: rgba(255,255,255,0.05); }
+.drop-zone { border: 2px dashed rgba(0,201,167,0.4); border-radius: var(--r); padding: 18px; text-align: center; cursor: pointer; background: rgba(255,255,255,0.05); }
 .drop-zone:hover { background: rgba(0,201,167,0.1); border-color: var(--teal); }
 .dz-text { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 600; }
 .dz-sub { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 4px; }
 .dz-file { font-size: 12px; color: var(--teal); margin-top: 6px; font-weight: 600; }
 #pdf-input { display: none; }
-.btn { font-size: 13px; font-weight: 600; padding: 9px 20px; border-radius: var(--r); border: 0.5px solid var(--border2); background: var(--bg); color: var(--t1); cursor: pointer; }
+.btn { font-size: 13px; font-weight: 600; padding: 9px 20px; border-radius: var(--r); border: 0.5px solid var(--border2); background: var(--bg); color: var(--t1); cursor: pointer; transition: all 0.15s; }
 .btn:hover { background: var(--surface); }
 .btn-primary { background: var(--gd); color: white; border-color: var(--gd); }
 .btn-primary:hover { background: var(--gm); }
 .btn-ai { background: var(--teal); color: var(--gd); border-color: var(--teal); }
 .btn-ai:disabled { opacity: 0.5; cursor: not-allowed; }
-@media(max-width:640px){ .metrics{grid-template-columns:repeat(2,1fr);} .form-row,.form-row-3{grid-template-columns:1fr;} }
+@media(max-width:768px){ .metrics{grid-template-columns:repeat(2,1fr);} .form-row,.form-row-3{grid-template-columns:1fr;} }
 </style>
 </head>
 <body>
+
 <div class="topbar">
   <div>
     <div class="topbar-eyebrow">Pipeline B2B &middot; Coordenação Closer &amp; SDR</div>
@@ -148,7 +197,7 @@ tr:hover td { background: var(--teal-l); }
     <span class="updated" id="updated-label"></span>
     <button class="btn-top" onclick="exportData()">&#8595; Exportar</button>
     <label class="btn-top" style="cursor:pointer;">&#8593; Importar<input type="file" id="import-input" accept=".json" onchange="importData(event)" style="display:none" /></label>
-    <button class="btn-top" onclick="printReport()">&#128438; PDF</button>
+    <button class="btn-top" onclick="window.print()">&#128438; PDF</button>
     <button class="btn-new" onclick="openModal()">+ Candidato</button>
   </div>
 </div>
@@ -162,14 +211,16 @@ tr:hover td { background: var(--teal-l); }
       <button class="tab" onclick="switchTab('salarios',this)">Salários</button>
     </div>
 
+    <!-- LISTA -->
     <div id="lista" class="panel active">
       <div class="filters">
-        <select id="filter-vaga" onchange="renderTable()">
+        <input type="text" id="filter-nome" class="filter-search" placeholder="Buscar por nome..." oninput="renderTable()" />
+        <select id="filter-vaga" class="filter-sel" onchange="renderTable()">
           <option value="">Todas as vagas</option>
-          <option value="Closer">Coordenador Closer</option>
-          <option value="SDR">Coordenador SDR</option>
+          <option value="Closer">Closer</option>
+          <option value="SDR">SDR</option>
         </select>
-        <select id="filter-etapa" onchange="renderTable()">
+        <select id="filter-etapa" class="filter-sel" onchange="renderTable()">
           <option value="">Todas as etapas</option>
           <option value="Hunting">Hunting</option>
           <option value="Sem resposta">Sem resposta</option>
@@ -177,31 +228,50 @@ tr:hover td { background: var(--teal-l); }
           <option value="Triagem">Triagem</option>
           <option value="Em análise">Em análise</option>
           <option value="Fora do perfil">Fora do perfil</option>
-          <option value="Step 1 TA">Step 1 — TA</option>
+          <option value="Step 1 TA">Step 1</option>
           <option value="Step 2 Lucas">Step 2 — Lucas</option>
           <option value="Step 2 Raysa">Step 2 — Raysa</option>
-          <option value="Step 3 Case">Step 3 — Business Case</option>
-          <option value="Step 4 Alinhamento">Step 4 — Alinhamento</option>
+          <option value="Step 3 Case">Step 3 — Case</option>
+          <option value="Step 4 Alinhamento">Step 4</option>
           <option value="Oferta">Oferta</option>
           <option value="Declinou">Declinou</option>
           <option value="Reprovado">Reprovado</option>
         </select>
-        <select id="filter-regiao" onchange="renderTable()">
+        <select id="filter-regiao" class="filter-sel" onchange="renderTable()">
           <option value="">Todas as regiões</option>
           <option value="SP">São Paulo</option>
           <option value="RJ">Rio de Janeiro</option>
           <option value="MG">Minas Gerais</option>
-          <option value="Outros">Outros estados</option>
+          <option value="Outros">Outros</option>
         </select>
+        <select id="filter-faixa" class="filter-sel" onchange="renderTable()">
+          <option value="">Todas as faixas</option>
+          <option value="ok">Dentro da faixa</option>
+          <option value="warn">Atenção</option>
+          <option value="bad">Acima</option>
+          <option value="nd">Sem info</option>
+        </select>
+        <button class="btn-clear" onclick="clearFilters()">Limpar</button>
       </div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Nome</th><th>Cargo / Empresa</th><th>Vaga</th><th>Etapa</th>
-              <th>Cidade</th><th>Fixo atual</th><th>Pretensão fixo</th><th>Target comissão</th>
-              <th>Faixa</th><th>LinkedIn</th><th>1ª Abord.</th><th>Entrev. TA</th>
-              <th>Entrev. HM</th><th>Case</th><th>Tempo</th><th></th>
+              <th>Etapa</th>
+              <th>Nome</th>
+              <th>Cargo / Empresa</th>
+              <th>Cidade</th>
+              <th>Faixa fixo</th>
+              <th>Pret. fixo</th>
+              <th>Fixo atual</th>
+              <th>Comissão</th>
+              <th>OTE</th>
+              <th>Tempo</th>
+              <th>Li</th>
+              <th>TA</th>
+              <th>HM</th>
+              <th>Case</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
@@ -209,6 +279,7 @@ tr:hover td { background: var(--teal-l); }
       </div>
     </div>
 
+    <!-- DADOS -->
     <div id="dados" class="panel">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
         <div>
@@ -226,34 +297,34 @@ tr:hover td { background: var(--teal-l); }
           <div class="bar-wrap" id="origin-chart"></div>
         </div>
         <div>
-          <div class="section-title">Candidatos por região</div>
+          <div class="section-title">Por região</div>
           <div class="bar-wrap" id="regiao-chart"></div>
         </div>
       </div>
     </div>
 
+    <!-- SALÁRIOS -->
     <div id="salarios" class="panel">
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;" id="sal-metrics"></div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1.25rem;" id="sal-metrics"></div>
+      <div id="sal-insight" style="margin-bottom:1.25rem;"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
         <div>
-          <div class="section-title">Pretensão fixo — Closer por região</div>
+          <div class="section-title">Pretensão fixo por região — Closer</div>
           <div id="sal-closer-regiao"></div>
         </div>
         <div>
-          <div class="section-title">Pretensão fixo — SDR por região</div>
+          <div class="section-title">Pretensão fixo por região — SDR</div>
           <div id="sal-sdr-regiao"></div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
         <div>
-          <div class="section-title">Pretensão comissão — Closer</div>
-          <div class="bar-wrap" id="com-closer-chart"></div>
-          <div class="avg-line" id="com-closer-avg"></div>
+          <div class="section-title">OTE estimado — Closer</div>
+          <div class="bar-wrap" id="ote-closer-chart"></div>
         </div>
         <div>
-          <div class="section-title">Pretensão comissão — SDR</div>
-          <div class="bar-wrap" id="com-sdr-chart"></div>
-          <div class="avg-line" id="com-sdr-avg"></div>
+          <div class="section-title">OTE estimado — SDR</div>
+          <div class="bar-wrap" id="ote-sdr-chart"></div>
         </div>
       </div>
     </div>
@@ -279,11 +350,7 @@ tr:hover td { background: var(--teal-l); }
         </div>
         <div class="ai-panel" id="ai-panel-pdf">
           <input type="file" id="pdf-input" accept="application/pdf" onchange="handlePdfSelect(event)" />
-          <div class="drop-zone" id="drop-zone"
-            onclick="document.getElementById('pdf-input').click()"
-            ondragover="event.preventDefault();this.classList.add('drag-over')"
-            ondragleave="this.classList.remove('drag-over')"
-            ondrop="handlePdfDrop(event)">
+          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('pdf-input').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handlePdfDrop(event)">
             <div class="dz-text">Arraste o PDF ou clique para selecionar</div>
             <div class="dz-sub">Currículo em PDF — lido automaticamente</div>
             <div class="dz-file" id="pdf-filename"></div>
@@ -296,7 +363,6 @@ tr:hover td { background: var(--teal-l); }
       </div>
       <div class="ai-divider"></div>
     </div>
-
     <div class="field-section">
       <div class="field-title">Identificação</div>
       <div class="form-row" style="margin-bottom:12px;">
@@ -312,7 +378,6 @@ tr:hover td { background: var(--teal-l); }
         <div class="form-group"><label class="form-label">Observação</label><input type="text" id="f-obs" placeholder="Notas rápidas" /></div>
       </div>
     </div>
-
     <div class="field-section">
       <div class="field-title">Processo</div>
       <div class="form-row" style="margin-bottom:12px;">
@@ -363,19 +428,17 @@ tr:hover td { background: var(--teal-l); }
         <div class="form-group"><label class="form-label">Motivo encerramento</label><input type="text" id="f-motivo" placeholder="Se reprovado ou declinou..." /></div>
       </div>
     </div>
-
     <div class="field-section">
       <div class="field-title">Salário</div>
-      <div class="form-row-3" style="margin-bottom:0;">
+      <div class="form-row-3">
         <div class="form-group"><label class="form-label">Fixo atual</label><input type="text" id="f-salario-atual" placeholder="R$ 10.000" /></div>
         <div class="form-group"><label class="form-label">Pretensão fixo</label><input type="text" id="f-salario" placeholder="R$ 12.000" /></div>
         <div class="form-group"><label class="form-label">Target comissão</label><input type="text" id="f-comissao" placeholder="R$ 6.000" /></div>
       </div>
     </div>
-
     <div class="field-section">
       <div class="field-title">Datas</div>
-      <div class="form-row">
+      <div class="form-row" style="margin-bottom:12px;">
         <div class="form-group"><label class="form-label">1ª Abordagem</label><input type="date" id="f-data" /><div class="date-hint">Padrão: hoje</div></div>
         <div class="form-group"><label class="form-label">Entrevista TA</label><input type="date" id="f-data-ta" /></div>
       </div>
@@ -384,7 +447,6 @@ tr:hover td { background: var(--teal-l); }
         <div class="form-group"><label class="form-label">Business Case</label><input type="date" id="f-data-case" /></div>
       </div>
     </div>
-
     <div style="display:flex;gap:8px;justify-content:flex-end;">
       <button class="btn" onclick="closeModal()">Cancelar</button>
       <button class="btn btn-primary" id="modal-save-btn" onclick="saveCandidate()">Adicionar</button>
@@ -398,26 +460,29 @@ var currentPdfBase64 = null;
 var currentAiTab = 'linkedin';
 var editingId = null;
 
-var FAIXA_MAX_OK = 14000;
-var FAIXA_MAX_WARN = 16000;
+var FIXO_OK = 14250;
+var FIXO_WARN = 16000;
+var OTE_OK = 20250;
+var OTE_WARN = 22000;
+var COMISSAO_TARGET = 6000;
 
 var STAGES_CLOSER = [
-  {key:'Hunting',label:'Hunting',tip:'Perfil identificado e abordado',bg:'#E8F8F4',color:'#085041'},
-  {key:'Triagem',label:'Triagem',tip:'Análise de currículo pela TA',bg:'#EDE9FE',color:'#4C1D95'},
-  {key:'Step 1 TA',label:'Step 1 — TA',tip:'Entrevista com TA',bg:'#DBEAFE',color:'#1E3A8A'},
-  {key:'Step 2 Lucas',label:'Step 2 — Lucas',tip:'Entrevista com Lucas (HM)',bg:'#FEF3C7',color:'#92400E'},
-  {key:'Step 3 Case',label:'Step 3 — Case',tip:'Business Case',bg:'#FCE7F3',color:'#831843'},
-  {key:'Step 4 Alinhamento',label:'Step 4 — Alinhamento',tip:'Alinhamento final',bg:'#FFEDD5',color:'#9A3412'},
-  {key:'Oferta',label:'Oferta',tip:'Proposta enviada',bg:'#D1FAE5',color:'#065F46'}
+  {key:'Hunting',label:'Hunting',tip:'Perfil identificado e abordado',bg:'#F1EFE8',color:'#5F5E5A'},
+  {key:'Triagem',label:'Triagem',tip:'Análise de currículo pela TA',bg:'#EEEDFE',color:'#534AB7'},
+  {key:'Step 1 TA',label:'Step 1 — TA',tip:'Entrevista com TA',bg:'#E6F1FB',color:'#0C447C'},
+  {key:'Step 2 Lucas',label:'Step 2 — Lucas',tip:'Entrevista com Lucas (HM)',bg:'#FAEEDA',color:'#633806'},
+  {key:'Step 3 Case',label:'Step 3 — Case',tip:'Business Case',bg:'#EEEDFE',color:'#3C3489'},
+  {key:'Step 4 Alinhamento',label:'Step 4 — Alinhamento',tip:'Alinhamento final',bg:'#FAECE7',color:'#712B13'},
+  {key:'Oferta',label:'Oferta',tip:'Proposta enviada',bg:'#EAF3DE',color:'#27500A'}
 ];
 var STAGES_SDR = [
-  {key:'Hunting',label:'Hunting',tip:'Perfil identificado e abordado',bg:'#E8F8F4',color:'#085041'},
-  {key:'Triagem',label:'Triagem',tip:'Análise de currículo pela TA',bg:'#EDE9FE',color:'#4C1D95'},
-  {key:'Step 1 TA',label:'Step 1 — TA',tip:'Entrevista com TA',bg:'#DBEAFE',color:'#1E3A8A'},
-  {key:'Step 2 Raysa',label:'Step 2 — Raysa',tip:'Entrevista com Raysa (HM)',bg:'#FEF3C7',color:'#92400E'},
-  {key:'Step 3 Case',label:'Step 3 — Case',tip:'Business Case',bg:'#FCE7F3',color:'#831843'},
-  {key:'Step 4 Alinhamento',label:'Step 4 — Alinhamento',tip:'Alinhamento final',bg:'#FFEDD5',color:'#9A3412'},
-  {key:'Oferta',label:'Oferta',tip:'Proposta enviada',bg:'#D1FAE5',color:'#065F46'}
+  {key:'Hunting',label:'Hunting',tip:'Perfil identificado e abordado',bg:'#F1EFE8',color:'#5F5E5A'},
+  {key:'Triagem',label:'Triagem',tip:'Análise de currículo pela TA',bg:'#EEEDFE',color:'#534AB7'},
+  {key:'Step 1 TA',label:'Step 1 — TA',tip:'Entrevista com TA',bg:'#E6F1FB',color:'#0C447C'},
+  {key:'Step 2 Raysa',label:'Step 2 — Raysa',tip:'Entrevista com Raysa (HM)',bg:'#FAEEDA',color:'#633806'},
+  {key:'Step 3 Case',label:'Step 3 — Case',tip:'Business Case',bg:'#EEEDFE',color:'#3C3489'},
+  {key:'Step 4 Alinhamento',label:'Step 4 — Alinhamento',tip:'Alinhamento final',bg:'#FAECE7',color:'#712B13'},
+  {key:'Oferta',label:'Oferta',tip:'Proposta enviada',bg:'#EAF3DE',color:'#27500A'}
 ];
 var BADGE_MAP = {
   'Hunting':'b-hunting','Triagem':'b-triagem',
@@ -431,54 +496,72 @@ var ETAPA_LABEL = {
   'Hunting':'Hunting','Triagem':'Triagem','Em análise':'Em análise','Fora do perfil':'Fora do perfil',
   'Sem resposta':'Sem resposta','Sem interesse':'Sem interesse',
   'Step 1 TA':'Step 1','Step 2 Lucas':'Step 2 — Lucas','Step 2 Raysa':'Step 2 — Raysa',
-  'Step 3 Case':'Step 3','Step 4 Alinhamento':'Step 4','Oferta':'Oferta',
-  'Declinou':'Declinou','Reprovado':'Reprovado'
+  'Step 3 Case':'Step 3 — Case','Step 4 Alinhamento':'Step 4 — Alinhamento',
+  'Oferta':'Oferta','Declinou':'Declinou','Reprovado':'Reprovado'
 };
 
 function todayISO(){ return new Date().toISOString().split('T')[0]; }
 function formatDate(iso){ if(!iso) return '—'; var p=iso.split('-'); return p[2]+'/'+p[1]; }
 function daysDiff(iso){ if(!iso) return null; return Math.floor((new Date()-new Date(iso))/86400000); }
-function alertBadge(days){
-  if(days===null) return '';
-  var cls = days<=7?'al-ok':days<=14?'al-warn':'al-bad';
-  return '<span class="alert-badge '+cls+'">'+days+'d</span>';
-}
+
 function parseSal(s){
   if(!s||s==='-'||s==='') return null;
   var n=parseFloat(s.replace(/[^\d,.]/g,'').replace(',','.'));
   return isNaN(n)?null:n;
 }
-function salBadge(val){
-  if(!val) return '';
-  if(val<=FAIXA_MAX_OK) return '<span class="sal-ok">Ok</span>';
-  if(val<=FAIXA_MAX_WARN) return '<span class="sal-warn">Atenção</span>';
-  return '<span class="sal-bad">Acima</span>';
+function fmtBRL(n){ return 'R$'+Math.round(n).toLocaleString('pt-BR'); }
+
+function faixaBadge(val){
+  if(val===null) return '<span class="faixa-nd">Sem info</span>';
+  if(val<=FIXO_OK) return '<span class="faixa-ok">Dentro &middot; '+fmtBRL(val)+'</span>';
+  if(val<=FIXO_WARN) return '<span class="faixa-warn">Aten&ccedil;&atilde;o &middot; '+fmtBRL(val)+'</span>';
+  return '<span class="faixa-bad">Acima &middot; '+fmtBRL(val)+'</span>';
+}
+function getFaixaClass(val){
+  if(val===null) return 'nd';
+  if(val<=FIXO_OK) return 'ok';
+  if(val<=FIXO_WARN) return 'warn';
+  return 'bad';
+}
+function oteBadge(fixo, comissao){
+  var f=parseSal(fixo);
+  var c=parseSal(comissao)||COMISSAO_TARGET;
+  if(f===null) return '<span style="color:var(--t3);font-size:12px;">—</span>';
+  var ote=f+c;
+  var cls=ote<=OTE_OK?'faixa-ok':ote<=OTE_WARN?'faixa-warn':'faixa-bad';
+  return '<span class="'+cls+'">'+fmtBRL(ote)+'</span>';
+}
+function tempoBadge(days){
+  if(days===null) return '';
+  if(days<=5) return '<span class="tempo-ok">'+days+'d</span>';
+  if(days<=10) return '<span class="tempo-warn">'+days+'d</span>';
+  return '<span class="tempo-bad">'+days+'d</span>';
 }
 function getRegiao(cidade){
   if(!cidade) return 'Outros';
-  var c = cidade.toUpperCase();
-  if(c.indexOf(', SP')>-1 || c.indexOf('SÃO PAULO')>-1 || c.indexOf('SAO PAULO')>-1) return 'SP';
-  if(c.indexOf(', RJ')>-1 || c.indexOf('RIO DE JANEIRO')>-1) return 'RJ';
-  if(c.indexOf(', MG')>-1 || c.indexOf('MINAS GERAIS')>-1 || c.indexOf('BELO HORIZONTE')>-1) return 'MG';
+  var c=cidade.toUpperCase();
+  if(c.indexOf(', SP')>-1||c.indexOf('SÃO PAULO')>-1||c.indexOf('SAO PAULO')>-1) return 'SP';
+  if(c.indexOf(', RJ')>-1||c.indexOf('RIO DE JANEIRO')>-1) return 'RJ';
+  if(c.indexOf(', MG')>-1||c.indexOf('MINAS GERAIS')>-1||c.indexOf('BELO HORIZONTE')>-1) return 'MG';
   return 'Outros';
 }
 
 function loadCandidates(){
-  candidates = JSON.parse(localStorage.getItem('ht_doc_v3')||'[]');
-  var now = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('sync-label').textContent = candidates.length+' candidatos';
-  document.getElementById('sync-dot').style.background = '#00C9A7';
-  document.getElementById('updated-label').textContent = 'Atualizado às '+now;
+  candidates=JSON.parse(localStorage.getItem('ht_doc_v3')||'[]');
+  var now=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('sync-label').textContent=candidates.length+' candidatos';
+  document.getElementById('sync-dot').style.background='#00C9A7';
+  document.getElementById('updated-label').textContent='Atualizado às '+now;
   renderAll();
 }
 function saveCandidates(){
-  localStorage.setItem('ht_doc_v3', JSON.stringify(candidates));
+  localStorage.setItem('ht_doc_v3',JSON.stringify(candidates));
   loadCandidates();
 }
 function exportData(){
-  var blob = new Blob([JSON.stringify(candidates,null,2)],{type:'application/json'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
+  var blob=new Blob([JSON.stringify(candidates,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
   a.href=url; a.download='candidatos_doctoralia_'+todayISO()+'.json';
   a.click(); URL.revokeObjectURL(url);
 }
@@ -498,10 +581,14 @@ function importData(e){
   };
   reader.readAsText(file);
 }
-function printReport(){
-  window.print();
+function clearFilters(){
+  document.getElementById('filter-nome').value='';
+  document.getElementById('filter-vaga').value='';
+  document.getElementById('filter-etapa').value='';
+  document.getElementById('filter-regiao').value='';
+  document.getElementById('filter-faixa').value='';
+  renderTable();
 }
-
 function openModal(docId){
   editingId=docId||null;
   var isEdit=!!editingId;
@@ -547,7 +634,7 @@ function closeModal(){
 }
 function clearForm(){
   var ids=['f-nome','f-cidade','f-cargo','f-empresa','f-salario-atual','f-salario','f-comissao','f-linkedin-url','f-obs','f-motivo','f-linkedin-text','f-data-ta','f-data-hm','f-data-case'];
-  ids.forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  ids.forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
 }
 function saveCandidate(){
   var nome=document.getElementById('f-nome').value.trim();
@@ -587,18 +674,17 @@ function deleteCandidate(docId){
   var ov=document.createElement('div');
   ov.style.cssText='position:fixed;inset:0;background:rgba(13,79,60,0.4);z-index:300;display:flex;align-items:center;justify-content:center;';
   ov.innerHTML='<div style="background:#fff;border-radius:20px;padding:1.75rem;width:380px;max-width:90vw;">'
-    +'<div style="font-size:18px;font-weight:800;color:#1a1a18;margin-bottom:8px;">Remover candidato</div>'
+    +'<div style="font-size:18px;font-weight:800;margin-bottom:8px;">Remover candidato</div>'
     +'<div style="font-size:13px;color:#5a5a56;margin-bottom:1.5rem;">Tem certeza que quer remover <strong>'+c.nome+'</strong>?</div>'
     +'<div style="display:flex;gap:8px;justify-content:flex-end;">'
     +'<button class="btn" id="del-cancel">Cancelar</button>'
-    +'<button class="btn" style="background:#FEE2E2;color:#991B1B;border-color:#FCA5A5;" id="del-confirm">Remover</button>'
+    +'<button class="btn" style="background:#FCEBEB;color:#791F1F;border-color:#F09595;" id="del-confirm">Remover</button>'
     +'</div></div>';
   document.body.appendChild(ov);
   document.getElementById('del-cancel').onclick=function(){document.body.removeChild(ov);};
   document.getElementById('del-confirm').onclick=function(){
     candidates=candidates.filter(function(x){return x._docId!==docId;});
-    saveCandidates();
-    document.body.removeChild(ov);
+    saveCandidates(); document.body.removeChild(ov);
   };
 }
 function switchAiTab(tab,el){
@@ -608,12 +694,12 @@ function switchAiTab(tab,el){
   el.classList.add('active');
   document.getElementById('ai-panel-'+tab).classList.add('active');
 }
-function handlePdfSelect(e){var f=e.target.files[0];if(f) loadPdf(f);}
+function handlePdfSelect(e){var f=e.target.files[0];if(f)loadPdf(f);}
 function handlePdfDrop(e){
   e.preventDefault();
   document.getElementById('drop-zone').classList.remove('drag-over');
   var f=e.dataTransfer.files[0];
-  if(f&&f.type==='application/pdf') loadPdf(f);
+  if(f&&f.type==='application/pdf')loadPdf(f);
 }
 function loadPdf(file){
   document.getElementById('pdf-filename').textContent=file.name;
@@ -653,9 +739,7 @@ function analyzeProfile(){
   }).catch(function(){
     status.textContent='Erro na análise. Preencha manualmente.';
     status.style.color='#DC2626';
-  }).finally(function(){
-    btn.disabled=false; btn.textContent='Analisar perfil';
-  });
+  }).finally(function(){btn.disabled=false;btn.textContent='Analisar perfil';});
 }
 function switchTab(id,el){
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
@@ -668,7 +752,9 @@ function switchTab(id,el){
 function renderMetrics(){
   var total=candidates.length;
   var closer=candidates.filter(function(c){return c.vaga==='Closer';}).length;
-  var active=candidates.filter(function(c){return c.etapa!=='Reprovado'&&c.etapa!=='Declinou'&&c.etapa!=='Fora do perfil'&&c.etapa!=='Sem interesse';}).length;
+  var active=candidates.filter(function(c){
+    return c.etapa!=='Reprovado'&&c.etapa!=='Declinou'&&c.etapa!=='Fora do perfil'&&c.etapa!=='Sem interesse';
+  }).length;
   var ofertas=candidates.filter(function(c){return c.etapa==='Oferta';}).length;
   var conv=total>0?Math.round((ofertas/total)*100):0;
   document.getElementById('metrics').innerHTML=
@@ -678,38 +764,47 @@ function renderMetrics(){
     +'<div class="metric m-ok"><div class="metric-label">Conversão</div><div class="metric-value">'+conv+'%</div><div class="metric-sub">hunting → oferta</div></div>';
 }
 function renderTable(){
+  var fn=document.getElementById('filter-nome').value.toLowerCase();
   var fv=document.getElementById('filter-vaga').value;
   var fe=document.getElementById('filter-etapa').value;
   var fr=document.getElementById('filter-regiao').value;
+  var ff=document.getElementById('filter-faixa').value;
   var list=candidates.filter(function(c){
-    var regiao=getRegiao(c.cidade);
-    return(!fv||c.vaga===fv)&&(!fe||c.etapa===fe)&&(!fr||regiao===fr);
+    if(fn&&c.nome.toLowerCase().indexOf(fn)===-1) return false;
+    if(fv&&c.vaga!==fv) return false;
+    if(fe&&c.etapa!==fe) return false;
+    if(fr&&getRegiao(c.cidade)!==fr) return false;
+    if(ff&&getFaixaClass(parseSal(c.salario))!==ff) return false;
+    return true;
   }).slice().sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');});
   var tbody=document.getElementById('tbody');
-  if(!list.length){tbody.innerHTML='<tr><td colspan="16" class="empty">Nenhum candidato ainda</td></tr>';return;}
+  if(!list.length){tbody.innerHTML='<tr><td colspan="15" class="empty">Nenhum candidato encontrado</td></tr>';return;}
   var rows='';
   for(var i=0;i<list.length;i++){
     var c=list[i];
     var days=daysDiff(c.dataContato);
     var salVal=parseSal(c.salario);
-    var linkedinHtml=c.linkedin?'<a href="'+(c.linkedin.startsWith('http')?c.linkedin:'https://'+c.linkedin)+'" target="_blank" style="color:#00C9A7;font-size:12px;font-weight:600;text-decoration:none;">Ver</a>':'-';
+    var liHtml=c.linkedin
+      ?'<a class="li-icon" href="'+(c.linkedin.startsWith('http')?c.linkedin:'https://'+c.linkedin)+'" target="_blank" title="Abrir LinkedIn">in</a>'
+      :'<span style="color:var(--t3);font-size:12px;">—</span>';
     var row='<tr>';
-    row+='<td style="font-weight:700;white-space:nowrap">'+c.nome+'</td>';
-    row+='<td style="font-size:12px;color:#5a5a56;white-space:nowrap">'+(c.cargo||'-')+'<br><span style="color:#9a9a94;font-size:11px;">'+(c.empresa||'')+'</span></td>';
-    row+='<td style="font-size:12px;color:#5a5a56">'+c.vaga+'</td>';
-    row+='<td><span class="badge '+(BADGE_MAP[c.etapa]||'')+'">'+(ETAPA_LABEL[c.etapa]||c.etapa)+'</span></td>';
-    row+='<td style="font-size:12px;color:#5a5a56">'+(c.cidade||'-')+'</td>';
-    row+='<td style="font-size:12px;color:#5a5a56">'+(c.salario_atual||'-')+'</td>';
-    row+='<td style="font-size:12px;color:#5a5a56">'+(c.salario||'-')+'</td>';
-    row+='<td style="font-size:12px;color:#5a5a56">'+(c.comissao||'-')+'</td>';
-    row+='<td>'+salBadge(salVal)+'</td>';
-    row+='<td>'+linkedinHtml+'</td>';
-    row+='<td style="font-size:12px;color:#9a9a94">'+formatDate(c.dataContato)+'</td>';
-    row+='<td style="font-size:12px;color:#9a9a94">'+formatDate(c.dataTA)+'</td>';
-    row+='<td style="font-size:12px;color:#9a9a94">'+formatDate(c.dataHM)+'</td>';
-    row+='<td style="font-size:12px;color:#9a9a94">'+formatDate(c.dataCase)+'</td>';
-    row+='<td>'+alertBadge(days)+'</td>';
-    row+='<td style="white-space:nowrap"><button class="btn-icon" onclick="openModal(\''+c._docId+'\')">&#9999;</button> <button class="btn-icon btn-del" onclick="deleteCandidate(\''+c._docId+'\')">&#x2715;</button></td>';
+    row+='<td><span class="badge '+(BADGE_MAP[c.etapa]||'b-hunting')+'">'+(ETAPA_LABEL[c.etapa]||c.etapa)+'</span></td>';
+    row+='<td><div style="font-weight:700;font-size:13px;white-space:nowrap;">'+c.nome+'</div>';
+    if(c.obs) row+='<div style="font-size:11px;color:var(--t3);margin-top:2px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+c.obs+'">'+c.obs+'</div>';
+    row+='</td>';
+    row+='<td><div style="font-size:12px;color:var(--t2);white-space:nowrap;">'+(c.cargo||'—')+'</div><div style="font-size:11px;color:var(--t3);">'+(c.empresa||'')+'</div></td>';
+    row+='<td style="font-size:12px;color:var(--t2);white-space:nowrap;">'+(c.cidade||'—')+'</td>';
+    row+='<td>'+faixaBadge(salVal)+'</td>';
+    row+='<td style="font-size:12px;color:var(--t2);">'+(c.salario&&c.salario!=='-'?c.salario:'—')+'</td>';
+    row+='<td style="font-size:12px;color:var(--t2);">'+(c.salario_atual&&c.salario_atual!=='-'?c.salario_atual:'—')+'</td>';
+    row+='<td style="font-size:12px;color:var(--t2);">'+(c.comissao&&c.comissao!=='-'?c.comissao:'—')+'</td>';
+    row+='<td>'+oteBadge(c.salario,c.comissao)+'</td>';
+    row+='<td>'+tempoBadge(days)+'</td>';
+    row+='<td>'+liHtml+'</td>';
+    row+='<td style="font-size:11px;color:var(--t3);">'+formatDate(c.dataTA)+'</td>';
+    row+='<td style="font-size:11px;color:var(--t3);">'+formatDate(c.dataHM)+'</td>';
+    row+='<td style="font-size:11px;color:var(--t3);">'+formatDate(c.dataCase)+'</td>';
+    row+='<td style="white-space:nowrap;"><button class="btn-icon" onclick="openModal(\''+c._docId+'\')">&#9999;</button> <button class="btn-icon btn-del" onclick="deleteCandidate(\''+c._docId+'\')">&#x2715;</button></td>';
     row+='</tr>';
     rows+=row;
   }
@@ -718,53 +813,53 @@ function renderTable(){
 function buildPyramid(cId,stages,vaga){
   var cands=candidates.filter(function(c){return c.vaga===vaga;});
   var counts=stages.map(function(s){return cands.filter(function(c){return c.etapa===s.key;}).length;});
-  var maxW=100,minW=38;
   var html='';
   for(var i=0;i<stages.length;i++){
     var s=stages[i];
-    var w=maxW-((maxW-minW)/(stages.length-1))*i;
+    var w=100-((100-38)/(stages.length-1))*i;
     var sc=cands.filter(function(c){return c.etapa===s.key;});
     var prev=i>0?counts[i-1]:null;
     var conv=(prev!==null&&prev>0)?Math.round((counts[i]/prev)*100):null;
+    var pctCls=conv===null?'':'conv<=30?pct-bad:conv<=60?pct-warn:pct-ok';
+    if(conv!==null) pctCls=conv<=30?'pct-bad':conv<=60?'pct-warn':'pct-ok';
     var names=sc.length?sc.map(function(c){return '<div class="ptip-name">· '+c.nome+'</div>';}).join(''):'<div class="ptip-empty">Nenhum candidato</div>';
-    html+='<div class="pyramid-stage" style="width:'+w+'%;background:'+s.bg+';color:'+s.color+';min-width:110px;">'
+    html+='<div class="pyramid-stage" style="width:'+w+'%;background:'+s.bg+';color:'+s.color+';min-width:120px;">'
       +'<div class="ptip"><div class="ptip-title">'+s.label+'</div><div class="ptip-desc">'+s.tip+'</div>'+names+'</div>'
       +'<span class="ps-label">'+s.label+'</span>'
       +'<span class="ps-count">'+counts[i]+'</span>'
-      +(conv!==null?'<span class="ps-pct">'+conv+'%</span>':'')
+      +(conv!==null?'<span class="ps-pct '+pctCls+'">'+conv+'%</span>':'')
       +'</div>';
   }
   document.getElementById(cId).innerHTML=html;
 }
-function buildBar(cId,items,colors){
+function buildBarChart(cId,items){
   if(!items.length){document.getElementById(cId).innerHTML='<div class="no-data">Sem dados ainda</div>';return;}
   var max=Math.max.apply(null,items.map(function(x){return x.val;}));
+  var colors=['#00C9A7','#0D4F3C','#1D9E75','#5DCAA5','#9FE1CB'];
   var html='';
   for(var i=0;i<items.length;i++){
     var it=items[i];
     html+='<div class="bar-row">'
       +'<div class="bar-label">'+it.label+'</div>'
-      +'<div class="bar-track"><div class="bar-fill" style="width:'+Math.round((it.val/max)*100)+'%;background:'+(colors[i%colors.length])+'"></div></div>'
+      +'<div class="bar-track"><div class="bar-fill" style="width:'+Math.round((it.val/max)*100)+'%;background:'+colors[i%colors.length]+'"></div></div>'
       +'<div class="bar-val">'+it.display+'</div>'
       +'</div>';
   }
   document.getElementById(cId).innerHTML=html;
 }
-var BAR_COLORS=['#00C9A7','#0D4F3C','#1D9E75','#5DCAA5','#9FE1CB'];
 function renderDados(){
   buildPyramid('pyr-closer',STAGES_CLOSER,'Closer');
   buildPyramid('pyr-sdr',STAGES_SDR,'SDR');
   var origins={};
   candidates.forEach(function(c){origins[c.origem]=(origins[c.origem]||0)+1;});
-  buildBar('origin-chart',Object.entries(origins).map(function(e){return{label:e[0],val:e[1],display:e[1]};}),BAR_COLORS);
+  buildBarChart('origin-chart',Object.entries(origins).map(function(e){return{label:e[0],val:e[1],display:String(e[1])};}).sort(function(a,b){return b.val-a.val;}));
   var regioes={SP:0,RJ:0,MG:0,Outros:0};
-  candidates.forEach(function(c){var r=getRegiao(c.cidade);regioes[r]=(regioes[r]||0)+1;});
-  buildBar('regiao-chart',Object.entries(regioes).filter(function(e){return e[1]>0;}).map(function(e){return{label:e[0],val:e[1],display:e[1]};}),BAR_COLORS);
+  candidates.forEach(function(c){var r=getRegiao(c.cidade);regioes[r]++;});
+  buildBarChart('regiao-chart',Object.entries(regioes).filter(function(e){return e[1]>0;}).map(function(e){return{label:e[0],val:e[1],display:String(e[1])};}).sort(function(a,b){return b.val-a.val;}));
 }
 function renderSalarios(){
   var regioes=['SP','RJ','MG','Outros'];
-  var vagas=['Closer','SDR'];
-  function buildRegionChart(containerId,vaga){
+  function buildRegionSection(containerId,vaga){
     var html='';
     for(var ri=0;ri<regioes.length;ri++){
       var reg=regioes[ri];
@@ -774,37 +869,47 @@ function renderSalarios(){
       var avg=Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length);
       var min=Math.min.apply(null,vals);
       var max=Math.max.apply(null,vals);
-      var badgeCls=avg<=FAIXA_MAX_OK?'sal-ok':avg<=FAIXA_MAX_WARN?'sal-warn':'sal-bad';
-      html+='<div style="background:var(--bg);border-radius:var(--r);padding:10px 14px;margin-bottom:8px;border:0.5px solid var(--border);">'
-        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">'
-        +'<span style="font-size:12px;font-weight:700;color:var(--t1);">'+reg+' <span style="font-size:11px;color:var(--t3);font-weight:400;">('+cands.length+' cand.)</span></span>'
-        +'<span class="'+badgeCls+'">Média R$'+avg.toLocaleString('pt-BR')+'</span>'
-        +'</div>'
-        +'<div style="font-size:11px;color:var(--t3);">Mín: R$'+min.toLocaleString('pt-BR')+' · Máx: R$'+max.toLocaleString('pt-BR')+'</div>'
+      var badgeCls=avg<=FIXO_OK?'faixa-ok':avg<=FIXO_WARN?'faixa-warn':'faixa-bad';
+      html+='<div class="reg-card">'
+        +'<div class="reg-card-head"><span class="reg-card-name">'+reg+' <span style="font-weight:400;color:var(--t3);">('+cands.length+' cand.)</span></span>'
+        +'<span class="'+badgeCls+'">Média '+fmtBRL(avg)+'</span></div>'
+        +'<div class="reg-card-sub">Mín: '+fmtBRL(min)+' · Máx: '+fmtBRL(max)+'</div>'
         +'</div>';
     }
     document.getElementById(containerId).innerHTML=html||'<div class="no-data">Sem dados ainda</div>';
   }
-  buildRegionChart('sal-closer-regiao','Closer');
-  buildRegionChart('sal-sdr-regiao','SDR');
-  function buildComissaoChart(cId,avgId,vaga){
-    var cands=candidates.filter(function(c){return c.vaga===vaga&&parseSal(c.comissao)!==null;});
-    if(!cands.length){document.getElementById(cId).innerHTML='<div class="no-data">Sem dados ainda</div>';if(avgId)document.getElementById(avgId).textContent='';return;}
-    var vals=cands.map(function(c){return parseSal(c.comissao);});
-    var avg=Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length);
-    var max=Math.max.apply(null,vals);
-    buildBar(cId,cands.map(function(c){var v=parseSal(c.comissao);return{label:c.nome.split(' ')[0],val:v,display:'R$'+v.toLocaleString('pt-BR')};}),BAR_COLORS);
-    if(avgId) document.getElementById(avgId).textContent='Média: R$ '+avg.toLocaleString('pt-BR');
-  }
-  buildComissaoChart('com-closer-chart','com-closer-avg','Closer');
-  buildComissaoChart('com-sdr-chart','com-sdr-avg','SDR');
-  var acima=candidates.filter(function(c){var v=parseSal(c.salario);return v&&v>FAIXA_MAX_WARN;}).length;
-  var atencao=candidates.filter(function(c){var v=parseSal(c.salario);return v&&v>FAIXA_MAX_OK&&v<=FAIXA_MAX_WARN;}).length;
-  var dentro=candidates.filter(function(c){var v=parseSal(c.salario);return v&&v<=FAIXA_MAX_OK;}).length;
+  buildRegionSection('sal-closer-regiao','Closer');
+  buildRegionSection('sal-sdr-regiao','SDR');
+
+  var acima=candidates.filter(function(c){var v=parseSal(c.salario);return v&&v>FIXO_WARN;}).length;
+  var atencao=candidates.filter(function(c){var v=parseSal(c.salario);return v&&v>FIXO_OK&&v<=FIXO_WARN;}).length;
+  var dentro=candidates.filter(function(c){var v=parseSal(c.salario);return v&&v<=FIXO_OK;}).length;
+  var seminfo=candidates.filter(function(c){return parseSal(c.salario)===null;}).length;
   document.getElementById('sal-metrics').innerHTML=
-    '<div class="metric m-ok" style="padding:12px 16px;"><div class="metric-label">Dentro da faixa</div><div class="metric-value" style="font-size:24px;">'+dentro+'</div><div class="metric-sub">até R$14.000</div></div>'
-    +'<div class="metric m-warn" style="padding:12px 16px;"><div class="metric-label">Atenção</div><div class="metric-value" style="font-size:24px;">'+atencao+'</div><div class="metric-sub">R$14k a R$16k</div></div>'
-    +'<div class="metric m-teal" style="padding:12px 16px;background:#FEE2E2;color:#991B1B;"><div class="metric-label">Acima da faixa</div><div class="metric-value" style="font-size:24px;">'+acima+'</div><div class="metric-sub">acima R$16.000</div></div>';
+    '<div class="metric m-ok" style="padding:12px 16px;"><div class="metric-label">Dentro da faixa</div><div class="metric-value" style="font-size:24px;">'+dentro+'</div><div class="metric-sub">até R$14.250</div></div>'
+    +'<div class="metric m-warn" style="padding:12px 16px;"><div class="metric-label">Atenção</div><div class="metric-value" style="font-size:24px;">'+atencao+'</div><div class="metric-sub">R$14.250 a R$16.000</div></div>'
+    +'<div class="metric" style="padding:12px 16px;background:#FCEBEB;color:#791F1F;"><div class="metric-label">Acima da faixa</div><div class="metric-value" style="font-size:24px;">'+acima+'</div><div class="metric-sub">acima R$16.000</div></div>';
+
+  var totalComSal=dentro+atencao+acima;
+  var pctAcima=totalComSal>0?Math.round((acima/totalComSal)*100):0;
+  var insight='';
+  if(pctAcima>=50) insight='Alta concentração de candidatos acima da faixa ('+pctAcima+'% do total com salário informado). Pode indicar desalinhamento com o mercado ou necessidade de revisar o budget.';
+  else if(atencao>dentro&&atencao>acima) insight='Maioria dos candidatos na faixa de atenção. Negociação necessária para fechar dentro do budget.';
+  else if(dentro>=atencao&&dentro>=acima&&totalComSal>0) insight='Boa parte dos candidatos está dentro da faixa alvo. Bom sinal para o processo.';
+  else if(seminfo>totalComSal) insight='Muitos candidatos sem salário informado ('+seminfo+'). Colete essa informação na triagem para melhorar a análise.';
+  if(insight) document.getElementById('sal-insight').innerHTML='<div class="insight-box"><div class="insight-text">'+insight+'</div></div>';
+  else document.getElementById('sal-insight').innerHTML='';
+
+  var oteCloser=candidates.filter(function(c){return c.vaga==='Closer'&&parseSal(c.salario)!==null;});
+  var oteSdr=candidates.filter(function(c){return c.vaga==='SDR'&&parseSal(c.salario)!==null;});
+  buildBarChart('ote-closer-chart',oteCloser.map(function(c){
+    var f=parseSal(c.salario); var com=parseSal(c.comissao)||COMISSAO_TARGET; var ote=f+com;
+    return{label:c.nome.split(' ')[0],val:ote,display:fmtBRL(ote)};
+  }).sort(function(a,b){return b.val-a.val;}));
+  buildBarChart('ote-sdr-chart',oteSdr.map(function(c){
+    var f=parseSal(c.salario); var com=parseSal(c.comissao)||COMISSAO_TARGET; var ote=f+com;
+    return{label:c.nome.split(' ')[0],val:ote,display:fmtBRL(ote)};
+  }).sort(function(a,b){return b.val-a.val;}));
 }
 function renderAll(){renderMetrics();renderTable();}
 loadCandidates();
