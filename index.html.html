@@ -109,7 +109,7 @@ tbody tr:hover td{background:rgba(0,201,167,.03)}
 /* PYRAMID */
 .pyr-wrap{display:flex;flex-direction:column;gap:7px;align-items:flex-start}
 .pyr-row{position:relative;display:flex;align-items:center;padding:0 14px;height:46px;border-radius:var(--r2);cursor:default}
-.pyr-row:hover .pyr-tip{opacity:1;pointer-events:auto}
+
 .pyr-lbl{font-size:11px;font-weight:700;flex:1}
 .pyr-cnt{font-size:22px;font-weight:800;letter-spacing:-.03em;margin-right:8px}
 .pyr-pct{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
@@ -509,24 +509,70 @@ var ETAPA_LBL={
   'Step 3 Case':'Step 3 — Case','Step 4 Alinhamento':'Step 4 — Alinhamento',
   'Oferta':'Oferta','Reprovado':'Reprovado','Declinou':'Declinou'
 };
+// Funil principal: apenas etapas avaliativas (sem Hunting/Triagem)
 var STAGES_CLOSER=[
-  {key:'Hunting',label:'Hunting',tip:'Perfil identificado e abordado',bg:'#F1EFE8',color:'#5F5E5A',next:'Triagem',conv:false},
-  {key:'Triagem',label:'Triagem',tip:'Análise de currículo pela TA',bg:'#EEEDFE',color:'#534AB7',next:'Step 1 TA',conv:false},
-  {key:'Step 1 TA',label:'Step 1 — TA',tip:'Entrevista com TA',bg:'#E6F1FB',color:'#0C447C',next:'Step 2 Lucas',conv:true},
-  {key:'Step 2 Lucas',label:'Step 2 — Lucas',tip:'Entrevista com Lucas (HM)',bg:'#FAEEDA',color:'#633806',next:'Step 3 Case',conv:true},
-  {key:'Step 3 Case',label:'Step 3 — Case',tip:'Business Case',bg:'#EEEDFE',color:'#3C3489',next:'Step 4 Alinhamento',conv:true},
-  {key:'Step 4 Alinhamento',label:'Step 4 — Alinhamento',tip:'Alinhamento final',bg:'#FAECE7',color:'#712B13',next:'Oferta',conv:true},
-  {key:'Oferta',label:'Oferta',tip:'Proposta enviada',bg:'#EAF3DE',color:'#1D5C0A',next:null,conv:false}
+  {key:'Step 1 TA',label:'Step 1 — TA',tip:'Entrevista com TA',bg:'#E6F1FB',color:'#0C447C',dateField:'dataTA',repKey:'Step 1 TA'},
+  {key:'Step 2 Lucas',label:'Step 2 — Lucas',tip:'Entrevista com Lucas (HM)',bg:'#FAEEDA',color:'#633806',dateField:'dataHM',repKey:'Step 2'},
+  {key:'Step 3 Case',label:'Step 3 — Case',tip:'Business Case',bg:'#EEEDFE',color:'#3C3489',dateField:'dataCase',repKey:'Step 3 Case'},
+  {key:'Step 4 Alinhamento',label:'Step 4 — Alinhamento',tip:'Alinhamento final',bg:'#FAECE7',color:'#712B13',dateField:null,repKey:'Step 4 Alinhamento'},
+  {key:'Oferta',label:'Oferta',tip:'Proposta enviada',bg:'#EAF3DE',color:'#1D5C0A',dateField:null,repKey:null}
 ];
 var STAGES_SDR=[
-  {key:'Hunting',label:'Hunting',tip:'Perfil identificado e abordado',bg:'#F1EFE8',color:'#5F5E5A',next:'Triagem',conv:false},
-  {key:'Triagem',label:'Triagem',tip:'Análise de currículo pela TA',bg:'#EEEDFE',color:'#534AB7',next:'Step 1 TA',conv:false},
-  {key:'Step 1 TA',label:'Step 1 — TA',tip:'Entrevista com TA',bg:'#E6F1FB',color:'#0C447C',next:'Step 2 Raysa',conv:true},
-  {key:'Step 2 Raysa',label:'Step 2 — Raysa',tip:'Entrevista com Raysa (HM)',bg:'#FAEEDA',color:'#633806',next:'Step 3 Case',conv:true},
-  {key:'Step 3 Case',label:'Step 3 — Case',tip:'Business Case',bg:'#EEEDFE',color:'#3C3489',next:'Step 4 Alinhamento',conv:true},
-  {key:'Step 4 Alinhamento',label:'Step 4 — Alinhamento',tip:'Alinhamento final',bg:'#FAECE7',color:'#712B13',next:'Oferta',conv:true},
-  {key:'Oferta',label:'Oferta',tip:'Proposta enviada',bg:'#EAF3DE',color:'#1D5C0A',next:null,conv:false}
+  {key:'Step 1 TA',label:'Step 1 — TA',tip:'Entrevista com TA',bg:'#E6F1FB',color:'#0C447C',dateField:'dataTA',repKey:'Step 1 TA'},
+  {key:'Step 2 Raysa',label:'Step 2 — Raysa',tip:'Entrevista com Raysa (HM)',bg:'#FAEEDA',color:'#633806',dateField:'dataHM',repKey:'Step 2'},
+  {key:'Step 3 Case',label:'Step 3 — Case',tip:'Business Case',bg:'#EEEDFE',color:'#3C3489',dateField:'dataCase',repKey:'Step 3 Case'},
+  {key:'Step 4 Alinhamento',label:'Step 4 — Alinhamento',tip:'Alinhamento final',bg:'#FAECE7',color:'#712B13',dateField:null,repKey:'Step 4 Alinhamento'},
+  {key:'Oferta',label:'Oferta',tip:'Proposta enviada',bg:'#EAF3DE',color:'#1D5C0A',dateField:null,repKey:null}
 ];
+
+// Inferir por quais etapas o candidato passou (leitura histórica)
+// Usa datas preenchidas + etapa da reprovação + etapa atual
+function getPassedStages(c, stages) {
+  var passed = [];
+  var repEtapa = c.etapaReprovacao || '';
+  var etapaAtual = c.etapa || '';
+
+  for (var i = 0; i < stages.length; i++) {
+    var s = stages[i];
+
+    // Se candidato está nessa etapa agora = está aguardando
+    if (etapaAtual === s.key) {
+      passed.push({key: s.key, status: 'aguardando'});
+      break;
+    }
+
+    // Se candidato foi reprovado nessa etapa
+    if (etapaAtual === 'Reprovado' && repEtapa === s.repKey) {
+      passed.push({key: s.key, status: 'reprovado'});
+      break;
+    }
+
+    // Se tem data preenchida para essa etapa = passou por ela
+    if (s.dateField && c[s.dateField]) {
+      passed.push({key: s.key, status: 'aprovado'});
+      continue;
+    }
+
+    // Se candidato está em etapas posteriores = passou por esta
+    var laterKeys = stages.slice(i+1).map(function(x){return x.key;});
+    laterKeys.push('Oferta');
+    if (laterKeys.indexOf(etapaAtual) > -1) {
+      passed.push({key: s.key, status: 'aprovado'});
+      continue;
+    }
+
+    // Se candidato foi reprovado em etapa posterior = passou por esta
+    var repIdx = stages.findIndex(function(x){return x.repKey === repEtapa;});
+    if (etapaAtual === 'Reprovado' && repIdx > i) {
+      passed.push({key: s.key, status: 'aprovado'});
+      continue;
+    }
+
+    // Não chegou nessa etapa
+    break;
+  }
+  return passed;
+}
 
 function todayISO(){return new Date().toISOString().split('T')[0];}
 function fmtDate(iso){if(!iso)return'—';var p=iso.split('-');return p[2]+'/'+p[1];}
@@ -899,52 +945,94 @@ function renderTable(){
   tbody.innerHTML=rows;
 }
 
-function buildPyramid(containerId,stages,vaga){
-  var cands=candidates.filter(function(c){return c.vaga===vaga;});
-  var html='';
-  for(var i=0;i<stages.length;i++){
-    var s=stages[i];
-    var inStage=cands.filter(function(c){return c.etapa===s.key;});
-    var repAqui=cands.filter(function(c){return c.etapa==='Reprovado'&&c.etapaReprovacao===s.key;});
-    // aprovados = candidatos que estão nas etapas seguintes ou em oferta
-    var nextKeys=stages.slice(i+1).map(function(x){return x.key;});
-    nextKeys.push('Oferta');
-    var aprovados=cands.filter(function(c){return nextKeys.indexOf(c.etapa)>-1;});
-    var avaliados=aprovados.length+repAqui.length;
-    var conv=s.conv&&avaliados>0?Math.round((aprovados.length/avaliados)*100):null;
-    var pctCls=conv===null?'pct-ok':conv<=30?'pct-bad':conv<=60?'pct-warn':'pct-ok';
-    var w=100-((100-38)/(stages.length-1))*i;
-    var tipRows='<div class="pyr-tip-row">Na etapa <span>'+inStage.length+'</span></div>';
-    if(s.conv){
-      tipRows+='<div class="pyr-tip-row">Avaliados <span>'+avaliados+'</span></div>';
-      tipRows+='<div class="pyr-tip-row">Aprovados <span>'+aprovados.length+'</span></div>';
-      tipRows+='<div class="pyr-tip-row">Reprovados <span>'+repAqui.length+'</span></div>';
-      if(conv!==null)tipRows+='<div class="pyr-tip-row">Conversão <span>'+conv+'%</span></div>';
+function buildPyramid(containerId, stages, vaga) {
+  var cands = candidates.filter(function(c) { return c.vaga === vaga; });
+  var html = '';
+
+  for (var i = 0; i < stages.length; i++) {
+    var s = stages[i];
+
+    // Candidatos aguardando nessa etapa agora
+    var aguardando = cands.filter(function(c) { return c.etapa === s.key; });
+
+    // Calcular aprovados e reprovados usando lógica histórica
+    var aprovadosList = [];
+    var reprovadosList = [];
+
+    cands.forEach(function(c) {
+      var passed = getPassedStages(c, stages);
+      var stageResult = passed.find(function(p) { return p.key === s.key; });
+      if (!stageResult) return;
+      if (stageResult.status === 'aprovado') aprovadosList.push(c);
+      else if (stageResult.status === 'reprovado') reprovadosList.push(c);
+    });
+
+    var avaliados = aprovadosList.length + reprovadosList.length;
+    var conv = avaliados > 0 ? Math.round((aprovadosList.length / avaliados) * 100) : null;
+    var pctCls = conv === null ? 'pct-ok' : conv <= 30 ? 'pct-bad' : conv <= 60 ? 'pct-warn' : 'pct-ok';
+    var w = 100 - ((100 - 38) / (stages.length - 1)) * i;
+
+    // Tooltip
+    var tipRows = '<div class="pyr-tip-row">Na etapa <span>' + aguardando.length + '</span></div>';
+    tipRows += '<div class="pyr-tip-row">Avaliados <span>' + avaliados + '</span></div>';
+    tipRows += '<div class="pyr-tip-row">Aprovados <span>' + aprovadosList.length + '</span></div>';
+    tipRows += '<div class="pyr-tip-row">Reprovados <span>' + reprovadosList.length + '</span></div>';
+    if (conv !== null) tipRows += '<div class="pyr-tip-row">Conversão <span>' + conv + '%</span></div>';
+
+    var namesHtml = '<div class="pyr-tip-div"></div>';
+    if (aguardando.length) {
+      namesHtml += '<div class="pyr-tip-section">Em andamento</div>';
+      namesHtml += aguardando.map(function(c) { return '<div class="pyr-tip-name">&#8250; ' + c.nome + '</div>'; }).join('');
     }
-    var namesHtml='';
-    if(inStage.length){
-      namesHtml+='<div class="pyr-tip-div"></div><div class="pyr-tip-section">Em andamento</div>';
-      namesHtml+=inStage.map(function(c){return'<div class="pyr-tip-name">&#8250; '+c.nome+'</div>';}).join('');
+    if (aprovadosList.length) {
+      namesHtml += '<div class="pyr-tip-section">Aprovados</div>';
+      namesHtml += aprovadosList.map(function(c) { return '<div class="pyr-tip-name">&#10003; ' + c.nome + '</div>'; }).join('');
     }
-    if(aprovados.length&&s.conv){
-      namesHtml+='<div class="pyr-tip-section">Aprovados</div>';
-      namesHtml+=aprovados.map(function(c){return'<div class="pyr-tip-name">&#10003; '+c.nome+'</div>';}).join('');
+    if (reprovadosList.length) {
+      namesHtml += '<div class="pyr-tip-section">Reprovados</div>';
+      namesHtml += reprovadosList.map(function(c) { return '<div class="pyr-tip-name-rep">&#215; ' + c.nome + '</div>'; }).join('');
     }
-    if(repAqui.length){
-      namesHtml+='<div class="pyr-tip-section">Reprovados</div>';
-      namesHtml+=repAqui.map(function(c){return'<div class="pyr-tip-name-rep">&#215; '+c.nome+'</div>';}).join('');
+    if (!aguardando.length && !aprovadosList.length && !reprovadosList.length) {
+      namesHtml += '<div class="pyr-tip-empty">Nenhum candidato ainda</div>';
     }
-    if(!inStage.length&&!aprovados.length&&!repAqui.length){
-      namesHtml+='<div class="pyr-tip-div"></div><div class="pyr-tip-empty">Nenhum candidato</div>';
-    }
-    html+='<div class="pyr-row" style="width:'+w+'%;background:'+s.bg+';color:'+s.color+';min-width:130px;">'
-      +'<div class="pyr-tip"><h4>'+s.label+'</h4>'+tipRows+namesHtml+'</div>'
-      +'<span class="pyr-lbl">'+s.label+'</span>'
-      +'<span class="pyr-cnt">'+inStage.length+'</span>'
-      +(conv!==null?'<span class="pyr-pct '+pctCls+'">'+conv+'%</span>':'')
-      +'</div>';
+
+    // Tooltip reposicionamento automático via JS
+    html += '<div class="pyr-row" style="width:' + w + '%;background:' + s.bg + ';color:' + s.color + ';min-width:130px;" onmouseenter="positionTip(this)">'
+      + '<div class="pyr-tip" style="position:fixed;opacity:0;pointer-events:none;z-index:200;min-width:220px;max-width:280px"><h4>' + s.label + '</h4>' + tipRows + namesHtml + '</div>'
+      + '<span class="pyr-lbl">' + s.label + '</span>'
+      + '<span class="pyr-cnt">' + aguardando.length + '</span>'
+      + (conv !== null ? '<span class="pyr-pct ' + pctCls + '">' + conv + '%</span>' : '')
+      + '</div>';
   }
-  document.getElementById(containerId).innerHTML=html;
+  document.getElementById(containerId).innerHTML = html;
+}
+
+function positionTip(el) {
+  var tip = el.querySelector('.pyr-tip');
+  if (!tip) return;
+  var rect = el.getBoundingClientRect();
+  var tipW = 260;
+  var left = rect.right + 12;
+  if (left + tipW > window.innerWidth - 10) left = rect.left - tipW - 12;
+  if (left < 10) left = 10;
+  var top = rect.top + rect.height / 2;
+  if (top < 60) top = 60;
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+  tip.style.transform = 'translateY(-50%)';
+  tip.style.opacity = '1';
+  tip.style.background = 'var(--white)';
+  tip.style.border = '0.5px solid var(--bd2)';
+  tip.style.borderRadius = 'var(--r2)';
+  tip.style.padding = '12px 16px';
+  tip.style.boxShadow = 'var(--shadow2)';
+  tip.style.transition = 'opacity .15s';
+
+  var hideHandler = function() {
+    tip.style.opacity = '0';
+    el.removeEventListener('mouseleave', hideHandler);
+  };
+  el.addEventListener('mouseleave', hideHandler);
 }
 
 function buildBarChart(cId,items){
