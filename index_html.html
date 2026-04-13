@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Hunting Tracker — Doctoralia</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#0D4F3C;--green-mid:#1A6B52;--teal:#00C9A7;--teal-bg:#E1F5EE;
+  --white:#FFFFFF;--page:#F5F4EF;--surface:#EEEDE8;--surface2:#E5E4DF;
+  --t1:#1A1A18;--t2:#555552;--t3:#9A9A96;
+  --bd:rgba(0,0,0,0.08);--bd2:rgba(0,0,0,0.13);
+  --r:8px;--r2:12px;--r3:18px;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 12px rgba(0,0,0,0.04);
+  --shadow2:0 2px 8px rgba(0,0,0,0.08),0 8px 24px rgba(0,0,0,0.06);
+}
+body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--page);color:var(--t1);min-height:100vh;padding-bottom:5rem}
+
+.topbar{background:var(--green);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:100}
+.topbar-brand{display:flex;flex-direction:column;gap:1px}
+.topbar-sub{font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.12em}
+.topbar-title{font-size:19px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.sync-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.55);padding:4px 10px;background:rgba(255,255,255,.09);border-radius:20px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.tb-btn{font-size:12px;font-weight:600;padding:7px 13px;border-radius:var(--r);background:rgba(255,255,255,.11);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.16);cursor:pointer;transition:background .15s;white-space:nowrap}
+.tb-btn:hover{background:rgba(255,255,255,.2)}
+.btn-add{font-size:13px;font-weight:700;padding:8px 18px;border-radius:var(--r);background:var(--teal);color:var(--green);border:none;cursor:pointer;transition:background .15s}
+.btn-add:hover{background:#00E4BC}
+
+.wrap{max-width:1280px;margin:0 auto;padding:1.5rem}
+
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
+.metric{background:var(--white);border-radius:var(--r2);padding:16px 20px;box-shadow:var(--shadow);border:0.5px solid var(--bd)}
+.metric-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:7px}
+.metric-value{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.metric-sub{font-size:11px;color:var(--t3);margin-top:4px}
+.metric-bar{height:3px;border-radius:2px;margin-top:12px}
+.m-teal{color:#085041}.m-teal .metric-bar{background:var(--teal)}
+.m-dark{color:var(--green)}.m-dark .metric-bar{background:var(--green)}
+.m-warn{color:#633806}.m-warn .metric-bar{background:#BA7517}
+.m-ok{color:#1D5C0A}.m-ok .metric-bar{background:#3B6D11}
+
+.card{background:var(--white);border-radius:var(--r2);border:0.5px solid var(--bd);box-shadow:var(--shadow);margin-bottom:1.25rem;overflow:hidden}
+.card-body{padding:1.25rem}
+
+.tabs{display:flex;border-bottom:1px solid var(--bd);padding:0 1.25rem}
+.tab{font-size:13px;font-weight:600;padding:12px 18px;border:none;background:transparent;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tab:hover{color:var(--t1)}
+.tab.active{color:var(--green);border-bottom-color:var(--teal)}
+
+.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+input[type=text],select,textarea,input[type=date]{font-family:inherit;font-size:13px;padding:8px 11px;border:0.5px solid var(--bd2);border-radius:var(--r);background:var(--white);color:var(--t1);outline:none;transition:border-color .15s,box-shadow .15s;width:100%}
+input[type=text]:focus,select:focus,textarea:focus,input[type=date]:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,201,167,.1)}
+textarea{resize:vertical;min-height:60px;line-height:1.5}
+.f-search{flex:2;min-width:160px}
+.f-sel{flex:1;min-width:110px}
+.btn-clear{font-size:12px;font-weight:500;padding:8px 12px;border-radius:var(--r);border:0.5px solid var(--bd2);background:transparent;color:var(--t3);cursor:pointer;white-space:nowrap;transition:all .15s}
+.btn-clear:hover{background:var(--surface);color:var(--t1)}
+
+.tbl-outer{overflow-x:auto;border-radius:var(--r2);border:0.5px solid var(--bd)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:900px}
+th{font-size:10px;font-weight:700;color:var(--t3);padding:10px 12px;text-align:left;border-bottom:0.5px solid var(--bd);background:var(--page);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
+td{padding:13px 12px;border-bottom:0.5px solid var(--bd);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(0,201,167,.03)}
+.empty{text-align:center;padding:3rem;color:var(--t3);font-size:13px}
+
+/* ETAPA BADGES */
+.badge{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:4px 11px;border-radius:20px;white-space:nowrap;line-height:1.3}
+.e-hunt{background:#F1EFE8;color:#5F5E5A}
+.e-triag{background:#EEEDFE;color:#534AB7}
+.e-s1{background:#E6F1FB;color:#0C447C}
+.e-s2{background:#FAEEDA;color:#633806}
+.e-s3{background:#EEEDFE;color:#3C3489}
+.e-s4{background:#FAECE7;color:#712B13}
+.e-of{background:#EAF3DE;color:#1D5C0A}
+.e-rep{background:#FCEBEB;color:#791F1F}
+.e-dec{background:#F3E8FF;color:#5B21B6}
+.e-sr{background:#F1EFE8;color:#888780}
+.e-si{background:#D3D1C7;color:#444441}
+.e-fp{background:#F1EFE8;color:#888780}
+.e-ea{background:#E6F1FB;color:#185FA5}
+
+/* FAIXA BADGES */
+.fok{background:#EAF3DE;color:#1D5C0A;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;display:inline-block;white-space:nowrap}
+.fwarn{background:#FAEEDA;color:#633806;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;display:inline-block;white-space:nowrap}
+.fbad{background:#FCEBEB;color:#791F1F;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;display:inline-block;white-space:nowrap}
+.fnd{background:#F1EFE8;color:#888780;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;display:inline-block;white-space:nowrap}
+
+/* TEMPO */
+.tok{background:#F1EFE8;color:#888780;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block}
+.twarn{background:#FAEEDA;color:#633806;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block}
+.tbad{background:#FCEBEB;color:#791F1F;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block}
+
+.motivo-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#F1EFE8;color:#5F5E5A;display:inline-block;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
+
+.btn-ic{font-size:12px;padding:4px 8px;border-radius:var(--r);border:0.5px solid var(--bd);background:transparent;color:var(--t3);cursor:pointer;transition:all .15s}
+.btn-ic:hover{background:var(--teal-bg);color:var(--green);border-color:var(--teal)}
+.btn-ic-del:hover{background:#FCEBEB;color:#791F1F;border-color:#F09595}
+.li-btn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:6px;background:#E6F1FB;color:#0C447C;font-size:11px;font-weight:800;text-decoration:none;transition:all .15s}
+.li-btn:hover{background:#0C447C;color:#fff}
+
+.panel{display:none}
+.panel.active{display:block}
+
+/* PYRAMID */
+.pyr-wrap{display:flex;flex-direction:column;gap:7px;align-items:flex-start}
+.pyr-row{position:relative;display:flex;align-items:center;padding:0 14px;height:46px;border-radius:var(--r2);cursor:default}
+.pyr-row:hover .pyr-tip{opacity:1;pointer-events:auto}
+.pyr-lbl{font-size:11px;font-weight:700;flex:1}
+.pyr-cnt{font-size:22px;font-weight:800;letter-spacing:-.03em;margin-right:8px}
+.pyr-pct{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.pct-ok{background:rgba(0,0,0,.1)}
+.pct-warn{background:#FAEEDA;color:#633806}
+.pct-bad{background:#FCEBEB;color:#791F1F}
+.pyr-tip{position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%);background:var(--white);border:0.5px solid var(--bd2);border-radius:var(--r2);padding:12px 16px;min-width:210px;max-width:270px;pointer-events:none;opacity:0;z-index:50;box-shadow:var(--shadow2);transition:opacity .18s}
+.pyr-tip h4{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.pyr-tip-row{display:flex;justify-content:space-between;font-size:12px;padding:2px 0;color:var(--t2)}
+.pyr-tip-row span{font-weight:700;color:var(--t1)}
+.pyr-tip-div{border-top:0.5px solid var(--bd);margin:8px 0}
+.pyr-tip-section{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin:6px 0 3px}
+.pyr-tip-name{font-size:12px;color:var(--t1);padding:1px 0}
+.pyr-tip-name-rep{font-size:12px;color:#791F1F;padding:1px 0}
+.pyr-tip-empty{font-size:11px;color:var(--t3);font-style:italic}
+
+.bar-wrap{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-lbl{width:68px;font-size:11px;color:var(--t2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.bar-track{flex:1;background:var(--surface);border-radius:3px;height:12px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;background:var(--teal)}
+.bar-val{font-size:11px;font-weight:600;color:var(--t1);white-space:nowrap;min-width:60px}
+.no-data{font-size:12px;color:var(--t3);font-style:italic;padding:4px 0}
+.sec-ttl{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:12px}
+
+.reg-card{background:var(--page);border-radius:var(--r2);padding:12px 16px;margin-bottom:8px;border:0.5px solid var(--bd)}
+.reg-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.reg-name{font-size:13px;font-weight:700;color:var(--t1)}
+.reg-sub{font-size:11px;color:var(--t3)}
+.insight-box{background:#E1F5EE;border-left:3px solid var(--teal);border-radius:0 var(--r2) var(--r2) 0;padding:12px 16px;margin-bottom:14px}
+.insight-txt{font-size:13px;color:#085041;line-height:1.65}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(13,79,60,.4);z-index:300;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
+.modal-bg.open{display:flex}
+.modal{background:var(--white);border-radius:var(--r3);border:0.5px solid var(--bd2);padding:2rem;width:620px;max-width:100%;box-shadow:var(--shadow2)}
+.modal-ttl{font-size:20px;font-weight:800;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between}
+.close-btn{background:var(--surface);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;color:var(--t2);font-size:18px;display:flex;align-items:center;justify-content:center}
+.close-btn:hover{background:var(--surface2)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.form-g{display:flex;flex-direction:column;gap:5px}
+.form-lbl{font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}
+.hint{font-size:10px;color:var(--t3);margin-top:2px}
+.field-sec{margin-bottom:20px}
+.field-ttl{font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--teal)}
+.rep-block{background:#FCEBEB;border-radius:var(--r2);padding:14px 16px;margin-bottom:16px;border:0.5px solid #F09595;display:none}
+.rep-block.show{display:block}
+.rep-ttl{font-size:11px;font-weight:700;color:#791F1F;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+
+.ai-wrap{background:var(--green);border-radius:var(--r2);padding:16px;margin-bottom:20px}
+.ai-ttl{font-size:12px;font-weight:700;color:var(--teal);margin-bottom:10px}
+.ai-tabs{display:flex;gap:4px;margin-bottom:10px}
+.ai-tab{font-size:12px;font-weight:600;padding:6px 14px;border-radius:var(--r);border:1px solid rgba(0,201,167,.3);background:transparent;color:rgba(255,255,255,.6);cursor:pointer;transition:all .15s}
+.ai-tab.active{background:var(--teal);color:var(--green);border-color:var(--teal)}
+.ai-panel{display:none}
+.ai-panel.active{display:block}
+.ai-ta{background:rgba(255,255,255,.08);border:0.5px solid rgba(255,255,255,.2);color:#fff;border-radius:var(--r);font-size:13px;padding:9px 11px;width:100%;font-family:inherit;resize:vertical;min-height:70px;outline:none}
+.ai-ta::placeholder{color:rgba(255,255,255,.35)}
+.ai-ta:focus{border-color:var(--teal)}
+.ai-status{font-size:12px;color:var(--teal);margin-top:8px;min-height:18px}
+.ai-div{border:none;border-top:0.5px solid var(--bd);margin:20px 0}
+.drop-zone{border:2px dashed rgba(0,201,167,.4);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;background:rgba(255,255,255,.04);transition:all .15s}
+.drop-zone:hover,.drop-zone.drag-over{background:rgba(0,201,167,.08);border-color:var(--teal)}
+.dz-ttl{font-size:13px;color:rgba(255,255,255,.85);font-weight:600}
+.dz-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:4px}
+.dz-file{font-size:12px;color:var(--teal);margin-top:6px;font-weight:600}
+#pdf-input{display:none}
+
+.btn{font-size:13px;font-weight:600;padding:9px 20px;border-radius:var(--r);border:0.5px solid var(--bd2);background:var(--page);color:var(--t1);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--surface)}
+.btn-primary{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-primary:hover{background:var(--green-mid)}
+.btn-ai{background:var(--teal);color:var(--green);border-color:var(--teal)}
+.btn-ai:disabled{opacity:.45;cursor:not-allowed}
+
+@media(max-width:768px){
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .form-row,.form-row-3{grid-template-columns:1fr}
+  .pyr-tip{left:auto;right:calc(100% + 12px)}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-sub">Pipeline B2B &middot; Closer &amp; SDR</div>
+    <div class="topbar-title">Hunting Tracker</div>
+  </div>
+  <div class="topbar-right">
+    <div class="sync-pill"><div class="sync-dot" id="sync-dot"></div><span id="sync-lbl">Carregando...</span></div>
+    <span style="font-size:11px;color:rgba(255,255,255,.3)" id="upd-lbl"></span>
+    <button class="tb-btn" onclick="exportData()">&#8595; Exportar</button>
+    <label class="tb-btn" style="cursor:pointer">&#8593; Importar<input type="file" id="imp-input" accept=".json" onchange="importData(event)" style="display:none"/></label>
+    <button class="tb-btn" onclick="window.print()">&#128438; PDF</button>
+    <button class="btn-add" onclick="openModal()">+ Candidato</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="metrics" id="metrics"></div>
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('lista',this)">Candidatos</button>
+      <button class="tab" onclick="switchTab('dados',this)">Funil &amp; Dados</button>
+      <button class="tab" onclick="switchTab('salarios',this)">Salários</button>
+    </div>
+
+    <div id="lista" class="panel active card-body">
+      <div class="filters">
+        <input type="text" id="fn" class="f-search" placeholder="Buscar por nome..." oninput="renderTable()"/>
+        <select id="fv" class="f-sel" onchange="renderTable()">
+          <option value="">Todas as vagas</option>
+          <option value="Closer">Closer</option>
+          <option value="SDR">SDR</option>
+        </select>
+        <select id="fe" class="f-sel" onchange="renderTable()">
+          <option value="">Todas as etapas</option>
+          <option value="Hunting">Hunting</option>
+          <option value="Sem resposta">Sem resposta</option>
+          <option value="Sem interesse">Sem interesse</option>
+          <option value="Triagem">Triagem</option>
+          <option value="Em análise">Em análise</option>
+          <option value="Fora do perfil">Fora do perfil</option>
+          <option value="Step 1 TA">Step 1</option>
+          <option value="Step 2 Lucas">Step 2 — Lucas</option>
+          <option value="Step 2 Raysa">Step 2 — Raysa</option>
+          <option value="Step 3 Case">Step 3</option>
+          <option value="Step 4 Alinhamento">Step 4</option>
+          <option value="Oferta">Oferta</option>
+          <option value="Declinou">Declinou</option>
+          <option value="Reprovado">Reprovado</option>
+        </select>
+        <select id="fr" class="f-sel" onchange="renderTable()">
+          <option value="">Todas as regiões</option>
+          <option value="SP">São Paulo</option>
+          <option value="RJ">Rio de Janeiro</option>
+          <option value="MG">Minas Gerais</option>
+          <option value="Outros">Outros</option>
+        </select>
+        <select id="ff" class="f-sel" onchange="renderTable()">
+          <option value="">Faixa fixo</option>
+          <option value="ok">Dentro</option>
+          <option value="warn">Atenção</option>
+          <option value="bad">Acima</option>
+          <option value="nd">Sem info</option>
+        </select>
+        <select id="fm" class="f-sel" onchange="renderTable()">
+          <option value="">Motivo reprov.</option>
+          <option value="Salário fora da faixa">Salário</option>
+          <option value="Não tem fit técnico">Fit técnico</option>
+          <option value="Não tem fit comportamental">Fit comportamental</option>
+          <option value="Falta de foco em resultado">Foco resultado</option>
+          <option value="Comunicação fraca">Comunicação</option>
+          <option value="Baixa profundidade em vendas consultivas">Vendas consultivas</option>
+          <option value="Timing / momento">Timing</option>
+          <option value="Sem interesse">Sem interesse</option>
+          <option value="Perfil melhor para outra vaga">Outra vaga</option>
+          <option value="Outro">Outro</option>
+        </select>
+        <button class="btn-clear" onclick="clearFilters()">Limpar</button>
+      </div>
+      <div class="tbl-outer">
+        <table>
+          <thead>
+            <tr>
+              <th>Etapa</th><th>Nome</th><th>Cidade</th>
+              <th>Fixo atual</th><th>Variável atual</th><th>OTE atual</th>
+              <th>Faixa fixo</th><th>Faixa OTE</th>
+              <th>Tempo</th><th>Li</th><th>Motivo</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="dados" class="panel card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+        <div><div class="sec-ttl">Funil — Closer B2B</div><div class="pyr-wrap" id="pyr-closer"></div></div>
+        <div><div class="sec-ttl">Funil — SDR B2B</div><div class="pyr-wrap" id="pyr-sdr"></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+        <div><div class="sec-ttl">Origem</div><div class="bar-wrap" id="chart-origem"></div></div>
+        <div><div class="sec-ttl">Por região</div><div class="bar-wrap" id="chart-regiao"></div></div>
+      </div>
+    </div>
+
+    <div id="salarios" class="panel card-body">
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1.25rem" id="sal-metrics"></div>
+      <div id="sal-insight" style="margin-bottom:1.25rem"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+        <div><div class="sec-ttl">Fixo por região — Closer</div><div id="reg-fixo-closer"></div></div>
+        <div><div class="sec-ttl">Fixo por região — SDR</div><div id="reg-fixo-sdr"></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+        <div><div class="sec-ttl">OTE por região — Closer</div><div id="reg-ote-closer"></div></div>
+        <div><div class="sec-ttl">OTE por região — SDR</div><div id="reg-ote-sdr"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-ttl">
+      <span id="modal-ttl-txt">Novo candidato</span>
+      <button class="close-btn" onclick="closeModal()">&#215;</button>
+    </div>
+
+    <div id="ai-block">
+      <div class="ai-wrap">
+        <div class="ai-ttl">&#10022; Analisar perfil com IA</div>
+        <div class="ai-tabs">
+          <button class="ai-tab active" onclick="switchAiTab('li',this)">Texto LinkedIn</button>
+          <button class="ai-tab" onclick="switchAiTab('pdf',this)">Upload CV (PDF)</button>
+        </div>
+        <div class="ai-panel active" id="ai-li">
+          <textarea class="ai-ta" id="f-li-text" rows="3" placeholder="Cole o texto do perfil LinkedIn..."></textarea>
+        </div>
+        <div class="ai-panel" id="ai-pdf">
+          <input type="file" id="pdf-input" accept="application/pdf" onchange="handlePdfSelect(event)"/>
+          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('pdf-input').click()"
+            ondragover="event.preventDefault();this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="handlePdfDrop(event)">
+            <div class="dz-ttl">Arraste o PDF ou clique para selecionar</div>
+            <div class="dz-sub">Currículo em PDF — lido automaticamente</div>
+            <div class="dz-file" id="pdf-fn"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+          <button class="btn btn-ai" id="btn-analyze" onclick="analyzeProfile()">Analisar perfil</button>
+          <div class="ai-status" id="ai-status"></div>
+        </div>
+      </div>
+      <div class="ai-div"></div>
+    </div>
+
+    <div class="field-sec">
+      <div class="field-ttl">Identificação</div>
+      <div class="form-row" style="margin-bottom:12px">
+        <div class="form-g"><label class="form-lbl">Nome</label><input type="text" id="f-nome" placeholder="Nome completo"/></div>
+        <div class="form-g"><label class="form-lbl">Cidade / Estado</label><input type="text" id="f-cidade" placeholder="Ex: São Paulo, SP"/></div>
+      </div>
+      <div class="form-row" style="margin-bottom:12px">
+        <div class="form-g"><label class="form-lbl">Cargo atual</label><input type="text" id="f-cargo" placeholder="Ex: Gerente de Vendas"/></div>
+        <div class="form-g"><label class="form-lbl">Empresa atual</label><input type="text" id="f-empresa" placeholder="Ex: TOTVS"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-g"><label class="form-lbl">LinkedIn URL</label><input type="text" id="f-linkedin" placeholder="linkedin.com/in/..."/></div>
+        <div class="form-g"><label class="form-lbl">Observação</label><input type="text" id="f-obs" placeholder="Notas rápidas"/></div>
+      </div>
+    </div>
+
+    <div class="field-sec">
+      <div class="field-ttl">Processo</div>
+      <div class="form-row" style="margin-bottom:12px">
+        <div class="form-g"><label class="form-lbl">Vaga</label>
+          <select id="f-vaga">
+            <option value="Closer">Coordenador Closer</option>
+            <option value="SDR">Coordenador SDR</option>
+          </select>
+        </div>
+        <div class="form-g"><label class="form-lbl">Origem</label>
+          <select id="f-origem">
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Indicação">Indicação</option>
+            <option value="CV Recebido">CV Recebido</option>
+            <option value="Job Board">Job Board</option>
+            <option value="Inbound">Inbound</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-g"><label class="form-lbl">Etapa atual</label>
+          <select id="f-etapa" onchange="onEtapaChange()">
+            <optgroup label="Hunting">
+              <option value="Hunting">Hunting</option>
+              <option value="Sem resposta">Sem resposta</option>
+              <option value="Sem interesse">Sem interesse</option>
+            </optgroup>
+            <optgroup label="Triagem">
+              <option value="Triagem">Triagem</option>
+              <option value="Em análise">Em análise</option>
+              <option value="Fora do perfil">Fora do perfil</option>
+            </optgroup>
+            <optgroup label="Processo">
+              <option value="Step 1 TA">Step 1 — TA</option>
+              <option value="Step 2 Lucas">Step 2 — Lucas (Closer)</option>
+              <option value="Step 2 Raysa">Step 2 — Raysa (SDR)</option>
+              <option value="Step 3 Case">Step 3 — Business Case</option>
+              <option value="Step 4 Alinhamento">Step 4 — Alinhamento</option>
+              <option value="Oferta">Oferta</option>
+            </optgroup>
+            <optgroup label="Encerrado">
+              <option value="Declinou">Declinou</option>
+              <option value="Reprovado">Reprovado</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-g"><label class="form-lbl">Data 1ª abordagem</label><input type="date" id="f-data"/><div class="hint">Padrão: hoje</div></div>
+      </div>
+    </div>
+
+    <div class="rep-block" id="rep-block">
+      <div class="rep-ttl">&#9888; Reprovação — campos obrigatórios</div>
+      <div class="form-row" style="margin-bottom:12px">
+        <div class="form-g"><label class="form-lbl">Etapa da reprovação *</label>
+          <select id="f-etapa-rep">
+            <option value="">Selecione...</option>
+            <option value="Triagem">Triagem</option>
+            <option value="Step 1 TA">Step 1 — TA</option>
+            <option value="Step 2">Step 2 — HM</option>
+            <option value="Step 3 Case">Step 3 — Case</option>
+            <option value="Step 4 Alinhamento">Step 4 — Alinhamento</option>
+          </select>
+        </div>
+        <div class="form-g"><label class="form-lbl">Motivo *</label>
+          <select id="f-motivo" onchange="onMotivoChange()">
+            <option value="">Selecione...</option>
+            <option value="Salário fora da faixa">Salário fora da faixa</option>
+            <option value="Não tem fit técnico">Não tem fit técnico</option>
+            <option value="Não tem fit comportamental">Não tem fit comportamental</option>
+            <option value="Falta de foco em resultado">Falta de foco em resultado</option>
+            <option value="Comunicação fraca">Comunicação fraca</option>
+            <option value="Baixa profundidade em vendas consultivas">Baixa profundidade em vendas consultivas</option>
+            <option value="Timing / momento">Timing / momento</option>
+            <option value="Sem interesse">Sem interesse</option>
+            <option value="Perfil melhor para outra vaga">Perfil melhor para outra vaga</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-g" id="motivo-outro-g" style="display:none">
+        <label class="form-lbl">Descreva o motivo *</label>
+        <input type="text" id="f-motivo-outro" placeholder="Descreva..."/>
+      </div>
+    </div>
+
+    <div class="field-sec">
+      <div class="field-ttl">Remuneração atual</div>
+      <div class="form-row-3" style="margin-bottom:12px">
+        <div class="form-g"><label class="form-lbl">Fixo atual</label><input type="text" id="f-fixo-atual" placeholder="R$ 12.000"/></div>
+        <div class="form-g"><label class="form-lbl">Variável atual</label><input type="text" id="f-variavel" placeholder="R$ 5.000"/></div>
+        <div class="form-g"><label class="form-lbl">OTE atual</label><input type="text" id="f-ote-display" placeholder="Calculado auto" readonly style="background:var(--surface);color:var(--t3);cursor:default"/></div>
+      </div>
+      <div class="field-ttl" style="margin-top:4px">Pretensão</div>
+      <div class="form-row" style="margin-top:12px">
+        <div class="form-g"><label class="form-lbl">Pretensão fixa</label><input type="text" id="f-fixo" placeholder="R$ 14.000"/></div>
+        <div class="form-g"><label class="form-lbl">Pretensão total cash</label><input type="text" id="f-pretensao-total" placeholder="R$ 20.000"/></div>
+      </div>
+    </div>
+
+    <div class="field-sec">
+      <div class="field-ttl">Datas do processo</div>
+      <div class="form-row" style="margin-bottom:12px">
+        <div class="form-g"><label class="form-lbl">Entrevista TA</label><input type="date" id="f-data-ta"/></div>
+        <div class="form-g"><label class="form-lbl">Entrevista HM</label><input type="date" id="f-data-hm"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-g"><label class="form-lbl">Business Case</label><input type="date" id="f-data-case"/></div>
+        <div class="form-g"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="modal-save" onclick="saveCandidate()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var candidates=[];
+var editingId=null;
+var currentPdfBase64=null;
+var currentAiTab='li';
+
+var FIXO_OK=14000,FIXO_WARN=16000;
+var OTE_OK=22000,OTE_WARN=24000;
+
+var ETAPA_CSS={
+  'Hunting':'e-hunt','Triagem':'e-triag','Em análise':'e-ea','Fora do perfil':'e-fp',
+  'Sem resposta':'e-sr','Sem interesse':'e-si',
+  'Step 1 TA':'e-s1','Step 2 Lucas':'e-s2','Step 2 Raysa':'e-s2',
+  'Step 3 Case':'e-s3','Step 4 Alinhamento':'e-s4',
+  'Oferta':'e-of','Reprovado':'e-rep','Declinou':'e-dec'
+};
+var ETAPA_LBL={
+  'Hunting':'Hunting','Triagem':'Triagem','Em análise':'Em análise','Fora do perfil':'Fora do perfil',
+  'Sem resposta':'Sem resposta','Sem interesse':'Sem interesse',
+  'Step 1 TA':'Step 1 — TA','Step 2 Lucas':'Step 2 — Lucas','Step 2 Raysa':'Step 2 — Raysa',
+  'Step 3 Case':'Step 3 — Case','Step 4 Alinhamento':'Step 4 — Alinhamento',
+  'Oferta':'Oferta','Reprovado':'Reprovado','Declinou':'Declinou'
+};
+var STAGES_CLOSER=[
+  {key:'Hunting',label:'Hunting',tip:'Perfil identificado e abordado',bg:'#F1EFE8',color:'#5F5E5A',next:'Triagem',conv:false},
+  {key:'Triagem',label:'Triagem',tip:'Análise de currículo pela TA',bg:'#EEEDFE',color:'#534AB7',next:'Step 1 TA',conv:false},
+  {key:'Step 1 TA',label:'Step 1 — TA',tip:'Entrevista com TA',bg:'#E6F1FB',color:'#0C447C',next:'Step 2 Lucas',conv:true},
+  {key:'Step 2 Lucas',label:'Step 2 — Lucas',tip:'Entrevista com Lucas (HM)',bg:'#FAEEDA',color:'#633806',next:'Step 3 Case',conv:true},
+  {key:'Step 3 Case',label:'Step 3 — Case',tip:'Business Case',bg:'#EEEDFE',color:'#3C3489',next:'Step 4 Alinhamento',conv:true},
+  {key:'Step 4 Alinhamento',label:'Step 4 — Alinhamento',tip:'Alinhamento final',bg:'#FAECE7',color:'#712B13',next:'Oferta',conv:true},
+  {key:'Oferta',label:'Oferta',tip:'Proposta enviada',bg:'#EAF3DE',color:'#1D5C0A',next:null,conv:false}
+];
+var STAGES_SDR=[
+  {key:'Hunting',label:'Hunting',tip:'Perfil identificado e abordado',bg:'#F1EFE8',color:'#5F5E5A',next:'Triagem',conv:false},
+  {key:'Triagem',label:'Triagem',tip:'Análise de currículo pela TA',bg:'#EEEDFE',color:'#534AB7',next:'Step 1 TA',conv:false},
+  {key:'Step 1 TA',label:'Step 1 — TA',tip:'Entrevista com TA',bg:'#E6F1FB',color:'#0C447C',next:'Step 2 Raysa',conv:true},
+  {key:'Step 2 Raysa',label:'Step 2 — Raysa',tip:'Entrevista com Raysa (HM)',bg:'#FAEEDA',color:'#633806',next:'Step 3 Case',conv:true},
+  {key:'Step 3 Case',label:'Step 3 — Case',tip:'Business Case',bg:'#EEEDFE',color:'#3C3489',next:'Step 4 Alinhamento',conv:true},
+  {key:'Step 4 Alinhamento',label:'Step 4 — Alinhamento',tip:'Alinhamento final',bg:'#FAECE7',color:'#712B13',next:'Oferta',conv:true},
+  {key:'Oferta',label:'Oferta',tip:'Proposta enviada',bg:'#EAF3DE',color:'#1D5C0A',next:null,conv:false}
+];
+
+function todayISO(){return new Date().toISOString().split('T')[0];}
+function fmtDate(iso){if(!iso)return'—';var p=iso.split('-');return p[2]+'/'+p[1];}
+function daysDiff(iso){if(!iso)return null;return Math.floor((new Date()-new Date(iso))/86400000);}
+
+function parseSal(s){
+  if(!s||s==='-'||s==='')return null;
+  s=s.replace(/R\$\s?/g,'').replace(/\s/g,'');
+  if(/^\d+\.\d{4,}$/.test(s))s=s.split('.')[0]+'000';
+  else if(/^\d+\.\d{3}$/.test(s))s=s.replace('.','');
+  else s=s.replace('.','').replace(',','.');
+  var n=parseFloat(s);
+  return isNaN(n)?null:n;
+}
+function fmtBRL(n){
+  if(n===null||n===undefined)return'—';
+  n=Math.round(n);
+  return'R$ '+n.toLocaleString('pt-BR');
+}
+function getOteAtual(c){
+  var f=parseSal(c.fixoAtual),v=parseSal(c.variavel);
+  if(f===null)return null;
+  return f+(v||0);
+}
+function getFaixaFixo(c){
+  var v=parseSal(c.fixoAtual);
+  if(v===null)v=parseSal(c.fixo);
+  return v;
+}
+function getFaixaOte(c){
+  var ote=getOteAtual(c);
+  if(ote!==null)return ote;
+  var pt=parseSal(c.pretensaoTotal);
+  if(pt!==null)return pt;
+  var f=parseSal(c.fixo);
+  return f;
+}
+function faixaFixoCls(val){
+  if(val===null)return'nd';
+  if(val<=FIXO_OK)return'ok';
+  if(val<=FIXO_WARN)return'warn';
+  return'bad';
+}
+function faixaBadge(val,okLim,warnLim){
+  if(val===null)return'<span class="fnd">Sem info</span>';
+  if(val<=okLim)return'<span class="fok">'+fmtBRL(val)+'</span>';
+  if(val<=warnLim)return'<span class="fwarn">'+fmtBRL(val)+'</span>';
+  return'<span class="fbad">'+fmtBRL(val)+'</span>';
+}
+function tempoBadge(d){
+  if(d===null)return'';
+  if(d<=5)return'<span class="tok">'+d+'d</span>';
+  if(d<=10)return'<span class="twarn">'+d+'d</span>';
+  return'<span class="tbad">'+d+'d</span>';
+}
+function getRegiao(cidade){
+  if(!cidade)return'Outros';
+  var c=cidade.toUpperCase();
+  if(c.indexOf(', SP')>-1||c.indexOf('SÃO PAULO')>-1||c.indexOf('SAO PAULO')>-1)return'SP';
+  if(c.indexOf(', RJ')>-1||c.indexOf('RIO DE JANEIRO')>-1)return'RJ';
+  if(c.indexOf(', MG')>-1||c.indexOf('BELO HORIZONTE')>-1||c.indexOf('MINAS GERAIS')>-1)return'MG';
+  return'Outros';
+}
+
+function loadCandidates(){
+  candidates=JSON.parse(localStorage.getItem('ht_v5')||'[]');
+  var now=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('sync-lbl').textContent=candidates.length+' candidatos';
+  document.getElementById('sync-dot').style.background='#00C9A7';
+  document.getElementById('upd-lbl').textContent='Atualizado às '+now;
+  renderAll();
+}
+function saveToStorage(){localStorage.setItem('ht_v5',JSON.stringify(candidates));loadCandidates();}
+
+function exportData(){
+  var b=new Blob([JSON.stringify(candidates,null,2)],{type:'application/json'});
+  var u=URL.createObjectURL(b);
+  var a=document.createElement('a');
+  a.href=u;a.download='candidatos_'+todayISO()+'.json';
+  a.click();URL.revokeObjectURL(u);
+}
+function importData(e){
+  var file=e.target.files[0];if(!file)return;
+  var r=new FileReader();
+  r.onload=function(ev){
+    try{
+      var imp=JSON.parse(ev.target.result);
+      if(!Array.isArray(imp))throw new Error();
+      // migrate old fields if needed
+      imp=imp.map(function(c){
+        if(!c.fixoAtual&&c.salario_atual)c.fixoAtual=c.salario_atual;
+        if(!c.fixo&&c.salario)c.fixo=c.salario;
+        if(!c.variavel&&c.comissao)c.variavel=c.comissao;
+        if(!c.pretensaoTotal)c.pretensaoTotal='-';
+        if(!c.etapaReprovacao)c.etapaReprovacao='';
+        if(!c.motivoReprovacao)c.motivoReprovacao='';
+        if(!c.motivoOutro)c.motivoOutro='';
+        return c;
+      });
+      candidates=imp;
+      localStorage.setItem('ht_v5',JSON.stringify(candidates));
+      loadCandidates();
+      alert(imp.length+' candidatos importados!');
+    }catch(err){alert('Erro ao importar.');}
+    e.target.value='';
+  };
+  r.readAsText(file);
+}
+function clearFilters(){
+  document.getElementById('fn').value='';
+  ['fv','fe','fr','ff','fm'].forEach(function(id){document.getElementById(id).value='';});
+  renderTable();
+}
+
+function onEtapaChange(){
+  var v=document.getElementById('f-etapa').value;
+  document.getElementById('rep-block').classList.toggle('show',v==='Reprovado');
+  onMotivoChange();
+}
+function onMotivoChange(){
+  var v=document.getElementById('f-motivo').value;
+  var etapa=document.getElementById('f-etapa').value;
+  document.getElementById('motivo-outro-g').style.display=(etapa==='Reprovado'&&v==='Outro')?'block':'none';
+}
+function updateOteDisplay(){
+  var f=parseSal(document.getElementById('f-fixo-atual').value);
+  var v=parseSal(document.getElementById('f-variavel').value);
+  var ote=(f!==null)?(f+(v||0)):null;
+  document.getElementById('f-ote-display').value=ote!==null?fmtBRL(ote):'';
+}
+
+function openModal(docId){
+  editingId=docId||null;
+  var isEdit=!!editingId;
+  document.getElementById('modal-ttl-txt').textContent=isEdit?'Editar candidato':'Novo candidato';
+  document.getElementById('modal-save').textContent=isEdit?'Salvar':'Adicionar';
+  document.getElementById('ai-block').style.display=isEdit?'none':'';
+  if(isEdit){
+    var c=candidates.find(function(x){return x._docId===docId;});
+    if(!c)return;
+    document.getElementById('f-nome').value=c.nome||'';
+    document.getElementById('f-cidade').value=(c.cidade&&c.cidade!=='-')?c.cidade:'';
+    document.getElementById('f-cargo').value=(c.cargo&&c.cargo!=='-')?c.cargo:'';
+    document.getElementById('f-empresa').value=(c.empresa&&c.empresa!=='-')?c.empresa:'';
+    document.getElementById('f-linkedin').value=c.linkedin||'';
+    document.getElementById('f-obs').value=c.obs||'';
+    document.getElementById('f-fixo-atual').value=(c.fixoAtual&&c.fixoAtual!=='-')?c.fixoAtual:'';
+    document.getElementById('f-variavel').value=(c.variavel&&c.variavel!=='-')?c.variavel:'';
+    document.getElementById('f-fixo').value=(c.fixo&&c.fixo!=='-')?c.fixo:'';
+    document.getElementById('f-pretensao-total').value=(c.pretensaoTotal&&c.pretensaoTotal!=='-')?c.pretensaoTotal:'';
+    document.getElementById('f-data').value=c.dataContato||todayISO();
+    document.getElementById('f-data-ta').value=c.dataTA||'';
+    document.getElementById('f-data-hm').value=c.dataHM||'';
+    document.getElementById('f-data-case').value=c.dataCase||'';
+    setSelect('f-vaga',c.vaga);setSelect('f-origem',c.origem);setSelect('f-etapa',c.etapa);
+    setSelect('f-etapa-rep',c.etapaReprovacao||'');setSelect('f-motivo',c.motivoReprovacao||'');
+    document.getElementById('f-motivo-outro').value=c.motivoOutro||'';
+    onEtapaChange();updateOteDisplay();
+  }else{
+    clearModalForm();
+    document.getElementById('f-data').value=todayISO();
+    document.getElementById('rep-block').classList.remove('show');
+  }
+  document.getElementById('modal').classList.add('open');
+}
+function setSelect(id,val){
+  var s=document.getElementById(id);if(!s)return;
+  for(var i=0;i<s.options.length;i++){if(s.options[i].value===val){s.selectedIndex=i;break;}}
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  editingId=null;currentPdfBase64=null;
+  document.getElementById('pdf-fn').textContent='';
+  document.getElementById('ai-status').textContent='';
+  document.getElementById('ai-status').style.color='';
+}
+function clearModalForm(){
+  ['f-nome','f-cidade','f-cargo','f-empresa','f-linkedin','f-obs',
+   'f-fixo-atual','f-variavel','f-ote-display','f-fixo','f-pretensao-total',
+   'f-data-ta','f-data-hm','f-data-case','f-li-text','f-motivo-outro'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  setSelect('f-vaga','Closer');setSelect('f-origem','LinkedIn');
+  setSelect('f-etapa','Hunting');setSelect('f-etapa-rep','');setSelect('f-motivo','');
+  document.getElementById('motivo-outro-g').style.display='none';
+}
+
+document.getElementById('f-fixo-atual').addEventListener('input',updateOteDisplay);
+document.getElementById('f-variavel').addEventListener('input',updateOteDisplay);
+
+function saveCandidate(){
+  var nome=document.getElementById('f-nome').value.trim();
+  if(!nome){alert('Informe o nome');return;}
+  var etapa=document.getElementById('f-etapa').value;
+  if(etapa==='Reprovado'){
+    if(!document.getElementById('f-etapa-rep').value){alert('Informe a etapa da reprovação');return;}
+    if(!document.getElementById('f-motivo').value){alert('Informe o motivo da reprovação');return;}
+    if(document.getElementById('f-motivo').value==='Outro'&&!document.getElementById('f-motivo-outro').value.trim()){alert('Descreva o motivo');return;}
+  }
+  var motivo=document.getElementById('f-motivo').value;
+  var motivoFinal=motivo==='Outro'?document.getElementById('f-motivo-outro').value.trim():motivo;
+  var fixoAtualRaw=document.getElementById('f-fixo-atual').value.trim();
+  var variavelRaw=document.getElementById('f-variavel').value.trim();
+  var fixoRaw=document.getElementById('f-fixo').value.trim();
+  var ptRaw=document.getElementById('f-pretensao-total').value.trim();
+  var data={
+    nome:nome,
+    cargo:document.getElementById('f-cargo').value.trim()||'-',
+    empresa:document.getElementById('f-empresa').value.trim()||'-',
+    vaga:document.getElementById('f-vaga').value,
+    origem:document.getElementById('f-origem').value,
+    etapa:etapa,
+    cidade:document.getElementById('f-cidade').value.trim()||'-',
+    fixoAtual:fixoAtualRaw?fmtBRL(parseSal(fixoAtualRaw)||parseSal(fixoAtualRaw)):'-',
+    variavel:variavelRaw?fmtBRL(parseSal(variavelRaw)||parseSal(variavelRaw)):'-',
+    fixo:fixoRaw?fmtBRL(parseSal(fixoRaw)||parseSal(fixoRaw)):'-',
+    pretensaoTotal:ptRaw?fmtBRL(parseSal(ptRaw)||parseSal(ptRaw)):'-',
+    linkedin:document.getElementById('f-linkedin').value.trim(),
+    obs:document.getElementById('f-obs').value.trim(),
+    etapaReprovacao:etapa==='Reprovado'?document.getElementById('f-etapa-rep').value:'',
+    motivoReprovacao:etapa==='Reprovado'?motivoFinal:'',
+    motivoOutro:etapa==='Reprovado'&&motivo==='Outro'?document.getElementById('f-motivo-outro').value.trim():'',
+    dataContato:document.getElementById('f-data').value||todayISO(),
+    dataTA:document.getElementById('f-data-ta').value||'',
+    dataHM:document.getElementById('f-data-hm').value||'',
+    dataCase:document.getElementById('f-data-case').value||''
+  };
+  if(editingId){
+    var idx=candidates.findIndex(function(c){return c._docId===editingId;});
+    if(idx>-1)candidates[idx]=Object.assign({},candidates[idx],data);
+  }else{data._docId=Date.now().toString();candidates.push(data);}
+  saveToStorage();closeModal();
+}
+
+function deleteCandidate(docId){
+  var c=candidates.find(function(x){return x._docId===docId;});
+  if(!c)return;
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(13,79,60,.4);z-index:400;display:flex;align-items:center;justify-content:center;';
+  ov.innerHTML='<div style="background:#fff;border-radius:18px;padding:1.75rem;width:380px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,.15);">'
+    +'<div style="font-size:17px;font-weight:800;margin-bottom:8px;">Remover candidato</div>'
+    +'<div style="font-size:13px;color:#555;margin-bottom:1.5rem;">Tem certeza que quer remover <strong>'+c.nome+'</strong>?</div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end;">'
+    +'<button class="btn" id="dc">Cancelar</button>'
+    +'<button class="btn" style="background:#FCEBEB;color:#791F1F;border-color:#F09595;" id="dd">Remover</button>'
+    +'</div></div>';
+  document.body.appendChild(ov);
+  document.getElementById('dc').onclick=function(){document.body.removeChild(ov);};
+  document.getElementById('dd').onclick=function(){
+    candidates=candidates.filter(function(x){return x._docId!==docId;});
+    saveToStorage();document.body.removeChild(ov);
+  };
+}
+
+function switchAiTab(tab,el){
+  currentAiTab=tab;
+  document.querySelectorAll('.ai-tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.ai-panel').forEach(function(p){p.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById('ai-'+tab).classList.add('active');
+}
+function handlePdfSelect(e){var f=e.target.files[0];if(f)loadPdf(f);}
+function handlePdfDrop(e){
+  e.preventDefault();document.getElementById('drop-zone').classList.remove('drag-over');
+  var f=e.dataTransfer.files[0];if(f&&f.type==='application/pdf')loadPdf(f);
+}
+function loadPdf(file){
+  document.getElementById('pdf-fn').textContent=file.name;
+  var r=new FileReader();r.onload=function(e){currentPdfBase64=e.target.result.split(',')[1];};r.readAsDataURL(file);
+}
+var AI_PROMPT='Você é assistente de recrutamento da Doctoralia Brasil. Analise o currículo e extraia em JSON.\n\nVagas:\n- Coordenador Closer B2B: liderança de closers, vendas B2B, SaaS\n- Coordenador SDR B2B: liderança de SDRs outbound, pré-vendas B2B\n\nResponda APENAS JSON válido:\n{"nome":"nome completo","cidade":"cidade, UF","cargo":"cargo atual","empresa":"empresa atual","vaga":"Closer ou SDR","obs":"1 frase de diferencial"}';
+function analyzeProfile(){
+  var btn=document.getElementById('btn-analyze'),status=document.getElementById('ai-status');
+  btn.disabled=true;btn.textContent='Analisando...';status.textContent='Processando...';status.style.color='';
+  var messages;
+  if(currentAiTab==='pdf'){
+    if(!currentPdfBase64){status.textContent='Selecione um PDF primeiro.';btn.disabled=false;btn.textContent='Analisar perfil';return;}
+    messages=[{role:'user',content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:currentPdfBase64}},{type:'text',text:AI_PROMPT}]}];
+  }else{
+    var text=document.getElementById('f-li-text').value.trim();
+    if(!text){status.textContent='Cole o texto primeiro.';btn.disabled=false;btn.textContent='Analisar perfil';return;}
+    messages=[{role:'user',content:AI_PROMPT+'\n\nPerfil:\n'+text}];
+  }
+  fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messages})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var block=data.content&&data.content.find(function(b){return b.type==='text';});
+    if(!block)throw new Error();
+    var parsed=JSON.parse(block.text.replace(/```json|```/g,'').trim());
+    if(parsed.nome)document.getElementById('f-nome').value=parsed.nome;
+    if(parsed.cidade)document.getElementById('f-cidade').value=parsed.cidade;
+    if(parsed.cargo)document.getElementById('f-cargo').value=parsed.cargo;
+    if(parsed.empresa)document.getElementById('f-empresa').value=parsed.empresa;
+    if(parsed.obs)document.getElementById('f-obs').value=parsed.obs;
+    if(parsed.vaga)setSelect('f-vaga',parsed.vaga);
+    document.getElementById('f-origem').value=currentAiTab==='pdf'?'CV Recebido':'LinkedIn';
+    status.textContent='Campos preenchidos! Revise se necessário.';status.style.color='#00C9A7';
+  }).catch(function(){status.textContent='Erro na análise. Preencha manualmente.';status.style.color='#DC2626';})
+  .finally(function(){btn.disabled=false;btn.textContent='Analisar perfil';});
+}
+
+function switchTab(id,el){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById(id).classList.add('active');el.classList.add('active');
+  if(id==='dados')renderDados();
+  if(id==='salarios')renderSalarios();
+}
+
+function renderMetrics(){
+  var total=candidates.length;
+  var closer=candidates.filter(function(c){return c.vaga==='Closer';}).length;
+  var active=candidates.filter(function(c){return['Reprovado','Declinou','Fora do perfil','Sem interesse'].indexOf(c.etapa)===-1;}).length;
+  var ofertas=candidates.filter(function(c){return c.etapa==='Oferta';}).length;
+  var conv=total>0?Math.round((ofertas/total)*100):0;
+  document.getElementById('metrics').innerHTML=
+    '<div class="metric m-teal"><div class="metric-label">Total mapeados</div><div class="metric-value">'+total+'</div><div class="metric-sub">Closer: '+closer+' · SDR: '+(total-closer)+'</div><div class="metric-bar"></div></div>'
+    +'<div class="metric m-dark"><div class="metric-label">Em processo</div><div class="metric-value">'+active+'</div><div class="metric-sub">ativos no funil</div><div class="metric-bar"></div></div>'
+    +'<div class="metric m-warn"><div class="metric-label">Encerrados</div><div class="metric-value">'+(total-active)+'</div><div class="metric-sub">reprovados + declínios</div><div class="metric-bar"></div></div>'
+    +'<div class="metric m-ok"><div class="metric-label">Conversão geral</div><div class="metric-value">'+conv+'%</div><div class="metric-sub">hunting → oferta</div><div class="metric-bar"></div></div>';
+}
+
+function renderTable(){
+  var qn=document.getElementById('fn').value.toLowerCase();
+  var qv=document.getElementById('fv').value,qe=document.getElementById('fe').value;
+  var qr=document.getElementById('fr').value,qf=document.getElementById('ff').value;
+  var qm=document.getElementById('fm').value;
+  var list=candidates.filter(function(c){
+    if(qn&&c.nome.toLowerCase().indexOf(qn)===-1)return false;
+    if(qv&&c.vaga!==qv)return false;
+    if(qe&&c.etapa!==qe)return false;
+    if(qr&&getRegiao(c.cidade)!==qr)return false;
+    if(qf&&faixaFixoCls(getFaixaFixo(c))!==qf)return false;
+    if(qm&&c.motivoReprovacao!==qm)return false;
+    return true;
+  }).slice().sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');});
+  var tbody=document.getElementById('tbody');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="12" class="empty">Nenhum candidato encontrado</td></tr>';return;}
+  var rows='';
+  for(var i=0;i<list.length;i++){
+    var c=list[i];
+    var days=daysDiff(c.dataContato);
+    var fixoVal=getFaixaFixo(c);
+    var oteVal=getOteAtual(c);
+    var oteFaixaVal=getFaixaOte(c);
+    var liHtml=c.linkedin
+      ?'<a class="li-btn" href="'+(c.linkedin.startsWith('http')?c.linkedin:'https://'+c.linkedin)+'" target="_blank" title="Abrir LinkedIn">in</a>'
+      :'<span style="color:var(--t3)">—</span>';
+    var motivoHtml=c.motivoReprovacao
+      ?'<span class="motivo-badge" title="'+c.motivoReprovacao+'">'+c.motivoReprovacao+'</span>'
+      :'<span style="color:var(--t3);font-size:12px">—</span>';
+    var row='<tr>';
+    row+='<td style="white-space:nowrap"><span class="badge '+(ETAPA_CSS[c.etapa]||'e-hunt')+'">'+(ETAPA_LBL[c.etapa]||c.etapa)+'</span></td>';
+    row+='<td><div style="font-weight:700;font-size:13px;white-space:nowrap">'+c.nome+'</div>';
+    if(c.obs)row+='<div style="font-size:11px;color:var(--t3);margin-top:2px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+c.obs+'">'+c.obs+'</div>';
+    row+='<div style="font-size:11px;color:var(--t3);white-space:nowrap">'+(c.cargo&&c.cargo!=='-'?c.cargo:'')+(c.empresa&&c.empresa!=='-'?' · '+c.empresa:'')+'</div></td>';
+    row+='<td style="font-size:12px;color:var(--t2);white-space:nowrap">'+(c.cidade&&c.cidade!=='-'?c.cidade:'—')+'</td>';
+    row+='<td style="font-size:12px;color:var(--t2);white-space:nowrap">'+(c.fixoAtual&&c.fixoAtual!=='-'?c.fixoAtual:'—')+'</td>';
+    row+='<td style="font-size:12px;color:var(--t2);white-space:nowrap">'+(c.variavel&&c.variavel!=='-'?c.variavel:'—')+'</td>';
+    row+='<td style="font-size:13px;font-weight:600;white-space:nowrap">'+(oteVal!==null?fmtBRL(oteVal):'—')+'</td>';
+    row+='<td>'+faixaBadge(fixoVal,FIXO_OK,FIXO_WARN)+'</td>';
+    row+='<td>'+faixaBadge(oteFaixaVal,OTE_OK,OTE_WARN)+'</td>';
+    row+='<td>'+tempoBadge(days)+'</td>';
+    row+='<td>'+liHtml+'</td>';
+    row+='<td>'+motivoHtml+'</td>';
+    row+='<td style="white-space:nowrap"><button class="btn-ic" onclick="openModal(\''+c._docId+'\')">&#9999;</button> <button class="btn-ic btn-ic-del" onclick="deleteCandidate(\''+c._docId+'\')">&#x2715;</button></td>';
+    row+='</tr>';
+    rows+=row;
+  }
+  tbody.innerHTML=rows;
+}
+
+function buildPyramid(containerId,stages,vaga){
+  var cands=candidates.filter(function(c){return c.vaga===vaga;});
+  var html='';
+  for(var i=0;i<stages.length;i++){
+    var s=stages[i];
+    var inStage=cands.filter(function(c){return c.etapa===s.key;});
+    var repAqui=cands.filter(function(c){return c.etapa==='Reprovado'&&c.etapaReprovacao===s.key;});
+    // aprovados = candidatos que estão nas etapas seguintes ou em oferta
+    var nextKeys=stages.slice(i+1).map(function(x){return x.key;});
+    nextKeys.push('Oferta');
+    var aprovados=cands.filter(function(c){return nextKeys.indexOf(c.etapa)>-1;});
+    var avaliados=aprovados.length+repAqui.length;
+    var conv=s.conv&&avaliados>0?Math.round((aprovados.length/avaliados)*100):null;
+    var pctCls=conv===null?'pct-ok':conv<=30?'pct-bad':conv<=60?'pct-warn':'pct-ok';
+    var w=100-((100-38)/(stages.length-1))*i;
+    var tipRows='<div class="pyr-tip-row">Na etapa <span>'+inStage.length+'</span></div>';
+    if(s.conv){
+      tipRows+='<div class="pyr-tip-row">Avaliados <span>'+avaliados+'</span></div>';
+      tipRows+='<div class="pyr-tip-row">Aprovados <span>'+aprovados.length+'</span></div>';
+      tipRows+='<div class="pyr-tip-row">Reprovados <span>'+repAqui.length+'</span></div>';
+      if(conv!==null)tipRows+='<div class="pyr-tip-row">Conversão <span>'+conv+'%</span></div>';
+    }
+    var namesHtml='';
+    if(inStage.length){
+      namesHtml+='<div class="pyr-tip-div"></div><div class="pyr-tip-section">Em andamento</div>';
+      namesHtml+=inStage.map(function(c){return'<div class="pyr-tip-name">&#8250; '+c.nome+'</div>';}).join('');
+    }
+    if(aprovados.length&&s.conv){
+      namesHtml+='<div class="pyr-tip-section">Aprovados</div>';
+      namesHtml+=aprovados.map(function(c){return'<div class="pyr-tip-name">&#10003; '+c.nome+'</div>';}).join('');
+    }
+    if(repAqui.length){
+      namesHtml+='<div class="pyr-tip-section">Reprovados</div>';
+      namesHtml+=repAqui.map(function(c){return'<div class="pyr-tip-name-rep">&#215; '+c.nome+'</div>';}).join('');
+    }
+    if(!inStage.length&&!aprovados.length&&!repAqui.length){
+      namesHtml+='<div class="pyr-tip-div"></div><div class="pyr-tip-empty">Nenhum candidato</div>';
+    }
+    html+='<div class="pyr-row" style="width:'+w+'%;background:'+s.bg+';color:'+s.color+';min-width:130px;">'
+      +'<div class="pyr-tip"><h4>'+s.label+'</h4>'+tipRows+namesHtml+'</div>'
+      +'<span class="pyr-lbl">'+s.label+'</span>'
+      +'<span class="pyr-cnt">'+inStage.length+'</span>'
+      +(conv!==null?'<span class="pyr-pct '+pctCls+'">'+conv+'%</span>':'')
+      +'</div>';
+  }
+  document.getElementById(containerId).innerHTML=html;
+}
+
+function buildBarChart(cId,items){
+  if(!items||!items.length){document.getElementById(cId).innerHTML='<div class="no-data">Sem dados ainda</div>';return;}
+  var max=Math.max.apply(null,items.map(function(x){return x.val;}));
+  var colors=['#00C9A7','#0D4F3C','#1D9E75','#5DCAA5','#9FE1CB'];
+  var html='';
+  for(var i=0;i<items.length;i++){
+    var it=items[i];
+    html+='<div class="bar-row"><div class="bar-lbl">'+it.label+'</div>'
+      +'<div class="bar-track"><div class="bar-fill" style="width:'+Math.round((it.val/max)*100)+'%;background:'+colors[i%colors.length]+'"></div></div>'
+      +'<div class="bar-val">'+it.display+'</div></div>';
+  }
+  document.getElementById(cId).innerHTML=html;
+}
+
+function renderDados(){
+  buildPyramid('pyr-closer',STAGES_CLOSER,'Closer');
+  buildPyramid('pyr-sdr',STAGES_SDR,'SDR');
+  var origins={};
+  candidates.forEach(function(c){origins[c.origem]=(origins[c.origem]||0)+1;});
+  buildBarChart('chart-origem',Object.entries(origins).sort(function(a,b){return b[1]-a[1];}).map(function(e){return{label:e[0],val:e[1],display:String(e[1])};}));
+  var regs={SP:0,RJ:0,MG:0,Outros:0};
+  candidates.forEach(function(c){regs[getRegiao(c.cidade)]++;});
+  buildBarChart('chart-regiao',Object.entries(regs).filter(function(e){return e[1]>0;}).sort(function(a,b){return b[1]-a[1];}).map(function(e){return{label:e[0],val:e[1],display:String(e[1])};}));
+}
+
+function renderSalarios(){
+  var regioes=['SP','RJ','MG','Outros'];
+  function buildRegBlock(cId,vaga,useOTE){
+    var html='';
+    for(var ri=0;ri<regioes.length;ri++){
+      var reg=regioes[ri];
+      var cands=candidates.filter(function(c){
+        if(c.vaga!==vaga||getRegiao(c.cidade)!==reg)return false;
+        return useOTE?(getOteAtual(c)!==null||getFaixaOte(c)!==null):(getFaixaFixo(c)!==null);
+      });
+      if(!cands.length)continue;
+      var vals=cands.map(function(c){return useOTE?(getOteAtual(c)||getFaixaOte(c)):getFaixaFixo(c);}).filter(function(v){return v!==null;});
+      if(!vals.length)continue;
+      var avg=Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length);
+      var min=Math.min.apply(null,vals),max=Math.max.apply(null,vals);
+      var okL=useOTE?OTE_OK:FIXO_OK,warnL=useOTE?OTE_WARN:FIXO_WARN;
+      var badgeCls=avg<=okL?'fok':avg<=warnL?'fwarn':'fbad';
+      var pctAc=Math.round((vals.filter(function(v){return v>warnL;}).length/vals.length)*100);
+      html+='<div class="reg-card"><div class="reg-head"><span class="reg-name">'+reg+' <span style="font-size:11px;font-weight:400;color:var(--t3)">('+cands.length+')</span></span>'
+        +'<span class="'+badgeCls+'">Média '+fmtBRL(avg)+'</span></div>'
+        +'<div class="reg-sub">Mín: '+fmtBRL(min)+' · Máx: '+fmtBRL(max)+' · '+pctAc+'% acima da faixa</div></div>';
+    }
+    document.getElementById(cId).innerHTML=html||'<div class="no-data">Sem dados ainda</div>';
+  }
+  buildRegBlock('reg-fixo-closer','Closer',false);
+  buildRegBlock('reg-fixo-sdr','SDR',false);
+  buildRegBlock('reg-ote-closer','Closer',true);
+  buildRegBlock('reg-ote-sdr','SDR',true);
+
+  var comFixo=candidates.filter(function(c){return getFaixaFixo(c)!==null;}).length;
+  var dentroFixo=candidates.filter(function(c){var v=getFaixaFixo(c);return v!==null&&v<=FIXO_OK;}).length;
+  var acimaFixo=candidates.filter(function(c){var v=getFaixaFixo(c);return v!==null&&v>FIXO_WARN;}).length;
+  var comOte=candidates.filter(function(c){return getFaixaOte(c)!==null;}).length;
+  var acimaOte=candidates.filter(function(c){var v=getFaixaOte(c);return v!==null&&v>OTE_WARN;}).length;
+  document.getElementById('sal-metrics').innerHTML=
+    '<div class="metric m-ok" style="padding:12px 16px"><div class="metric-label">Fixo dentro da faixa</div><div class="metric-value" style="font-size:22px">'+dentroFixo+'</div><div class="metric-sub">até R$ 14.000</div><div class="metric-bar"></div></div>'
+    +'<div class="metric m-warn" style="padding:12px 16px"><div class="metric-label">Fixo em atenção/acima</div><div class="metric-value" style="font-size:22px">'+(comFixo-dentroFixo)+'</div><div class="metric-sub">acima R$ 14.000</div><div class="metric-bar"></div></div>'
+    +'<div class="metric" style="padding:12px 16px;background:#FCEBEB"><div class="metric-label" style="color:#791F1F">OTE acima da faixa</div><div class="metric-value" style="font-size:22px;color:#791F1F">'+acimaOte+'</div><div class="metric-sub" style="color:#F09595">acima R$ 24.000</div></div>';
+
+  var total=candidates.length;
+  var semSal=candidates.filter(function(c){return getFaixaFixo(c)===null;}).length;
+  var pctAcFixo=comFixo>0?Math.round((acimaFixo/comFixo)*100):0;
+  var insight='';
+  // insight baseado em dados reais
+  var spAcima=candidates.filter(function(c){var v=getFaixaFixo(c);return getRegiao(c.cidade)==='SP'&&v!==null&&v>FIXO_WARN;}).length;
+  var spTotal=candidates.filter(function(c){return getRegiao(c.cidade)==='SP'&&getFaixaFixo(c)!==null;}).length;
+  var rjDentro=candidates.filter(function(c){var v=getFaixaFixo(c);return getRegiao(c.cidade)==='RJ'&&v!==null&&v<=FIXO_OK;}).length;
+  var rjTotal=candidates.filter(function(c){return getRegiao(c.cidade)==='RJ'&&getFaixaFixo(c)!==null;}).length;
+  if(semSal>total*0.5){
+    insight='Mais da metade dos candidatos não tem salário informado ('+semSal+'). Coletar esse dado na triagem vai melhorar a análise salarial.';
+  }else if(spTotal>0&&Math.round((spAcima/spTotal)*100)>=50){
+    insight='SP concentra '+Math.round((spAcima/spTotal)*100)+'% dos candidatos com fixo acima da faixa. Pode indicar desalinhamento de budget com o mercado paulistano.';
+  }else if(rjTotal>0&&Math.round((rjDentro/rjTotal)*100)>=60){
+    insight='RJ apresenta boa aderência salarial — '+Math.round((rjDentro/rjTotal)*100)+'% dos candidatos estão dentro da faixa alvo.';
+  }else if(pctAcFixo>=50){
+    insight='Alta concentração de candidatos com fixo acima da faixa ('+pctAcFixo+'% do total com dado). Revisar budget ou critérios de seleção.';
+  }else if(dentroFixo>=comFixo*0.6&&comFixo>0){
+    insight='Boa aderência salarial geral — maioria dos candidatos com dado está dentro da faixa alvo de fixo.';
+  }
+  if(insight)document.getElementById('sal-insight').innerHTML='<div class="insight-box"><div class="insight-txt">'+insight+'</div></div>';
+  else document.getElementById('sal-insight').innerHTML='';
+}
+
+function renderAll(){renderMetrics();renderTable();}
+loadCandidates();
+</script>
+</body>
+</html>
