@@ -637,15 +637,8 @@ function getRegiao(cidade){
   return'Outros';
 }
 
-function loadCandidates(){
-  candidates=JSON.parse(localStorage.getItem('ht_v5')||'[]');
-  var now=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('sync-lbl').textContent=candidates.length+' candidatos';
-  document.getElementById('sync-dot').style.background='#00C9A7';
-  document.getElementById('upd-lbl').textContent='Atualizado às '+now;
-  renderAll();
-}
-function saveToStorage(){localStorage.setItem('ht_v5',JSON.stringify(candidates));loadCandidates();}
+function loadCandidates(){}
+function saveToStorage(){}
 
 function exportData(){
   var b=new Blob([JSON.stringify(candidates,null,2)],{type:'application/json'});
@@ -657,7 +650,7 @@ function exportData(){
 function importData(e){
   var file=e.target.files[0];if(!file)return;
   var r=new FileReader();
-  r.onload=function(ev){
+  r.onload=async function(ev){
     try{
       var imp=JSON.parse(ev.target.result);
       if(!Array.isArray(imp))throw new Error();
@@ -672,10 +665,8 @@ function importData(e){
         if(!c.motivoOutro)c.motivoOutro='';
         return c;
       });
-      candidates=imp;
-      localStorage.setItem('ht_v5',JSON.stringify(candidates));
-      loadCandidates();
-      alert(imp.length+' candidatos importados!');
+      for(var ci of imp){ if(!ci._docId)ci._docId=Date.now().toString()+(Math.random()*1000|0); await window._fbSave(ci); }
+      alert(imp.length+' candidatos importados no Firebase!');
     }catch(err){alert('Erro ao importar.');}
     e.target.value='';
   };
@@ -800,11 +791,10 @@ function saveCandidate(){
     dataHM:document.getElementById('f-data-hm').value||'',
     dataCase:document.getElementById('f-data-case').value||''
   };
-  if(editingId){
-    var idx=candidates.findIndex(function(c){return c._docId===editingId;});
-    if(idx>-1)candidates[idx]=Object.assign({},candidates[idx],data);
-  }else{data._docId=Date.now().toString();candidates.push(data);}
-  saveToStorage();closeModal();
+  if(!editingId){data._docId=Date.now().toString();}
+  else{data._docId=editingId;}
+  window._fbSave(data);
+  closeModal();
 }
 
 function deleteCandidate(docId){
@@ -822,8 +812,8 @@ function deleteCandidate(docId){
   document.body.appendChild(ov);
   document.getElementById('dc').onclick=function(){document.body.removeChild(ov);};
   document.getElementById('dd').onclick=function(){
-    candidates=candidates.filter(function(x){return x._docId!==docId;});
-    saveToStorage();document.body.removeChild(ov);
+    window._fbDelete(docId);
+    document.body.removeChild(ov);
   };
 }
 
@@ -1124,7 +1114,54 @@ function renderSalarios(){
 }
 
 function renderAll(){renderMetrics();renderTable();}
-loadCandidates();
 </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCU7iNFy2PaSd4Yn8mdE7uhni3av2kier0",
+      authDomain: "hunting-tracker-doctoralia.firebaseapp.com",
+      projectId: "hunting-tracker-doctoralia",
+      storageBucket: "hunting-tracker-doctoralia.appspot.com",
+      messagingSenderId: "1057633086543",
+      appId: "1:1057633086543:web:hunting-tracker"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const colRef = collection(db, "candidates");
+    const SEED = [{"_docId": "c1", "nome": "Anderson Souza", "cargo": "SMB Partners Channel Lead", "empresa": "Mercado Livre", "vaga": "Closer", "origem": "LinkedIn", "etapa": "Sem interesse", "cidade": "São Paulo, SP", "fixoAtual": "-", "fixo": "R$ 30.000", "variavel": "-", "linkedin": "https://www.linkedin.com/in/anderson-souza-239a85b4", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-02", "dataTA": "", "dataHM": "", "dataCase": "", "pretensaoTotal": "R$ 30.000"}, {"_docId": "c2", "nome": "Caroline Macedo", "cargo": "Coordenadora de Prospecção de Novos Negócios", "empresa": "TOTVS", "vaga": "SDR", "origem": "Inbound", "etapa": "Step 1 TA", "cidade": "Rio de Janeiro, RJ", "fixoAtual": "-", "fixo": "-", "variavel": "-", "linkedin": "www.linkedin.com/in/carolinemacedo-gestaocomercial", "obs": "6+ anos liderando times SDR e Inside Sales, especialista em funil e KPIs", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-06", "dataTA": "2026-04-08", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c3", "nome": "Cássio de Miranda", "cargo": "Head of Sales", "empresa": "E-inscrição", "vaga": "Closer", "origem": "LinkedIn", "etapa": "Step 2 Lucas", "cidade": "Madre de Deus, BA", "fixoAtual": "R$ 12.000", "fixo": "R$ 12.000", "variavel": "-", "linkedin": "https://www.linkedin.com/in/cassiodemiranda", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-03-30", "dataTA": "2026-04-07", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c4", "nome": "Daniel Barbosa", "cargo": "Sênior Sales Manager SMB BR", "empresa": "Wellhub", "vaga": "Closer", "origem": "LinkedIn", "etapa": "Sem interesse", "cidade": "São Paulo, SP", "fixoAtual": "R$ 30.000", "fixo": "R$ 30.000", "variavel": "R$ 5.000", "linkedin": "https://www.linkedin.com/in/daniel-barbosa92", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-02", "dataTA": "", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c5", "nome": "Denis Franci", "cargo": "Gerente Comercial Sênior", "empresa": "Arco Educação", "vaga": "Closer", "origem": "Inbound", "etapa": "Reprovado", "cidade": "Rio de Janeiro, RJ", "fixoAtual": "R$ 16.000", "fixo": "R$ 15.000", "variavel": "R$ 6.000", "linkedin": "https://www.linkedin.com/in/denisfdc", "obs": "", "etapaReprovacao": "Step 1 TA", "motivoReprovacao": "Não tem fit comportamental", "motivoOutro": "", "dataContato": "2026-03-31", "dataTA": "2026-03-31", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c6", "nome": "Gabriela Ramalho", "cargo": "Head of Sales - SMB", "empresa": "Intelipost", "vaga": "Closer", "origem": "LinkedIn", "etapa": "Sem interesse", "cidade": "São Paulo, SP", "fixoAtual": "R$ 30.000", "fixo": "-", "variavel": "-", "linkedin": "https://www.linkedin.com/in/anagabrielaramalho", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-02", "dataTA": "", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c7", "nome": "Heitor Siqueira", "cargo": "Head of Sales", "empresa": "Ifope Educa", "vaga": "Closer", "origem": "LinkedIn", "etapa": "Sem interesse", "cidade": "Belo Horizonte, MG", "fixoAtual": "-", "fixo": "-", "variavel": "-", "linkedin": "https://www.linkedin.com/in/heitor-siqueira-851875131", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-02", "dataTA": "", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c18", "nome": "Igor Paixão Salgado", "cargo": "Pre Sales Manager B2B", "empresa": "Alura", "vaga": "SDR", "origem": "LinkedIn", "etapa": "Step 2 Raysa", "cidade": "São Paulo, SP", "fixoAtual": "R$ 20.000", "fixo": "R$ 20.000", "variavel": "-", "linkedin": "www.linkedin.com/in/igor-paixao", "obs": "12 SDRs liderados em inbound/outbound na Alura, 3 operações estruturadas, Apollo, HubSpot, Sales Navigator", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-07", "dataTA": "2026-04-09", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c8", "nome": "Janine Oliveira", "cargo": "Coordenadora Inside Sales", "empresa": "Sólides", "vaga": "SDR", "origem": "LinkedIn", "etapa": "Sem interesse", "cidade": "Belo Horizonte, MG", "fixoAtual": "-", "fixo": "-", "variavel": "-", "linkedin": "https://www.linkedin.com/in/janinemarinhodeoliveira", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-02", "dataTA": "", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c9", "nome": "Laion Amaral", "cargo": "Head of Sales and Relationship Management", "empresa": "Telavita", "vaga": "Closer", "origem": "LinkedIn", "etapa": "Reprovado", "cidade": "São Paulo, SP", "fixoAtual": "R$ 20.000", "fixo": "R$ 26.000", "variavel": "R$ 5.000", "linkedin": "https://www.linkedin.com/in/laionamaral", "obs": "", "etapaReprovacao": "Step 1 TA", "motivoReprovacao": "Não tem fit comportamental", "motivoOutro": "", "dataContato": "2026-04-02", "dataTA": "2026-04-08", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c19", "nome": "Larissa Queiroz", "cargo": "Sales Coordinator", "empresa": "Sanar", "vaga": "SDR", "origem": "Inbound", "etapa": "Step 2 Raysa", "cidade": "São Paulo, SP", "fixoAtual": "R$ 9.000", "fixo": "R$ 12.000", "variavel": "R$ 4.000", "linkedin": "www.linkedin.com/in/larissadequeiroz", "obs": "Lidera 15 closers na Sanar, 230% crescimento YoY, histórico em Flash e Creditas — forte gestão de time comercial", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-10", "dataTA": "2026-04-09", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c10", "nome": "Laís Xavier", "cargo": "Head of Sales", "empresa": "Pontotel", "vaga": "Closer", "origem": "LinkedIn", "etapa": "Step 1 TA", "cidade": "São Paulo, SP", "fixoAtual": "-", "fixo": "-", "variavel": "-", "linkedin": "https://www.linkedin.com/in/laisxavier1", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-07", "dataTA": "2026-04-13", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c11", "nome": "Leandro Moura", "cargo": "Senior Inside Sales Manager", "empresa": "Botdesigner", "vaga": "Closer", "origem": "Indicação", "etapa": "Step 3 Case", "cidade": "Rio de Janeiro, RJ", "fixoAtual": "-", "fixo": "R$ 15.000", "variavel": "R$ 5.000", "linkedin": "https://www.linkedin.com/in/leandromouraalves", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-01", "dataTA": "2026-04-02", "dataHM": "2026-04-08", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c12", "nome": "Natasha Renault", "cargo": "Sales Manager", "empresa": "TOTVS", "vaga": "Closer", "origem": "LinkedIn", "etapa": "Sem resposta", "cidade": "São Paulo, SP", "fixoAtual": "-", "fixo": "-", "variavel": "-", "linkedin": "https://www.linkedin.com/in/natasharenault", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-02", "dataTA": "", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c13", "nome": "Pedro Henrique El Bainy", "cargo": "Head de Revenue & Novos Negócios", "empresa": "Lance!", "vaga": "Closer", "origem": "Inbound", "etapa": "Reprovado", "cidade": "Rio de Janeiro, RJ", "fixoAtual": "R$ 25.000", "fixo": "R$ 25.000", "variavel": "R$ 5.000", "linkedin": "https://www.linkedin.com/in/pedro-henrique-el-bainy", "obs": "", "etapaReprovacao": "Step 1 TA", "motivoReprovacao": "Não tem fit técnico", "motivoOutro": "", "dataContato": "2026-03-30", "dataTA": "2026-04-06", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c14", "nome": "Rodrigo Sena", "cargo": "Coordenador de Vendas", "empresa": "Valid", "vaga": "Closer", "origem": "LinkedIn", "etapa": "Sem interesse", "cidade": "São Paulo, SP", "fixoAtual": "-", "fixo": "-", "variavel": "-", "linkedin": "https://www.linkedin.com/in/rodrigo-sena-rpds", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-04", "dataTA": "", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c15", "nome": "Vinicius Cecatto", "cargo": "Sales Manager", "empresa": "Isaac", "vaga": "Closer", "origem": "LinkedIn", "etapa": "Sem interesse", "cidade": "Rio de Janeiro, RJ", "fixoAtual": "-", "fixo": "-", "variavel": "-", "linkedin": "https://www.linkedin.com/in/vcecatto", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-03-30", "dataTA": "", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c16", "nome": "Vinicius Cordeiro", "cargo": "Coordenador Comercial", "empresa": "Contabilizei", "vaga": "SDR", "origem": "Indicação", "etapa": "Step 2 Raysa", "cidade": "Curitiba, PR", "fixoAtual": "R$ 8.000", "fixo": "R$ 9.000", "variavel": "R$ 4.000", "linkedin": "www.linkedin.com/in/viniciuscordeiro-a55184115", "obs": "6 anos liderando times SDR e Closer em SaaS (Olist, Monest, Contabilizei), SPIN Selling, HubSpot e Pipedrive", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-06", "dataTA": "2026-04-07", "dataHM": "", "dataCase": "", "pretensaoTotal": "-"}, {"_docId": "c17", "nome": "Yago Moraes", "cargo": "Head de Novos Negócios Enterprise", "empresa": "Great Place To Work Brasil", "vaga": "Closer", "origem": "Inbound", "etapa": "Reprovado", "cidade": "Rio de Janeiro, RJ", "fixoAtual": "R$ 18.000", "fixo": "R$ 18.000", "variavel": "R$ 8.000", "linkedin": "https://www.linkedin.com/in/cassiodemiranda", "obs": "", "etapaReprovacao": "Step 2", "motivoReprovacao": "Não tem fit técnico", "motivoOutro": "", "dataContato": "2026-03-31", "dataTA": "2026-04-02", "dataHM": "2026-04-09", "dataCase": "", "pretensaoTotal": "R$ 20.000"}, {"nome": "Rogério Gusmão", "cargo": "Sales Coordinator", "empresa": "Valid", "vaga": "Closer", "origem": "LinkedIn", "etapa": "Hunting", "cidade": "São Paulo, SP", "fixoAtual": "-", "variavel": "-", "fixo": "-", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/rog%C3%A9rio-leite-gusm%C3%A3o-8702137a", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "", "dataHM": "", "dataCase": "", "_docId": "1776170138006"}, {"nome": "Paula Lobato", "cargo": "Sales Coordinator", "empresa": "Estoca", "vaga": "Closer", "origem": "LinkedIn", "etapa": "Hunting", "cidade": "São Paulo, SP", "fixoAtual": "-", "variavel": "-", "fixo": "-", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/paulalobato", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "", "dataHM": "", "dataCase": "", "_docId": "1776170200255"}, {"nome": "Ronaldo Vargas", "cargo": "Coordinator of Sales and Partnerships – TOTVS and RD Station", "empresa": "TOTVS", "vaga": "Closer", "origem": "Inbound", "etapa": "Reprovado", "cidade": "São Paulo, SP", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 25.000", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/ronaldo-vargas?jobid=1234&lipi=urn%3Ali%3Apage%3Ad_jobs_easyapply_pdfgenresume%3B9QPsvAqiQxyR5Xyn5fREWw%3D%3D&licu=urn%3Ali%3Acontrol%3Ad_jobs_easyapply_pdfgenresume-v02_profile", "obs": "", "etapaReprovacao": "Triagem", "motivoReprovacao": "Salário fora da faixa", "motivoOutro": "", "dataContato": "2026-04-06", "dataTA": "", "dataHM": "", "dataCase": "", "_docId": "1776171594730"}, {"nome": "Fernando Diniz", "cargo": "Sales Manager", "empresa": "Clearsale S/A", "vaga": "Closer", "origem": "Inbound", "etapa": "Reprovado", "cidade": "São Paulo, SP", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 20.000", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/fernandoddiniz", "obs": "", "etapaReprovacao": "Triagem", "motivoReprovacao": "Salário fora da faixa", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "", "dataHM": "", "dataCase": "", "_docId": "1776174030142"}, {"nome": "Guilherme Morais", "cargo": "Coordenador de Pré-Vendas", "empresa": "Grupo Voyzer", "vaga": "SDR", "origem": "Inbound", "etapa": "Step 1 TA", "cidade": "Rio de Janeiro, RJ", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 7.500", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/guilherme-morais-316a9616a/", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "2026-04-16", "dataHM": "", "dataCase": "", "_docId": "1776175929905"}, {"nome": "Eliza Aguiar", "cargo": "Supervisor de operações", "empresa": "SolarGrid", "vaga": "SDR", "origem": "Inbound", "etapa": "Step 1 TA", "cidade": "Rio de Janeiro, RJ", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 6.000", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/eliza-aguiar-179ab4156/", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "2026-04-17", "dataHM": "", "dataCase": "", "_docId": "1776176007763"}, {"nome": "Rodrigo de Oliveira", "cargo": "Head Comercial", "empresa": "Comunidade 1%", "vaga": "SDR", "origem": "Inbound", "etapa": "Step 1 TA", "cidade": "Curitiba, PR", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 6.000", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/rodrigodeoliveiraa/", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "2026-04-15", "dataHM": "", "dataCase": "", "_docId": "1776176078645"}, {"nome": "Thaís Amorim", "cargo": "Gerente de Vendas", "empresa": "BlackBean", "vaga": "SDR", "origem": "Inbound", "etapa": "Em análise", "cidade": "Espírito Santo, ES", "fixoAtual": "-", "variavel": "-", "fixo": "-", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/tha%C3%ADs-amorim-8858a6175", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "", "dataHM": "", "dataCase": "", "_docId": "1776176170617"}, {"nome": "Heitor Mota", "cargo": "Coordenador Comercial", "empresa": "Genial Care", "vaga": "SDR", "origem": "Inbound", "etapa": "Em análise", "cidade": "Rio de Janeiro, RJ", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 20.000", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/heitormota/", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "", "dataHM": "", "dataCase": "", "_docId": "1776176248723"}, {"nome": "Thamires Romualdo", "cargo": "Head Comercial", "empresa": "Instituto 12", "vaga": "SDR", "origem": "Inbound", "etapa": "Em análise", "cidade": "Rio de Janeiro, RJ", "fixoAtual": "-", "variavel": "-", "fixo": "-", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/thamires-romualdo", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "", "dataHM": "", "dataCase": "", "_docId": "1776176314460"}, {"nome": "Christine Moreira Da Silva", "cargo": "Coordenadora de Pré-vendas", "empresa": "ImpulseUp", "vaga": "SDR", "origem": "Inbound", "etapa": "Triagem", "cidade": "Uberlândia, MG", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 6.500", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/christine-moreira-da-silva-47b53390", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "", "dataHM": "", "dataCase": "", "_docId": "1776176379791"}, {"nome": "Tatiane Da Silva Cornélio", "cargo": "Líder de Pré- Vendas", "empresa": "Biztrip", "vaga": "SDR", "origem": "Inbound", "etapa": "Em análise", "cidade": "Jacareí, SP", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 4.500", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/tatianemonique/", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "", "dataHM": "", "dataCase": "", "_docId": "1776176478778"}, {"nome": "Guilherme Cantarelli", "cargo": "Coordenador Comercial", "empresa": "Jetimob", "vaga": "Closer", "origem": "Inbound", "etapa": "Step 1 TA", "cidade": "Santa Maria, RS", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 10.000", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/guilherme-pippi-093837161/", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "2026-04-22", "dataHM": "", "dataCase": "", "_docId": "1776176587533"}, {"nome": "Andreza Vidal", "cargo": "Inside Sales Manager", "empresa": "Progic", "vaga": "Closer", "origem": "Inbound", "etapa": "Step 1 TA", "cidade": "Salvador, BA", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 14.000", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/andrezavidalbarros", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "2026-04-20", "dataHM": "", "dataCase": "", "_docId": "1776176652455"}, {"nome": "Giovanna Clara", "cargo": "Head of Sales", "empresa": "Konsi", "vaga": "Closer", "origem": "Inbound", "etapa": "Step 1 TA", "cidade": "Salvador, BA", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 12.000", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/giovanna-clara-b8358970", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "2026-04-20", "dataHM": "", "dataCase": "", "_docId": "1776176770210"}, {"nome": "Leticia dos Santos Bento", "cargo": "Head de Pré-Vendas", "empresa": "Buzzmonitor", "vaga": "SDR", "origem": "Inbound", "etapa": "Em análise", "cidade": "Taubaté, SP", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 12.000", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/leticiasantosrcc/", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "", "dataHM": "", "dataCase": "", "_docId": "1776176846709"}, {"nome": "Luiz Norberto Rodrigues", "cargo": "Gerente Comercial", "empresa": "Seazone", "vaga": "Closer", "origem": "Inbound", "etapa": "Em análise", "cidade": "Florianópolis, SC", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 13.000", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/luiz-norberto-61653ab6/", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "", "dataHM": "", "dataCase": "", "_docId": "1776176914608"}, {"nome": "Fernando Pereira", "cargo": "Head of Sales", "empresa": "Loveena", "vaga": "Closer", "origem": "Inbound", "etapa": "Em análise", "cidade": "São Paulo, SP", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 10.000", "pretensaoTotal": "-", "linkedin": "https://www.linkedin.com/in/fernando-head-of-sales-revenue/", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "", "dataHM": "", "dataCase": "", "_docId": "1776177050876"}, {"nome": "Juliana Oliveira", "cargo": "Coordenadora de Vendas", "empresa": "Onfly", "vaga": "SDR", "origem": "Inbound", "etapa": "Step 1 TA", "cidade": "Belo Horizonte, MG", "fixoAtual": "-", "variavel": "-", "fixo": "R$ 10.000", "pretensaoTotal": "-", "linkedin": "", "obs": "", "etapaReprovacao": "", "motivoReprovacao": "", "motivoOutro": "", "dataContato": "2026-04-14", "dataTA": "2026-04-17", "dataHM": "", "dataCase": "", "_docId": "1776177176063"}];
+
+    async function seedIfEmpty() {
+      const snap = await getDocs(colRef);
+      if (snap.empty) {
+        for (const c of SEED) {
+          await setDoc(doc(db, "candidates", c._docId), c);
+        }
+      }
+    }
+
+    window._fbSave = async function(c) {
+      await setDoc(doc(db, "candidates", c._docId), c);
+    };
+    window._fbDelete = async function(docId) {
+      await deleteDoc(doc(db, "candidates", docId));
+    };
+
+    onSnapshot(colRef, function(snap) {
+      candidates = [];
+      snap.forEach(function(d) { candidates.push(d.data()); });
+      candidates.sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');});
+      var now = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      document.getElementById('sync-lbl').textContent = candidates.length + ' candidatos';
+      document.getElementById('sync-dot').style.background = '#00C9A7';
+      document.getElementById('upd-lbl').textContent = 'Sincronizado às ' + now;
+      renderAll();
+    });
+
+    seedIfEmpty();
+  </script>
 </body>
 </html>
