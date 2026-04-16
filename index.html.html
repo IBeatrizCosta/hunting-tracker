@@ -191,13 +191,17 @@ tbody tr:hover td{background:rgba(0,201,167,.03)}
   .form-row,.form-row-3{grid-template-columns:1fr}
   .pyr-tip{left:auto;right:calc(100% + 12px)}
 }
+
+td[style*="position:sticky"],th[style*="position:sticky"]{
+  box-shadow:2px 0 4px rgba(0,0,0,0.05);
+}
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <div class="topbar-brand">
-    <div class="topbar-sub">Pipeline B2B &middot; Closer &amp; SDR</div>
+    <div class="topbar-sub">B2B &middot; Lideranças Comerciais</div>
     <div class="topbar-title">Hunting Tracker</div>
   </div>
   <div class="topbar-right">
@@ -214,8 +218,9 @@ tbody tr:hover td{background:rgba(0,201,167,.03)}
   <div class="metrics" id="metrics"></div>
   <div class="card">
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('lista',this)">Candidatos</button>
-      <button class="tab" onclick="switchTab('dados',this)">Funil &amp; Dados</button>
+      <button class="tab active" onclick="switchTab('lista',this)">Pipeline</button>
+      <button class="tab" onclick="switchTab('dados',this)">Funil</button>
+      <button class="tab" onclick="switchTab('hunting',this)">Hunting</button>
       <button class="tab" onclick="switchTab('salarios',this)">Salários</button>
     </div>
 
@@ -224,8 +229,8 @@ tbody tr:hover td{background:rgba(0,201,167,.03)}
         <input type="text" id="fn" class="f-search" placeholder="Buscar por nome..." oninput="renderTable()"/>
         <select id="fv" class="f-sel" onchange="renderTable()">
           <option value="">Todas as vagas</option>
-          <option value="Closer">Closer</option>
-          <option value="SDR">SDR</option>
+          <option value="Closer">Coordenação de Closer</option>
+          <option value="SDR">Coordenação de SDR</option>
         </select>
         <select id="fe" class="f-sel" onchange="renderTable()">
           <option value="">Todas as etapas</option>
@@ -277,10 +282,7 @@ tbody tr:hover td{background:rgba(0,201,167,.03)}
         <table>
           <thead>
             <tr>
-              <th>Etapa</th><th>Nome</th><th>Cidade</th>
-              <th>Fixo atual</th><th>Variável atual</th><th>OTE atual</th>
-              <th>Faixa fixo</th><th>Faixa OTE</th>
-              <th>Tempo</th><th>Li</th><th>Motivo</th><th></th>
+              <th style="position:sticky;left:0;z-index:3;background:var(--page)">Etapa</th><th style="position:sticky;left:90px;z-index:3;background:var(--page)">Nome</th><th style="position:sticky;left:260px;z-index:3;background:var(--page)">Vaga</th><th>Cidade</th><th>Fixo atual</th><th>Variável atual</th><th>OTE atual</th><th>Faixa fixo</th><th>Faixa OTE</th><th>Tempo</th><th>Li</th><th>SR</th><th>Motivo</th><th></th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
@@ -290,8 +292,8 @@ tbody tr:hover td{background:rgba(0,201,167,.03)}
 
     <div id="dados" class="panel card-body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
-        <div><div class="sec-ttl">Funil — Closer B2B</div><div class="pyr-wrap" id="pyr-closer"></div></div>
-        <div><div class="sec-ttl">Funil — SDR B2B</div><div class="pyr-wrap" id="pyr-sdr"></div></div>
+        <div><div class="sec-ttl">Funil — Coordenação de Closer</div><div class="pyr-wrap" id="pyr-closer"></div></div>
+        <div><div class="sec-ttl">Funil — Coordenação de SDR</div><div class="pyr-wrap" id="pyr-sdr"></div></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
         <div><div class="sec-ttl">Origem</div><div class="bar-wrap" id="chart-origem"></div></div>
@@ -309,6 +311,29 @@ tbody tr:hover td{background:rgba(0,201,167,.03)}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
         <div><div class="sec-ttl">OTE por região — Closer</div><div id="reg-ote-closer"></div></div>
         <div><div class="sec-ttl">OTE por região — SDR</div><div id="reg-ote-sdr"></div></div>
+      </div>
+    </div>
+  </div>
+
+    <div id="hunting" class="panel card-body">
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem" id="hunt-metrics"></div>
+      <div id="hunt-insight" style="margin-bottom:1.25rem"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+        <div><div class="sec-ttl">Status de Hunting</div><div class="bar-wrap" id="hunt-status-chart"></div></div>
+        <div><div class="sec-ttl">Por região</div><div id="hunt-regiao"></div></div>
+      </div>
+      <div class="sec-ttl" style="margin-bottom:12px">Candidatos em Hunting</div>
+      <div class="tbl-outer">
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th><th>Nome</th><th>Cidade</th><th>Vaga</th>
+              <th>Origem</th><th>Fixo atual</th><th>Pretensão fixo</th>
+              <th>Tempo</th><th>Motivo sem interesse</th>
+            </tr>
+          </thead>
+          <tbody id="hunt-tbody"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -363,6 +388,9 @@ tbody tr:hover td{background:rgba(0,201,167,.03)}
       </div>
       <div class="form-row">
         <div class="form-g"><label class="form-lbl">LinkedIn URL</label><input type="text" id="f-linkedin" placeholder="linkedin.com/in/..."/></div>
+        <div class="form-g"><label class="form-lbl">SmartRecruiters URL</label><input type="text" id="f-sr" placeholder="jobs.smartrecruiters.com/..."/></div>
+      </div>
+      <div class="form-row">
         <div class="form-g"><label class="form-lbl">Observação</label><input type="text" id="f-obs" placeholder="Notas rápidas"/></div>
       </div>
     </div>
@@ -372,13 +400,15 @@ tbody tr:hover td{background:rgba(0,201,167,.03)}
       <div class="form-row" style="margin-bottom:12px">
         <div class="form-g"><label class="form-lbl">Vaga</label>
           <select id="f-vaga">
-            <option value="Closer">Coordenador Closer</option>
-            <option value="SDR">Coordenador SDR</option>
+            <option value="Closer">Coordenação de Closer</option>
+            <option value="SDR">Coordenação de SDR</option>
           </select>
         </div>
         <div class="form-g"><label class="form-lbl">Origem</label>
-          <select id="f-origem">
+          <select id="f-origem" onchange="onOrigemChange()">
             <option value="LinkedIn">LinkedIn</option>
+            <option value="LinkedIn Recruiter">LinkedIn Recruiter</option>
+            <option value="Hunting">Hunting</option>
             <option value="Indicação">Indicação</option>
             <option value="CV Recebido">CV Recebido</option>
             <option value="Job Board">Job Board</option>
@@ -418,6 +448,33 @@ tbody tr:hover td{background:rgba(0,201,167,.03)}
       </div>
     </div>
 
+
+    <div class="hunt-block" id="hunt-block" style="display:none;background:#E1F5EE;border-radius:var(--r2);padding:14px 16px;margin-bottom:16px;border:0.5px solid var(--teal)">
+      <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">&#9650; Status de Hunting</div>
+      <div class="form-row" style="margin-bottom:0">
+        <div class="form-g"><label class="form-lbl">Status manual</label>
+          <select id="f-hunt-status" onchange="onHuntStatusChange()">
+            <option value="Mapeado">Mapeado</option>
+            <option value="Abordado">Abordado</option>
+            <option value="Respondeu">Respondeu</option>
+            <option value="Em conversa">Em conversa</option>
+            <option value="Sem resposta">Sem resposta</option>
+            <option value="Sem interesse">Sem interesse</option>
+          </select>
+        </div>
+        <div class="form-g" id="hunt-motivo-g" style="display:none"><label class="form-lbl">Motivo sem interesse *</label>
+          <select id="f-hunt-motivo">
+            <option value="">Selecione...</option>
+            <option value="Salário">Salário</option>
+            <option value="Escopo da posição">Escopo da posição</option>
+            <option value="Modelo de trabalho">Modelo de trabalho</option>
+            <option value="Momento atual">Momento atual</option>
+            <option value="Localização">Localização</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+      </div>
+    </div>
     <div class="rep-block" id="rep-block">
       <div class="rep-ttl">&#9888; Reprovação — campos obrigatórios</div>
       <div class="form-row" style="margin-bottom:12px">
@@ -494,6 +551,22 @@ var currentAiTab='li';
 
 var FIXO_OK=14000,FIXO_WARN=16000;
 var OTE_OK=22000,OTE_WARN=24000;
+
+var VAGA_LBL={'Closer':'Coordenação de Closer','SDR':'Coordenação de SDR'};
+function vagaLbl(v){return VAGA_LBL[v]||v;}
+
+// Hunting origins
+function isHunting(c){
+  return c.origem==='LinkedIn Recruiter'||c.origem==='Hunting'||c.origem==='LinkedIn';
+}
+
+// Effective hunting status (auto-overrides manual)
+function getHuntStatus(c){
+  var proc=['Step 1 TA','Step 2 Lucas','Step 2 Raysa','Step 3 Case','Step 4 Alinhamento','Oferta'];
+  if(proc.indexOf(c.etapa)>-1) return 'Em processo';
+  if(c.etapa==='Reprovado') return 'Reprovado';
+  return c.huntStatus||'Mapeado';
+}
 
 var ETAPA_CSS={
   'Hunting':'e-hunt','Triagem':'e-triag','Em análise':'e-ea','Fora do perfil':'e-fp',
@@ -683,6 +756,34 @@ function onEtapaChange(){
   document.getElementById('rep-block').classList.toggle('show',v==='Reprovado');
   onMotivoChange();
 }
+
+function autoFmtSal(el){
+  var raw=el.value.replace(/[^\d]/g,'');
+  if(!raw){el.value='';return;}
+  var n=parseInt(raw,10);
+  el.value='R$ '+n.toLocaleString('pt-BR');
+}
+function attachSalListeners(){
+  ['f-fixo-atual','f-variavel','f-fixo','f-pretensao-total'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el)return;
+    el.addEventListener('blur',function(){autoFmtSal(this);});
+    el.addEventListener('focus',function(){
+      var raw=this.value.replace(/[^\d]/g,'');
+      this.value=raw;
+    });
+  });
+}
+
+function onOrigemChange(){
+  var o=document.getElementById('f-origem').value;
+  var isH=(o==='LinkedIn Recruiter'||o==='Hunting');
+  document.getElementById('hunt-block').style.display=isH?'block':'none';
+}
+function onHuntStatusChange(){
+  var v=document.getElementById('f-hunt-status').value;
+  document.getElementById('hunt-motivo-g').style.display=(v==='Sem interesse')?'flex':'none';
+}
 function onMotivoChange(){
   var v=document.getElementById('f-motivo').value;
   var etapa=document.getElementById('f-etapa').value;
@@ -709,7 +810,11 @@ function openModal(docId){
     document.getElementById('f-cargo').value=(c.cargo&&c.cargo!=='-')?c.cargo:'';
     document.getElementById('f-empresa').value=(c.empresa&&c.empresa!=='-')?c.empresa:'';
     document.getElementById('f-linkedin').value=c.linkedin||'';
+    document.getElementById('f-sr').value=c.sr||'';
     document.getElementById('f-obs').value=c.obs||'';
+    var isH=(c.origem==='LinkedIn Recruiter'||c.origem==='Hunting');
+    document.getElementById('hunt-block').style.display=isH?'block':'none';
+    if(isH){setSelect('f-hunt-status',c.huntStatus||'Mapeado');setSelect('f-hunt-motivo',c.huntMotivo||'');document.getElementById('hunt-motivo-g').style.display=(c.huntStatus==='Sem interesse')?'flex':'none';}
     document.getElementById('f-fixo-atual').value=(c.fixoAtual&&c.fixoAtual!=='-')?c.fixoAtual:'';
     document.getElementById('f-variavel').value=(c.variavel&&c.variavel!=='-')?c.variavel:'';
     document.getElementById('f-fixo').value=(c.fixo&&c.fixo!=='-')?c.fixo:'';
@@ -728,6 +833,7 @@ function openModal(docId){
     document.getElementById('rep-block').classList.remove('show');
   }
   document.getElementById('modal').classList.add('open');
+  attachSalListeners();
 }
 function setSelect(id,val){
   var s=document.getElementById(id);if(!s)return;
@@ -743,7 +849,7 @@ function closeModal(){
 function clearModalForm(){
   ['f-nome','f-cidade','f-cargo','f-empresa','f-linkedin','f-obs',
    'f-fixo-atual','f-variavel','f-ote-display','f-fixo','f-pretensao-total',
-   'f-data-ta','f-data-hm','f-data-case','f-li-text','f-motivo-outro'].forEach(function(id){
+   'f-data-ta','f-data-hm','f-data-case','f-li-text','f-motivo-outro','f-sr'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.value='';
   });
   setSelect('f-vaga','Closer');setSelect('f-origem','LinkedIn');
@@ -769,12 +875,16 @@ function saveCandidate(){
   var variavelRaw=document.getElementById('f-variavel').value.trim();
   var fixoRaw=document.getElementById('f-fixo').value.trim();
   var ptRaw=document.getElementById('f-pretensao-total').value.trim();
+  var origem=document.getElementById('f-origem').value;
+  var isHunt=(origem==='LinkedIn Recruiter'||origem==='Hunting');
+  var huntStatus=isHunt?document.getElementById('f-hunt-status').value:'';
+  var huntMotivo=(isHunt&&huntStatus==='Sem interesse')?document.getElementById('f-hunt-motivo').value:'';
   var data={
     nome:nome,
     cargo:document.getElementById('f-cargo').value.trim()||'-',
     empresa:document.getElementById('f-empresa').value.trim()||'-',
     vaga:document.getElementById('f-vaga').value,
-    origem:document.getElementById('f-origem').value,
+    origem:origem,
     etapa:etapa,
     cidade:document.getElementById('f-cidade').value.trim()||'-',
     fixoAtual:fixoAtualRaw?fmtBRL(parseSal(fixoAtualRaw)||parseSal(fixoAtualRaw)):'-',
@@ -782,6 +892,9 @@ function saveCandidate(){
     fixo:fixoRaw?fmtBRL(parseSal(fixoRaw)||parseSal(fixoRaw)):'-',
     pretensaoTotal:ptRaw?fmtBRL(parseSal(ptRaw)||parseSal(ptRaw)):'-',
     linkedin:document.getElementById('f-linkedin').value.trim(),
+    sr:document.getElementById('f-sr').value.trim(),
+    huntStatus:huntStatus,
+    huntMotivo:huntMotivo,
     obs:document.getElementById('f-obs').value.trim(),
     etapaReprovacao:etapa==='Reprovado'?document.getElementById('f-etapa-rep').value:'',
     motivoReprovacao:etapa==='Reprovado'?motivoFinal:'',
@@ -870,6 +983,7 @@ function switchTab(id,el){
   document.getElementById(id).classList.add('active');el.classList.add('active');
   if(id==='dados')renderDados();
   if(id==='salarios')renderSalarios();
+  if(id==='hunting')renderHunting();
 }
 
 function renderMetrics(){
@@ -914,11 +1028,13 @@ function renderTable(){
     var motivoHtml=c.motivoReprovacao
       ?'<span class="motivo-badge" title="'+c.motivoReprovacao+'">'+c.motivoReprovacao+'</span>'
       :'<span style="color:var(--t3);font-size:12px">—</span>';
+    var srHtml=c.sr?'<a class="li-btn" style="background:#E8F5E9;color:#1B5E20" href="'+(c.sr.startsWith('http')?c.sr:'https://'+c.sr)+'" target="_blank" title="SmartRecruiters">SR</a>':'<span style="color:var(--t3)">—</span>';
     var row='<tr>';
-    row+='<td style="white-space:nowrap"><span class="badge '+(ETAPA_CSS[c.etapa]||'e-hunt')+'">'+(ETAPA_LBL[c.etapa]||c.etapa)+'</span></td>';
-    row+='<td><div style="font-weight:700;font-size:13px;white-space:nowrap">'+c.nome+'</div>';
+    row+='<td style="white-space:nowrap;position:sticky;left:0;background:var(--white);z-index:2"><span class="badge '+(ETAPA_CSS[c.etapa]||'e-hunt')+'">'+(ETAPA_LBL[c.etapa]||c.etapa)+'</span></td>';
+    row+='<td style="position:sticky;left:90px;background:var(--white);z-index:2;min-width:170px"><div style="font-weight:700;font-size:13px;white-space:nowrap">'+c.nome+'</div>';
     if(c.obs)row+='<div style="font-size:11px;color:var(--t3);margin-top:2px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+c.obs+'">'+c.obs+'</div>';
     row+='<div style="font-size:11px;color:var(--t3);white-space:nowrap">'+(c.cargo&&c.cargo!=='-'?c.cargo:'')+(c.empresa&&c.empresa!=='-'?' · '+c.empresa:'')+'</div></td>';
+    row+='<td style="position:sticky;left:260px;background:var(--white);z-index:2;font-size:12px;color:var(--t2);white-space:nowrap">'+vagaLbl(c.vaga)+'</td>';
     row+='<td style="font-size:12px;color:var(--t2);white-space:nowrap">'+(c.cidade&&c.cidade!=='-'?c.cidade:'—')+'</td>';
     row+='<td style="font-size:12px;color:var(--t2);white-space:nowrap">'+(c.fixoAtual&&c.fixoAtual!=='-'?c.fixoAtual:'—')+'</td>';
     row+='<td style="font-size:12px;color:var(--t2);white-space:nowrap">'+(c.variavel&&c.variavel!=='-'?c.variavel:'—')+'</td>';
@@ -927,6 +1043,7 @@ function renderTable(){
     row+='<td>'+faixaBadge(oteFaixaVal,OTE_OK,OTE_WARN)+'</td>';
     row+='<td>'+tempoBadge(days)+'</td>';
     row+='<td>'+liHtml+'</td>';
+    row+='<td>'+srHtml+'</td>';
     row+='<td>'+motivoHtml+'</td>';
     row+='<td style="white-space:nowrap"><button class="btn-ic" onclick="openModal(\''+c._docId+'\')">&#9999;</button> <button class="btn-ic btn-ic-del" onclick="deleteCandidate(\''+c._docId+'\')">&#x2715;</button></td>';
     row+='</tr>';
@@ -1113,6 +1230,99 @@ function renderSalarios(){
   else document.getElementById('sal-insight').innerHTML='';
 }
 
+
+// ── HUNTING ──────────────────────────────────────────────────────────────────
+var HUNT_STATUS_CSS={
+  'Mapeado':'e-hunt','Abordado':'e-s1','Respondeu':'e-s2','Em conversa':'e-s3',
+  'Sem resposta':'e-sr','Sem interesse':'e-si',
+  'Em processo':'e-of','Reprovado':'e-rep','Aprovado':'e-of'
+};
+
+function renderHunting(){
+  var hcands=candidates.filter(function(c){return isHunting(c);});
+  var total=hcands.length;
+  var abordados=hcands.filter(function(c){var s=getHuntStatus(c);return['Abordado','Respondeu','Em conversa','Sem resposta','Sem interesse','Em processo','Reprovado','Aprovado'].indexOf(s)>-1;}).length;
+  var responderam=hcands.filter(function(c){var s=getHuntStatus(c);return['Respondeu','Em conversa','Em processo','Reprovado','Aprovado'].indexOf(s)>-1;}).length;
+  var emConversa=hcands.filter(function(c){var s=getHuntStatus(c);return s==='Em conversa';}).length;
+  var emProcesso=hcands.filter(function(c){return getHuntStatus(c)==='Em processo';}).length;
+  var reprovados=hcands.filter(function(c){return getHuntStatus(c)==='Reprovado';}).length;
+  var semInteresse=hcands.filter(function(c){return getHuntStatus(c)==='Sem interesse';}).length;
+  var txResposta=abordados>0?Math.round((responderam/abordados)*100):0;
+  var txProcesso=abordados>0?Math.round((emProcesso/abordados)*100):0;
+
+  document.getElementById('hunt-metrics').innerHTML=
+    '<div class="metric m-teal" style="padding:12px 16px"><div class="metric-label">Total Hunting</div><div class="metric-value" style="font-size:24px">'+total+'</div><div class="metric-bar"></div></div>'
+    +'<div class="metric m-dark" style="padding:12px 16px"><div class="metric-label">Em processo</div><div class="metric-value" style="font-size:24px">'+emProcesso+'</div><div class="metric-bar"></div></div>'
+    +'<div class="metric m-warn" style="padding:12px 16px"><div class="metric-label">Sem interesse</div><div class="metric-value" style="font-size:24px">'+semInteresse+'</div><div class="metric-bar"></div></div>'
+    +'<div class="metric m-ok" style="padding:12px 16px"><div class="metric-label">Taxa de resposta</div><div class="metric-value" style="font-size:24px">'+txResposta+'%</div><div class="metric-bar"></div></div>';
+
+  // Status chart
+  var statusCounts={};
+  hcands.forEach(function(c){var s=getHuntStatus(c);statusCounts[s]=(statusCounts[s]||0)+1;});
+  var statusOrder=['Mapeado','Abordado','Respondeu','Em conversa','Sem resposta','Em processo','Reprovado','Sem interesse'];
+  var statusItems=statusOrder.filter(function(s){return statusCounts[s]>0;}).map(function(s){return{label:s,val:statusCounts[s],display:String(statusCounts[s])};});
+  buildBarChart('hunt-status-chart',statusItems);
+
+  // Por região
+  var regioes=['SP','RJ','MG','Outros'];
+  var regHtml='';
+  regioes.forEach(function(reg){
+    var rc=hcands.filter(function(c){return getRegiao(c.cidade)===reg;});
+    if(!rc.length)return;
+    var resp=rc.filter(function(c){var s=getHuntStatus(c);return['Respondeu','Em conversa','Em processo','Reprovado','Aprovado'].indexOf(s)>-1;}).length;
+    var proc=rc.filter(function(c){return getHuntStatus(c)==='Em processo';}).length;
+    var si=rc.filter(function(c){return getHuntStatus(c)==='Sem interesse';}).length;
+    var txR=rc.length>0?Math.round((resp/rc.length)*100):0;
+    var fixos=rc.map(function(c){return parseSal(c.fixoAtual)||parseSal(c.fixo);}).filter(function(v){return v!==null;});
+    var avgSal=fixos.length>0?Math.round(fixos.reduce(function(a,b){return a+b;},0)/fixos.length):null;
+    regHtml+='<div class="reg-card"><div class="reg-head"><span class="reg-name">'+reg+' <span style="font-size:11px;font-weight:400;color:var(--t3)">('+rc.length+')</span></span>'
+      +'<span style="font-size:11px;font-weight:700;color:var(--green)">'+txR+'% responderam</span></div>'
+      +'<div class="reg-sub">Em processo: '+proc+' · Sem interesse: '+si+(avgSal?' · Média: '+fmtBRL(avgSal):'')+'</div></div>';
+  });
+  document.getElementById('hunt-regiao').innerHTML=regHtml||'<div class="no-data">Sem dados ainda</div>';
+
+  // Insight
+  var insight='';
+  var motivosCounts={};
+  hcands.filter(function(c){return getHuntStatus(c)==='Sem interesse'&&c.huntMotivo;}).forEach(function(c){motivosCounts[c.huntMotivo]=(motivosCounts[c.huntMotivo]||0)+1;});
+  var topMotivo=Object.entries(motivosCounts).sort(function(a,b){return b[1]-a[1];})[0];
+  var spCands=hcands.filter(function(c){return getRegiao(c.cidade)==='SP';});
+  var rjCands=hcands.filter(function(c){return getRegiao(c.cidade)==='RJ';});
+  var spProc=spCands.filter(function(c){return getHuntStatus(c)==='Em processo';}).length;
+  var rjProc=rjCands.filter(function(c){return getHuntStatus(c)==='Em processo';}).length;
+  if(topMotivo&&topMotivo[1]>1){
+    insight='Principal motivo de perda em hunting: <strong>'+topMotivo[0]+'</strong> ('+topMotivo[1]+' candidatos). ';
+  }
+  if(spCands.length>0&&rjCands.length>0){
+    var spTx=Math.round((spProc/spCands.length)*100);
+    var rjTx=Math.round((rjProc/rjCands.length)*100);
+    if(rjTx>spTx) insight+='RJ converte melhor para processo ('+rjTx+'%) do que SP ('+spTx+'%).';
+    else if(spTx>rjTx) insight+='SP converte melhor para processo ('+spTx+'%) do que RJ ('+rjTx+'%).';
+  }
+  if(!insight&&txProcesso>0) insight='Taxa de conversão de hunting para processo: '+txProcesso+'%. LinkedIn Recruiter é a principal fonte ativa.';
+  document.getElementById('hunt-insight').innerHTML=insight?'<div class="insight-box"><div class="insight-txt">'+insight+'</div></div>':'';
+
+  // Tabela hunting
+  var sorted=hcands.slice().sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');});
+  var rows='';
+  sorted.forEach(function(c){
+    var hs=getHuntStatus(c);
+    var hsCls=HUNT_STATUS_CSS[hs]||'e-hunt';
+    rows+='<tr>'
+      +'<td><span class="badge '+hsCls+'">'+hs+'</span></td>'
+      +'<td><div style="font-weight:700;font-size:13px">'+c.nome+'</div>'
+      +'<div style="font-size:11px;color:var(--t3)">'+(c.cargo&&c.cargo!=='-'?c.cargo:'')+(c.empresa&&c.empresa!=='-'?' · '+c.empresa:'')+'</div></td>'
+      +'<td style="font-size:12px;color:var(--t2)">'+(c.cidade&&c.cidade!=='-'?c.cidade:'—')+'</td>'
+      +'<td style="font-size:12px;color:var(--t2)">'+vagaLbl(c.vaga)+'</td>'
+      +'<td style="font-size:12px;color:var(--t2)">'+c.origem+'</td>'
+      +'<td style="font-size:12px;color:var(--t2)">'+(c.fixoAtual&&c.fixoAtual!=='-'?c.fixoAtual:'—')+'</td>'
+      +'<td style="font-size:12px;color:var(--t2)">'+(c.fixo&&c.fixo!=='-'?c.fixo:'—')+'</td>'
+      +'<td>'+tempoBadge(daysDiff(c.dataContato))+'</td>'
+      +'<td style="font-size:11px;color:var(--t2)">'+(c.huntMotivo||'—')+'</td>'
+      +'</tr>';
+  });
+  document.getElementById('hunt-tbody').innerHTML=rows||'<tr><td colspan="9" class="empty">Nenhum candidato em hunting ainda</td></tr>';
+}
 function renderAll(){renderMetrics();renderTable();}
 </script>
 
