@@ -195,6 +195,50 @@ tbody tr:hover td{background:rgba(0,201,167,.03)}
 td[style*="position:sticky"],th[style*="position:sticky"]{
   box-shadow:2px 0 4px rgba(0,0,0,0.05);
 }
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+.kpi-card{background:var(--white);border-radius:var(--r2);padding:14px 16px;border:0.5px solid var(--bd);box-shadow:var(--shadow)}
+.kpi-card-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:6px}
+.kpi-card-value{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.kpi-card-sub{font-size:11px;color:var(--t3);margin-top:4px}
+.kpi-card-bar{height:3px;border-radius:2px;margin-top:10px;background:var(--surface)}
+.kpi-mapeado .kpi-card-bar{background:#9A9A96}
+.kpi-mapeado .kpi-card-value{color:#5F5E5A}
+.kpi-abordado .kpi-card-bar{background:#0C447C}
+.kpi-abordado .kpi-card-value{color:#0C447C}
+.kpi-conversa .kpi-card-bar{background:#633806}
+.kpi-conversa .kpi-card-value{color:#633806}
+.kpi-processo .kpi-card-bar{background:var(--teal)}
+.kpi-processo .kpi-card-value{color:var(--green)}
+.kpi-reprovado .kpi-card-bar{background:#791F1F}
+.kpi-reprovado .kpi-card-value{color:#791F1F}
+.kpi-semint .kpi-card-bar{background:#888780}
+.kpi-semint .kpi-card-value{color:#888780}
+.kpi-tx .kpi-card-bar{background:#3B6D11}
+.kpi-tx .kpi-card-value{color:#1D5C0A}
+
+/* REGION CARDS GRID */
+.reg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:1rem}
+.reg-card-v2{background:var(--white);border-radius:var(--r2);padding:14px 16px;border:0.5px solid var(--bd);box-shadow:var(--shadow)}
+.reg-card-v2-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.reg-card-v2-name{font-size:14px;font-weight:800;color:var(--t1)}
+.reg-card-v2-total{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--teal-bg);color:var(--green)}
+.reg-card-v2-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:0.5px solid var(--bd)}
+.reg-card-v2-row:last-child{border-bottom:none}
+.reg-card-v2-key{font-size:11px;color:var(--t3)}
+.reg-card-v2-val{font-size:12px;font-weight:700;color:var(--t1)}
+
+/* ORIGIN RANKING */
+.origin-list{display:flex;flex-direction:column;gap:8px}
+.origin-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--white);border-radius:var(--r2);border:0.5px solid var(--bd);box-shadow:var(--shadow)}
+.origin-rank{font-size:11px;font-weight:800;color:var(--t3);width:16px;text-align:center;flex-shrink:0}
+.origin-name{font-size:13px;font-weight:600;color:var(--t1);flex:1}
+.origin-bar-wrap{flex:2;display:flex;align-items:center;gap:8px}
+.origin-bar-track{flex:1;background:var(--surface);border-radius:3px;height:8px;overflow:hidden}
+.origin-bar-fill{height:100%;border-radius:3px;background:var(--teal);transition:width .4s ease}
+.origin-count{font-size:13px;font-weight:700;color:var(--t1);width:24px;text-align:right;flex-shrink:0}
+.origin-pct{font-size:11px;color:var(--t3);width:36px;text-align:right;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -296,8 +340,8 @@ td[style*="position:sticky"],th[style*="position:sticky"]{
         <div><div class="sec-ttl">Funil — Coordenação de SDR</div><div class="pyr-wrap" id="pyr-sdr"></div></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
-        <div><div class="sec-ttl">Origem</div><div class="bar-wrap" id="chart-origem"></div></div>
-        <div><div class="sec-ttl">Por região</div><div class="bar-wrap" id="chart-regiao"></div></div>
+        <div><div class="sec-ttl" style="margin-bottom:10px">Origem</div><div id="chart-origem"></div></div>
+        <div><div class="sec-ttl" style="margin-bottom:10px">Por região</div><div class="reg-grid" id="chart-regiao"></div></div>
       </div>
     </div>
 
@@ -316,12 +360,11 @@ td[style*="position:sticky"],th[style*="position:sticky"]{
   </div>
 
     <div id="hunting" class="panel card-body">
-      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem" id="hunt-metrics"></div>
       <div id="hunt-insight" style="margin-bottom:1.25rem"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
-        <div><div class="sec-ttl">Status de Hunting</div><div class="bar-wrap" id="hunt-status-chart"></div></div>
-        <div><div class="sec-ttl">Por região</div><div id="hunt-regiao"></div></div>
-      </div>
+      <div class="sec-ttl" style="margin-bottom:10px">Status de Hunting</div>
+      <div class="kpi-grid" id="hunt-kpi"></div>
+      <div class="sec-ttl" style="margin-bottom:10px">Por região</div>
+      <div class="reg-grid" id="hunt-regiao" style="margin-bottom:1.5rem"></div>
       <div class="sec-ttl" style="margin-bottom:12px">Candidatos em Hunting</div>
       <div class="tbl-outer">
         <table>
@@ -1250,20 +1293,22 @@ function renderHunting(){
   var txResposta=abordados>0?Math.round((responderam/abordados)*100):0;
   var txProcesso=abordados>0?Math.round((emProcesso/abordados)*100):0;
 
-  document.getElementById('hunt-metrics').innerHTML=
-    '<div class="metric m-teal" style="padding:12px 16px"><div class="metric-label">Total Hunting</div><div class="metric-value" style="font-size:24px">'+total+'</div><div class="metric-bar"></div></div>'
-    +'<div class="metric m-dark" style="padding:12px 16px"><div class="metric-label">Em processo</div><div class="metric-value" style="font-size:24px">'+emProcesso+'</div><div class="metric-bar"></div></div>'
-    +'<div class="metric m-warn" style="padding:12px 16px"><div class="metric-label">Sem interesse</div><div class="metric-value" style="font-size:24px">'+semInteresse+'</div><div class="metric-bar"></div></div>'
-    +'<div class="metric m-ok" style="padding:12px 16px"><div class="metric-label">Taxa de resposta</div><div class="metric-value" style="font-size:24px">'+txResposta+'%</div><div class="metric-bar"></div></div>';
+  // KPI cards
+  var mapeados=hcands.filter(function(c){return getHuntStatus(c)==='Mapeado';}).length;
+  var abordadosN=hcands.filter(function(c){var s=getHuntStatus(c);return s==='Abordado';}).length;
+  var conversa=hcands.filter(function(c){return getHuntStatus(c)==='Em conversa';}).length;
+  var kpiHtml=''
+    +'<div class="kpi-card kpi-mapeado"><div class="kpi-card-label">Mapeados</div><div class="kpi-card-value">'+mapeados+'</div><div class="kpi-card-sub">identificados</div><div class="kpi-card-bar"></div></div>'
+    +'<div class="kpi-card kpi-abordado"><div class="kpi-card-label">Abordados</div><div class="kpi-card-value">'+abordados+'</div><div class="kpi-card-sub">contato feito</div><div class="kpi-card-bar"></div></div>'
+    +'<div class="kpi-card kpi-conversa"><div class="kpi-card-label">Em conversa</div><div class="kpi-card-value">'+conversa+'</div><div class="kpi-card-sub">engajados</div><div class="kpi-card-bar"></div></div>'
+    +'<div class="kpi-card kpi-processo"><div class="kpi-card-label">Em processo</div><div class="kpi-card-value">'+emProcesso+'</div><div class="kpi-card-sub">no pipeline</div><div class="kpi-card-bar"></div></div>'
+    +'<div class="kpi-card kpi-reprovado"><div class="kpi-card-label">Reprovados</div><div class="kpi-card-value">'+reprovados+'</div><div class="kpi-card-sub">encerrados</div><div class="kpi-card-bar"></div></div>'
+    +'<div class="kpi-card kpi-semint"><div class="kpi-card-label">Sem interesse</div><div class="kpi-card-value">'+semInteresse+'</div><div class="kpi-card-sub">declinaram</div><div class="kpi-card-bar"></div></div>'
+    +'<div class="kpi-card kpi-tx"><div class="kpi-card-label">Taxa resposta</div><div class="kpi-card-value">'+txResposta+'%</div><div class="kpi-card-sub">abordados → respondeu</div><div class="kpi-card-bar"></div></div>'
+    +'<div class="kpi-card kpi-tx"><div class="kpi-card-label">Conv. processo</div><div class="kpi-card-value">'+txProcesso+'%</div><div class="kpi-card-sub">abordados → pipeline</div><div class="kpi-card-bar"></div></div>';
+  document.getElementById('hunt-kpi').innerHTML=kpiHtml;
 
-  // Status chart
-  var statusCounts={};
-  hcands.forEach(function(c){var s=getHuntStatus(c);statusCounts[s]=(statusCounts[s]||0)+1;});
-  var statusOrder=['Mapeado','Abordado','Respondeu','Em conversa','Sem resposta','Em processo','Reprovado','Sem interesse'];
-  var statusItems=statusOrder.filter(function(s){return statusCounts[s]>0;}).map(function(s){return{label:s,val:statusCounts[s],display:String(statusCounts[s])};});
-  buildBarChart('hunt-status-chart',statusItems);
-
-  // Por região
+  // Por região — mini cards v2
   var regioes=['SP','RJ','MG','Outros'];
   var regHtml='';
   regioes.forEach(function(reg){
@@ -1275,9 +1320,13 @@ function renderHunting(){
     var txR=rc.length>0?Math.round((resp/rc.length)*100):0;
     var fixos=rc.map(function(c){return parseSal(c.fixoAtual)||parseSal(c.fixo);}).filter(function(v){return v!==null;});
     var avgSal=fixos.length>0?Math.round(fixos.reduce(function(a,b){return a+b;},0)/fixos.length):null;
-    regHtml+='<div class="reg-card"><div class="reg-head"><span class="reg-name">'+reg+' <span style="font-size:11px;font-weight:400;color:var(--t3)">('+rc.length+')</span></span>'
-      +'<span style="font-size:11px;font-weight:700;color:var(--green)">'+txR+'% responderam</span></div>'
-      +'<div class="reg-sub">Em processo: '+proc+' · Sem interesse: '+si+(avgSal?' · Média: '+fmtBRL(avgSal):'')+'</div></div>';
+    regHtml+='<div class="reg-card-v2">'
+      +'<div class="reg-card-v2-head"><span class="reg-card-v2-name">'+reg+'</span><span class="reg-card-v2-total">'+rc.length+' perfis</span></div>'
+      +'<div class="reg-card-v2-row"><span class="reg-card-v2-key">Taxa de resposta</span><span class="reg-card-v2-val">'+txR+'%</span></div>'
+      +'<div class="reg-card-v2-row"><span class="reg-card-v2-key">Em processo</span><span class="reg-card-v2-val">'+proc+'</span></div>'
+      +'<div class="reg-card-v2-row"><span class="reg-card-v2-key">Sem interesse</span><span class="reg-card-v2-val">'+si+'</span></div>'
+      +(avgSal?'<div class="reg-card-v2-row"><span class="reg-card-v2-key">Média salarial</span><span class="reg-card-v2-val">'+fmtBRL(avgSal)+'</span></div>':'')
+      +'</div>';
   });
   document.getElementById('hunt-regiao').innerHTML=regHtml||'<div class="no-data">Sem dados ainda</div>';
 
