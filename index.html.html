@@ -239,6 +239,53 @@ td[style*="position:sticky"],th[style*="position:sticky"]{
 .origin-bar-fill{height:100%;border-radius:3px;background:var(--teal);transition:width .4s ease}
 .origin-count{font-size:13px;font-weight:700;color:var(--t1);width:24px;text-align:right;flex-shrink:0}
 .origin-pct{font-size:11px;color:var(--t3);width:36px;text-align:right;flex-shrink:0}
+
+/* RESUMO DA SEMANA */
+.week-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.week-title{font-size:16px;font-weight:800;color:var(--t1);letter-spacing:-.02em}
+.week-period{font-size:11px;font-weight:600;color:var(--t3);background:var(--surface);padding:4px 12px;border-radius:20px}
+.week-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:1.5rem}
+.week-card{background:var(--white);border-radius:var(--r2);border:0.5px solid var(--bd);box-shadow:var(--shadow);padding:16px 18px}
+.week-card-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.week-card-label-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.week-stat-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:0.5px solid var(--bd)}
+.week-stat-row:last-child{border-bottom:none}
+.week-stat-key{font-size:12px;color:var(--t2)}
+.week-stat-val{font-size:14px;font-weight:800;color:var(--t1)}
+.week-stat-val.green{color:#1D5C0A}
+.week-stat-val.red{color:#791F1F}
+.week-stat-val.amber{color:#633806}
+
+.conv-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:1.5rem}
+.conv-card{background:var(--white);border-radius:var(--r2);border:0.5px solid var(--bd);box-shadow:var(--shadow);padding:16px 18px;text-align:center}
+.conv-card-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:8px}
+.conv-card-pct{font-size:36px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.conv-card-pct.green{color:#1D5C0A}
+.conv-card-pct.amber{color:#633806}
+.conv-card-pct.red{color:#791F1F}
+.conv-card-pct.gray{color:var(--t3)}
+.conv-card-sub{font-size:11px;color:var(--t3);margin-top:5px}
+.conv-card-bar{height:4px;border-radius:2px;margin-top:10px;background:var(--surface)}
+.conv-card-bar-fill{height:100%;border-radius:2px;transition:width .4s}
+
+.next-section{margin-bottom:1.5rem}
+.next-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:10px}
+.next-list{display:flex;flex-direction:column;gap:7px}
+.next-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--white);border-radius:var(--r2);border:0.5px solid var(--bd);box-shadow:var(--shadow)}
+.next-item-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.next-item-dot.blue{background:#0C447C}
+.next-item-dot.amber{background:#BA7517}
+.next-item-dot.green{background:#1D5C0A}
+.next-item-dot.gray{background:#9A9A96}
+.next-item-text{font-size:13px;color:var(--t1);line-height:1.5;flex:1}
+.next-item-text strong{font-weight:700}
+.next-item-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;margin-top:1px}
+.next-badge-step1{background:#E6F1FB;color:#0C447C}
+.next-badge-step2{background:#FAEEDA;color:#633806}
+.next-badge-step3{background:#EEEDFE;color:#3C3489}
+.next-badge-step4{background:#FAECE7;color:#712B13}
+.week-empty{font-size:12px;color:var(--t3);font-style:italic;padding:8px 0}
+.week-divider{height:1px;background:var(--bd);margin:1.25rem 0}
 </style>
 </head>
 <body>
@@ -338,6 +385,19 @@ td[style*="position:sticky"],th[style*="position:sticky"]{
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
         <div><div class="sec-ttl">Funil — Coordenação de Closer</div><div class="pyr-wrap" id="pyr-closer"></div></div>
         <div><div class="sec-ttl">Funil — Coordenação de SDR</div><div class="pyr-wrap" id="pyr-sdr"></div></div>
+      </div>
+
+      <div class="week-divider"></div>
+      <div class="week-header">
+        <div class="week-title">Resumo da Semana</div>
+        <div class="week-period" id="week-period"></div>
+      </div>
+      <div class="week-grid" id="week-pipeline"></div>
+      <div class="sec-ttl" style="margin-bottom:10px">Conversão da semana</div>
+      <div class="conv-grid" id="week-conv"></div>
+      <div class="next-section">
+        <div class="next-title">Próximos passos</div>
+        <div class="next-list" id="week-next"></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
         <div><div class="sec-ttl" style="margin-bottom:10px">Origem</div><div id="chart-origem"></div></div>
@@ -1202,6 +1262,7 @@ function buildBarChart(cId,items){
 function renderDados(){
   buildPyramid('pyr-closer',STAGES_CLOSER,'Closer');
   buildPyramid('pyr-sdr',STAGES_SDR,'SDR');
+  renderWeek();
   var origins={};
   candidates.forEach(function(c){origins[c.origem]=(origins[c.origem]||0)+1;});
   buildBarChart('chart-origem',Object.entries(origins).sort(function(a,b){return b[1]-a[1];}).map(function(e){return{label:e[0],val:e[1],display:String(e[1])};}));
@@ -1372,6 +1433,158 @@ function renderHunting(){
   });
   document.getElementById('hunt-tbody').innerHTML=rows||'<tr><td colspan="9" class="empty">Nenhum candidato em hunting ainda</td></tr>';
 }
+
+// ── RESUMO DA SEMANA ──────────────────────────────────────────────────────────
+function getWeekBounds(){
+  var now=new Date();
+  var day=now.getDay(); // 0=sun
+  var diffMon=day===0?-6:1-day;
+  var mon=new Date(now); mon.setDate(now.getDate()+diffMon); mon.setHours(0,0,0,0);
+  var sun=new Date(mon); sun.setDate(mon.getDate()+6); sun.setHours(23,59,59,999);
+  return{mon:mon,sun:sun};
+}
+function inWeek(iso,bounds){
+  if(!iso)return false;
+  var d=new Date(iso+'T00:00:00');
+  return d>=bounds.mon&&d<=bounds.sun;
+}
+function fmtWeekPeriod(bounds){
+  var opts={day:'2-digit',month:'2-digit'};
+  return bounds.mon.toLocaleDateString('pt-BR',opts)+' – '+bounds.sun.toLocaleDateString('pt-BR',opts);
+}
+
+function renderWeek(){
+  var wb=getWeekBounds();
+  document.getElementById('week-period').textContent=fmtWeekPeriod(wb);
+
+  // Candidatos com atividade na semana
+  var taThisWeek=candidates.filter(function(c){return inWeek(c.dataTA,wb);});
+  var hmThisWeek=candidates.filter(function(c){return inWeek(c.dataHM,wb);});
+  var caseThisWeek=candidates.filter(function(c){return inWeek(c.dataCase,wb);});
+
+  // TA stats
+  var taAprov=taThisWeek.filter(function(c){
+    var proc=['Step 2 Lucas','Step 2 Raysa','Step 3 Case','Step 4 Alinhamento','Oferta'];
+    return proc.indexOf(c.etapa)>-1||(c.etapa==='Reprovado'&&c.etapaReprovacao!=='Step 1 TA');
+  }).length;
+  var taRep=taThisWeek.filter(function(c){return c.etapa==='Reprovado'&&c.etapaReprovacao==='Step 1 TA';}).length;
+
+  // HM stats
+  var hmAprov=hmThisWeek.filter(function(c){
+    var proc=['Step 3 Case','Step 4 Alinhamento','Oferta'];
+    return proc.indexOf(c.etapa)>-1||(c.etapa==='Reprovado'&&c.etapaReprovacao!=='Step 2'&&c.etapaReprovacao!=='Step 2 Lucas'&&c.etapaReprovacao!=='Step 2 Raysa');
+  }).length;
+  var hmRep=hmThisWeek.filter(function(c){return c.etapa==='Reprovado'&&(c.etapaReprovacao==='Step 2'||c.etapaReprovacao==='Step 2 Lucas'||c.etapaReprovacao==='Step 2 Raysa');}).length;
+
+  // Case stats
+  var caseAprov=caseThisWeek.filter(function(c){
+    return c.etapa==='Step 4 Alinhamento'||c.etapa==='Oferta'||(c.etapa==='Reprovado'&&c.etapaReprovacao==='Step 3 Case');
+  }).length;
+  var caseRep=caseThisWeek.filter(function(c){return c.etapa==='Reprovado'&&c.etapaReprovacao==='Step 3 Case';}).length;
+
+  function statVal(n,cls){return '<span class="week-stat-val '+(cls||'')+'">'+n+'</span>';}
+
+  // Pipeline cards
+  var pipeHtml='';
+
+  // TA Card
+  pipeHtml+='<div class="week-card">'
+    +'<div class="week-card-label"><div class="week-card-label-dot" style="background:#0C447C"></div>Step 1 — TA</div>'
+    +(taThisWeek.length===0?'<div class="week-empty">Nenhuma entrevista esta semana</div>'
+      :'<div class="week-stat-row"><span class="week-stat-key">Realizadas</span>'+statVal(taThisWeek.length)+'</div>'
+      +'<div class="week-stat-row"><span class="week-stat-key">Aprovados</span>'+statVal(taAprov,'green')+'</div>'
+      +'<div class="week-stat-row"><span class="week-stat-key">Reprovados</span>'+statVal(taRep,'red')+'</div>'
+      +(taThisWeek.length-taAprov-taRep>0?'<div class="week-stat-row"><span class="week-stat-key">Aguardando</span>'+statVal(taThisWeek.length-taAprov-taRep,'amber')+'</div>':''))
+    +'</div>';
+
+  // HM Card
+  pipeHtml+='<div class="week-card">'
+    +'<div class="week-card-label"><div class="week-card-label-dot" style="background:#633806"></div>Step 2 — HM</div>'
+    +(hmThisWeek.length===0?'<div class="week-empty">Nenhuma entrevista esta semana</div>'
+      :'<div class="week-stat-row"><span class="week-stat-key">Realizadas</span>'+statVal(hmThisWeek.length)+'</div>'
+      +'<div class="week-stat-row"><span class="week-stat-key">Aprovados</span>'+statVal(hmAprov,'green')+'</div>'
+      +'<div class="week-stat-row"><span class="week-stat-key">Reprovados</span>'+statVal(hmRep,'red')+'</div>'
+      +(hmThisWeek.length-hmAprov-hmRep>0?'<div class="week-stat-row"><span class="week-stat-key">Aguardando</span>'+statVal(hmThisWeek.length-hmAprov-hmRep,'amber')+'</div>':''))
+    +'</div>';
+
+  // Case Card
+  pipeHtml+='<div class="week-card">'
+    +'<div class="week-card-label"><div class="week-card-label-dot" style="background:#3C3489"></div>Step 3 — Case</div>'
+    +(caseThisWeek.length===0?'<div class="week-empty">Nenhum case esta semana</div>'
+      :'<div class="week-stat-row"><span class="week-stat-key">Realizados</span>'+statVal(caseThisWeek.length)+'</div>'
+      +'<div class="week-stat-row"><span class="week-stat-key">Aprovados</span>'+statVal(caseAprov,'green')+'</div>'
+      +'<div class="week-stat-row"><span class="week-stat-key">Reprovados</span>'+statVal(caseRep,'red')+'</div>'
+      +(caseThisWeek.length-caseAprov-caseRep>0?'<div class="week-stat-row"><span class="week-stat-key">Aguardando</span>'+statVal(caseThisWeek.length-caseAprov-caseRep,'amber')+'</div>':''))
+    +'</div>';
+
+  document.getElementById('week-pipeline').innerHTML=pipeHtml;
+
+  // Conversão cards
+  function convCard(label,aprov,total,sub){
+    if(total===0) return '<div class="conv-card"><div class="conv-card-label">'+label+'</div><div class="conv-card-pct gray">—</div><div class="conv-card-sub">sem dados esta semana</div><div class="conv-card-bar"></div></div>';
+    var pct=Math.round((aprov/total)*100);
+    var cls=pct>=70?'green':pct>=40?'amber':'red';
+    return '<div class="conv-card"><div class="conv-card-label">'+label+'</div>'
+      +'<div class="conv-card-pct '+cls+'">'+pct+'%</div>'
+      +'<div class="conv-card-sub">'+aprov+' de '+total+' '+sub+'</div>'
+      +'<div class="conv-card-bar"><div class="conv-card-bar-fill" style="width:'+pct+'%;background:'+(cls==='green'?'#3B6D11':cls==='amber'?'#BA7517':'#791F1F')+'"></div></div>'
+      +'</div>';
+  }
+  document.getElementById('week-conv').innerHTML=
+    convCard('TA → Aprovação',taAprov,taThisWeek.length,'entrevistados')
+    +convCard('HM → Aprovação',hmAprov,hmThisWeek.length,'entrevistados')
+    +convCard('Case → Aprovação',caseAprov,caseThisWeek.length,'cases');
+
+  // Próximos passos
+  var items=[];
+  var today=new Date(); today.setHours(0,0,0,0);
+  var nextWeek=new Date(today); nextWeek.setDate(today.getDate()+7);
+
+  // Entrevistas TA agendadas (data futura)
+  candidates.filter(function(c){
+    if(!c.dataTA)return false;
+    var d=new Date(c.dataTA+'T00:00:00');
+    return d>=today&&d<=nextWeek;
+  }).forEach(function(c){
+    items.push({dot:'blue',badge:'next-badge-step1',text:'<strong>'+c.nome+'</strong> — entrevista TA em '+new Date(c.dataTA+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'})});
+  });
+
+  // Entrevistas HM agendadas (data futura)
+  candidates.filter(function(c){
+    if(!c.dataHM)return false;
+    var d=new Date(c.dataHM+'T00:00:00');
+    return d>=today&&d<=nextWeek;
+  }).forEach(function(c){
+    items.push({dot:'amber',badge:'next-badge-step2',text:'<strong>'+c.nome+'</strong> — entrevista HM em '+new Date(c.dataHM+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'})});
+  });
+
+  // Cases agendados (data futura)
+  candidates.filter(function(c){
+    if(!c.dataCase)return false;
+    var d=new Date(c.dataCase+'T00:00:00');
+    return d>=today&&d<=nextWeek;
+  }).forEach(function(c){
+    items.push({dot:'amber',badge:'next-badge-step3',text:'<strong>'+c.nome+'</strong> — case em '+new Date(c.dataCase+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'})});
+  });
+
+  // Candidatos aguardando (em etapa ativa sem próxima data)
+  var waitStep1=candidates.filter(function(c){return c.etapa==='Step 1 TA'&&!c.dataTA;});
+  var waitStep2=candidates.filter(function(c){return(c.etapa==='Step 2 Lucas'||c.etapa==='Step 2 Raysa')&&!c.dataHM;});
+  var waitStep3=candidates.filter(function(c){return c.etapa==='Step 3 Case'&&!c.dataCase;});
+  var waitStep4=candidates.filter(function(c){return c.etapa==='Step 4 Alinhamento';});
+
+  if(waitStep1.length) items.push({dot:'blue',badge:'next-badge-step1',text:waitStep1.length+' candidato'+( waitStep1.length>1?'s':'')+' aguardando agendamento de TA: <strong>'+waitStep1.map(function(c){return c.nome.split(' ')[0];}).join(', ')+'</strong>'});
+  if(waitStep2.length) items.push({dot:'amber',badge:'next-badge-step2',text:waitStep2.length+' candidato'+( waitStep2.length>1?'s':'')+' aguardando HM: <strong>'+waitStep2.map(function(c){return c.nome.split(' ')[0];}).join(', ')+'</strong>'});
+  if(waitStep3.length) items.push({dot:'amber',badge:'next-badge-step3',text:waitStep3.length+' candidato'+( waitStep3.length>1?'s':'')+' aguardando case: <strong>'+waitStep3.map(function(c){return c.nome.split(' ')[0];}).join(', ')+'</strong>'});
+  if(waitStep4.length) items.push({dot:'green',badge:'next-badge-step4',text:waitStep4.length+' candidato'+( waitStep4.length>1?'s':'')+' em alinhamento final: <strong>'+waitStep4.map(function(c){return c.nome.split(' ')[0];}).join(', ')+'</strong>'});
+
+  var nextHtml=items.length
+    ?items.map(function(it){return'<div class="next-item"><div class="next-item-dot '+it.dot+'"></div><div class="next-item-text">'+it.text+'</div><span class="next-item-badge '+it.badge+'">'+it.badge.replace('next-badge-','').replace('step','Step ').toUpperCase()+'</span></div>';}).join('')
+    :'<div class="week-empty">Nenhuma pendência identificada para os próximos dias.</div>';
+
+  document.getElementById('week-next').innerHTML=nextHtml;
+}
+
 function renderAll(){renderMetrics();renderTable();}
 </script>
 
