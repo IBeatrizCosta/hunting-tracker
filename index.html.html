@@ -196,55 +196,11 @@ td[style*="position:sticky"],th[style*="position:sticky"]{
   box-shadow:2px 0 4px rgba(0,0,0,0.05);
 }
 
-/* KPI CARDS */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
-.kpi-card{background:var(--white);border-radius:var(--r2);padding:14px 16px;border:0.5px solid var(--bd);box-shadow:var(--shadow)}
-.kpi-card-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:6px}
-.kpi-card-value{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1}
-.kpi-card-sub{font-size:11px;color:var(--t3);margin-top:4px}
-.kpi-card-bar{height:3px;border-radius:2px;margin-top:10px;background:var(--surface)}
-.kpi-mapeado .kpi-card-bar{background:#9A9A96}
-.kpi-mapeado .kpi-card-value{color:#5F5E5A}
-.kpi-abordado .kpi-card-bar{background:#0C447C}
-.kpi-abordado .kpi-card-value{color:#0C447C}
-.kpi-conversa .kpi-card-bar{background:#633806}
-.kpi-conversa .kpi-card-value{color:#633806}
-.kpi-processo .kpi-card-bar{background:var(--teal)}
-.kpi-processo .kpi-card-value{color:var(--green)}
-.kpi-reprovado .kpi-card-bar{background:#791F1F}
-.kpi-reprovado .kpi-card-value{color:#791F1F}
-.kpi-semint .kpi-card-bar{background:#888780}
-.kpi-semint .kpi-card-value{color:#888780}
-.kpi-tx .kpi-card-bar{background:#3B6D11}
-.kpi-tx .kpi-card-value{color:#1D5C0A}
-
-/* REGION CARDS GRID */
-.reg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:1rem}
-.reg-card-v2{background:var(--white);border-radius:var(--r2);padding:14px 16px;border:0.5px solid var(--bd);box-shadow:var(--shadow)}
-.reg-card-v2-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.reg-card-v2-name{font-size:14px;font-weight:800;color:var(--t1)}
-.reg-card-v2-total{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--teal-bg);color:var(--green)}
-.reg-card-v2-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:0.5px solid var(--bd)}
-.reg-card-v2-row:last-child{border-bottom:none}
-.reg-card-v2-key{font-size:11px;color:var(--t3)}
-.reg-card-v2-val{font-size:12px;font-weight:700;color:var(--t1)}
-
-/* ORIGIN RANKING */
-.origin-list{display:flex;flex-direction:column;gap:8px}
-.origin-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--white);border-radius:var(--r2);border:0.5px solid var(--bd);box-shadow:var(--shadow)}
-.origin-rank{font-size:11px;font-weight:800;color:var(--t3);width:16px;text-align:center;flex-shrink:0}
-.origin-name{font-size:13px;font-weight:600;color:var(--t1);flex:1}
-.origin-bar-wrap{flex:2;display:flex;align-items:center;gap:8px}
-.origin-bar-track{flex:1;background:var(--surface);border-radius:3px;height:8px;overflow:hidden}
-.origin-bar-fill{height:100%;border-radius:3px;background:var(--teal);transition:width .4s ease}
-.origin-count{font-size:13px;font-weight:700;color:var(--t1);width:24px;text-align:right;flex-shrink:0}
-.origin-pct{font-size:11px;color:var(--t3);width:36px;text-align:right;flex-shrink:0}
-
 /* RESUMO DA SEMANA */
 .week-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
 .week-title{font-size:16px;font-weight:800;color:var(--t1);letter-spacing:-.02em}
 .week-period{font-size:11px;font-weight:600;color:var(--t3);background:var(--surface);padding:4px 12px;border-radius:20px}
-.week-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:1.5rem}
+.week-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:1rem}
 .week-card{background:var(--white);border-radius:var(--r2);border:0.5px solid var(--bd);box-shadow:var(--shadow);padding:16px 18px}
 .week-card-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:12px;display:flex;align-items:center;gap:6px}
 .week-card-label-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
@@ -255,8 +211,7 @@ td[style*="position:sticky"],th[style*="position:sticky"]{
 .week-stat-val.green{color:#1D5C0A}
 .week-stat-val.red{color:#791F1F}
 .week-stat-val.amber{color:#633806}
-
-.conv-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:1.5rem}
+.conv-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:1rem}
 .conv-card{background:var(--white);border-radius:var(--r2);border:0.5px solid var(--bd);box-shadow:var(--shadow);padding:16px 18px;text-align:center}
 .conv-card-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:8px}
 .conv-card-pct{font-size:36px;font-weight:800;letter-spacing:-.04em;line-height:1}
@@ -266,8 +221,7 @@ td[style*="position:sticky"],th[style*="position:sticky"]{
 .conv-card-pct.gray{color:var(--t3)}
 .conv-card-sub{font-size:11px;color:var(--t3);margin-top:5px}
 .conv-card-bar{height:4px;border-radius:2px;margin-top:10px;background:var(--surface)}
-.conv-card-bar-fill{height:100%;border-radius:2px;transition:width .4s}
-
+.conv-card-bar-fill{height:100%;border-radius:2px}
 .next-section{margin-bottom:1.5rem}
 .next-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:10px}
 .next-list{display:flex;flex-direction:column;gap:7px}
@@ -276,16 +230,12 @@ td[style*="position:sticky"],th[style*="position:sticky"]{
 .next-item-dot.blue{background:#0C447C}
 .next-item-dot.amber{background:#BA7517}
 .next-item-dot.green{background:#1D5C0A}
-.next-item-dot.gray{background:#9A9A96}
 .next-item-text{font-size:13px;color:var(--t1);line-height:1.5;flex:1}
 .next-item-text strong{font-weight:700}
-.next-item-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;margin-top:1px}
-.next-badge-step1{background:#E6F1FB;color:#0C447C}
-.next-badge-step2{background:#FAEEDA;color:#633806}
-.next-badge-step3{background:#EEEDFE;color:#3C3489}
-.next-badge-step4{background:#FAECE7;color:#712B13}
+.next-item-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;margin-top:1px;background:#E6F1FB;color:#0C447C}
 .week-empty{font-size:12px;color:var(--t3);font-style:italic;padding:8px 0}
 .week-divider{height:1px;background:var(--bd);margin:1.25rem 0}
+.vaga-section-label{font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;padding:6px 12px;background:var(--teal-bg);border-radius:var(--r);display:inline-block}
 </style>
 </head>
 <body>
@@ -386,22 +336,19 @@ td[style*="position:sticky"],th[style*="position:sticky"]{
         <div><div class="sec-ttl">Funil — Coordenação de Closer</div><div class="pyr-wrap" id="pyr-closer"></div></div>
         <div><div class="sec-ttl">Funil — Coordenação de SDR</div><div class="pyr-wrap" id="pyr-sdr"></div></div>
       </div>
-
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+        <div><div class="sec-ttl" style="margin-bottom:10px">Origem</div><div id="chart-origem"></div></div>
+        <div><div class="sec-ttl" style="margin-bottom:10px">Por região</div><div class="reg-grid" id="chart-regiao"></div></div>
+      </div>
       <div class="week-divider"></div>
       <div class="week-header">
         <div class="week-title">Resumo da Semana</div>
         <div class="week-period" id="week-period"></div>
       </div>
-      <div class="week-grid" id="week-pipeline"></div>
-      <div class="sec-ttl" style="margin-bottom:10px">Conversão da semana</div>
-      <div class="conv-grid" id="week-conv"></div>
+      <div id="week-pipeline"></div>
       <div class="next-section">
         <div class="next-title">Próximos passos</div>
         <div class="next-list" id="week-next"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
-        <div><div class="sec-ttl" style="margin-bottom:10px">Origem</div><div id="chart-origem"></div></div>
-        <div><div class="sec-ttl" style="margin-bottom:10px">Por região</div><div class="reg-grid" id="chart-regiao"></div></div>
       </div>
     </div>
 
@@ -420,11 +367,12 @@ td[style*="position:sticky"],th[style*="position:sticky"]{
   </div>
 
     <div id="hunting" class="panel card-body">
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem" id="hunt-metrics"></div>
       <div id="hunt-insight" style="margin-bottom:1.25rem"></div>
-      <div class="sec-ttl" style="margin-bottom:10px">Status de Hunting</div>
-      <div class="kpi-grid" id="hunt-kpi"></div>
-      <div class="sec-ttl" style="margin-bottom:10px">Por região</div>
-      <div class="reg-grid" id="hunt-regiao" style="margin-bottom:1.5rem"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+        <div><div class="sec-ttl">Status de Hunting</div><div class="bar-wrap" id="hunt-status-chart"></div></div>
+        <div><div class="sec-ttl">Por região</div><div id="hunt-regiao"></div></div>
+      </div>
       <div class="sec-ttl" style="margin-bottom:12px">Candidatos em Hunting</div>
       <div class="tbl-outer">
         <table>
@@ -1260,9 +1208,9 @@ function buildBarChart(cId,items){
 }
 
 function renderDados(){
+  renderWeek();
   buildPyramid('pyr-closer',STAGES_CLOSER,'Closer');
   buildPyramid('pyr-sdr',STAGES_SDR,'SDR');
-  renderWeek();
   var origins={};
   candidates.forEach(function(c){origins[c.origem]=(origins[c.origem]||0)+1;});
   buildBarChart('chart-origem',Object.entries(origins).sort(function(a,b){return b[1]-a[1];}).map(function(e){return{label:e[0],val:e[1],display:String(e[1])};}));
@@ -1354,22 +1302,20 @@ function renderHunting(){
   var txResposta=abordados>0?Math.round((responderam/abordados)*100):0;
   var txProcesso=abordados>0?Math.round((emProcesso/abordados)*100):0;
 
-  // KPI cards
-  var mapeados=hcands.filter(function(c){return getHuntStatus(c)==='Mapeado';}).length;
-  var abordadosN=hcands.filter(function(c){var s=getHuntStatus(c);return s==='Abordado';}).length;
-  var conversa=hcands.filter(function(c){return getHuntStatus(c)==='Em conversa';}).length;
-  var kpiHtml=''
-    +'<div class="kpi-card kpi-mapeado"><div class="kpi-card-label">Mapeados</div><div class="kpi-card-value">'+mapeados+'</div><div class="kpi-card-sub">identificados</div><div class="kpi-card-bar"></div></div>'
-    +'<div class="kpi-card kpi-abordado"><div class="kpi-card-label">Abordados</div><div class="kpi-card-value">'+abordados+'</div><div class="kpi-card-sub">contato feito</div><div class="kpi-card-bar"></div></div>'
-    +'<div class="kpi-card kpi-conversa"><div class="kpi-card-label">Em conversa</div><div class="kpi-card-value">'+conversa+'</div><div class="kpi-card-sub">engajados</div><div class="kpi-card-bar"></div></div>'
-    +'<div class="kpi-card kpi-processo"><div class="kpi-card-label">Em processo</div><div class="kpi-card-value">'+emProcesso+'</div><div class="kpi-card-sub">no pipeline</div><div class="kpi-card-bar"></div></div>'
-    +'<div class="kpi-card kpi-reprovado"><div class="kpi-card-label">Reprovados</div><div class="kpi-card-value">'+reprovados+'</div><div class="kpi-card-sub">encerrados</div><div class="kpi-card-bar"></div></div>'
-    +'<div class="kpi-card kpi-semint"><div class="kpi-card-label">Sem interesse</div><div class="kpi-card-value">'+semInteresse+'</div><div class="kpi-card-sub">declinaram</div><div class="kpi-card-bar"></div></div>'
-    +'<div class="kpi-card kpi-tx"><div class="kpi-card-label">Taxa resposta</div><div class="kpi-card-value">'+txResposta+'%</div><div class="kpi-card-sub">abordados → respondeu</div><div class="kpi-card-bar"></div></div>'
-    +'<div class="kpi-card kpi-tx"><div class="kpi-card-label">Conv. processo</div><div class="kpi-card-value">'+txProcesso+'%</div><div class="kpi-card-sub">abordados → pipeline</div><div class="kpi-card-bar"></div></div>';
-  document.getElementById('hunt-kpi').innerHTML=kpiHtml;
+  document.getElementById('hunt-metrics').innerHTML=
+    '<div class="metric m-teal" style="padding:12px 16px"><div class="metric-label">Total Hunting</div><div class="metric-value" style="font-size:24px">'+total+'</div><div class="metric-bar"></div></div>'
+    +'<div class="metric m-dark" style="padding:12px 16px"><div class="metric-label">Em processo</div><div class="metric-value" style="font-size:24px">'+emProcesso+'</div><div class="metric-bar"></div></div>'
+    +'<div class="metric m-warn" style="padding:12px 16px"><div class="metric-label">Sem interesse</div><div class="metric-value" style="font-size:24px">'+semInteresse+'</div><div class="metric-bar"></div></div>'
+    +'<div class="metric m-ok" style="padding:12px 16px"><div class="metric-label">Taxa de resposta</div><div class="metric-value" style="font-size:24px">'+txResposta+'%</div><div class="metric-bar"></div></div>';
 
-  // Por região — mini cards v2
+  // Status chart
+  var statusCounts={};
+  hcands.forEach(function(c){var s=getHuntStatus(c);statusCounts[s]=(statusCounts[s]||0)+1;});
+  var statusOrder=['Mapeado','Abordado','Respondeu','Em conversa','Sem resposta','Em processo','Reprovado','Sem interesse'];
+  var statusItems=statusOrder.filter(function(s){return statusCounts[s]>0;}).map(function(s){return{label:s,val:statusCounts[s],display:String(statusCounts[s])};});
+  buildBarChart('hunt-status-chart',statusItems);
+
+  // Por região
   var regioes=['SP','RJ','MG','Outros'];
   var regHtml='';
   regioes.forEach(function(reg){
@@ -1381,13 +1327,9 @@ function renderHunting(){
     var txR=rc.length>0?Math.round((resp/rc.length)*100):0;
     var fixos=rc.map(function(c){return parseSal(c.fixoAtual)||parseSal(c.fixo);}).filter(function(v){return v!==null;});
     var avgSal=fixos.length>0?Math.round(fixos.reduce(function(a,b){return a+b;},0)/fixos.length):null;
-    regHtml+='<div class="reg-card-v2">'
-      +'<div class="reg-card-v2-head"><span class="reg-card-v2-name">'+reg+'</span><span class="reg-card-v2-total">'+rc.length+' perfis</span></div>'
-      +'<div class="reg-card-v2-row"><span class="reg-card-v2-key">Taxa de resposta</span><span class="reg-card-v2-val">'+txR+'%</span></div>'
-      +'<div class="reg-card-v2-row"><span class="reg-card-v2-key">Em processo</span><span class="reg-card-v2-val">'+proc+'</span></div>'
-      +'<div class="reg-card-v2-row"><span class="reg-card-v2-key">Sem interesse</span><span class="reg-card-v2-val">'+si+'</span></div>'
-      +(avgSal?'<div class="reg-card-v2-row"><span class="reg-card-v2-key">Média salarial</span><span class="reg-card-v2-val">'+fmtBRL(avgSal)+'</span></div>':'')
-      +'</div>';
+    regHtml+='<div class="reg-card"><div class="reg-head"><span class="reg-name">'+reg+' <span style="font-size:11px;font-weight:400;color:var(--t3)">('+rc.length+')</span></span>'
+      +'<span style="font-size:11px;font-weight:700;color:var(--green)">'+txR+'% responderam</span></div>'
+      +'<div class="reg-sub">Em processo: '+proc+' · Sem interesse: '+si+(avgSal?' · Média: '+fmtBRL(avgSal):'')+'</div></div>';
   });
   document.getElementById('hunt-regiao').innerHTML=regHtml||'<div class="no-data">Sem dados ainda</div>';
 
@@ -1435,154 +1377,167 @@ function renderHunting(){
 }
 
 // ── RESUMO DA SEMANA ──────────────────────────────────────────────────────────
-function getWeekBounds(){
-  var now=new Date();
-  var day=now.getDay(); // 0=sun
-  var diffMon=day===0?-6:1-day;
-  var mon=new Date(now); mon.setDate(now.getDate()+diffMon); mon.setHours(0,0,0,0);
-  var sun=new Date(mon); sun.setDate(mon.getDate()+6); sun.setHours(23,59,59,999);
-  return{mon:mon,sun:sun};
+function getWeekBounds() {
+  var now = new Date();
+  var day = now.getDay();
+  var diffMon = day === 0 ? -6 : 1 - day;
+  var mon = new Date(now); mon.setDate(now.getDate() + diffMon); mon.setHours(0,0,0,0);
+  var sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+  return {mon: mon, sun: sun};
 }
-function inWeek(iso,bounds){
-  if(!iso)return false;
-  var d=new Date(iso+'T00:00:00');
-  return d>=bounds.mon&&d<=bounds.sun;
+function inWeek(iso, bounds) {
+  if (!iso) return false;
+  var d = new Date(iso + 'T00:00:00');
+  return d >= bounds.mon && d <= bounds.sun;
 }
-function fmtWeekPeriod(bounds){
-  var opts={day:'2-digit',month:'2-digit'};
-  return bounds.mon.toLocaleDateString('pt-BR',opts)+' – '+bounds.sun.toLocaleDateString('pt-BR',opts);
+function fmtWeekPeriod(bounds) {
+  var opts = {day: '2-digit', month: '2-digit'};
+  return bounds.mon.toLocaleDateString('pt-BR', opts) + ' – ' + bounds.sun.toLocaleDateString('pt-BR', opts);
 }
 
-function renderWeek(){
-  var wb=getWeekBounds();
-  document.getElementById('week-period').textContent=fmtWeekPeriod(wb);
+function renderWeek() {
+  var wb = getWeekBounds();
+  document.getElementById('week-period').textContent = fmtWeekPeriod(wb);
 
-  // Candidatos com atividade na semana
-  var taThisWeek=candidates.filter(function(c){return inWeek(c.dataTA,wb);});
-  var hmThisWeek=candidates.filter(function(c){return inWeek(c.dataHM,wb);});
-  var caseThisWeek=candidates.filter(function(c){return inWeek(c.dataCase,wb);});
-
-  // TA stats
-  var taAprov=taThisWeek.filter(function(c){
-    var proc=['Step 2 Lucas','Step 2 Raysa','Step 3 Case','Step 4 Alinhamento','Oferta'];
-    return proc.indexOf(c.etapa)>-1||(c.etapa==='Reprovado'&&c.etapaReprovacao!=='Step 1 TA');
-  }).length;
-  var taRep=taThisWeek.filter(function(c){return c.etapa==='Reprovado'&&c.etapaReprovacao==='Step 1 TA';}).length;
-
-  // HM stats
-  var hmAprov=hmThisWeek.filter(function(c){
-    var proc=['Step 3 Case','Step 4 Alinhamento','Oferta'];
-    return proc.indexOf(c.etapa)>-1||(c.etapa==='Reprovado'&&c.etapaReprovacao!=='Step 2'&&c.etapaReprovacao!=='Step 2 Lucas'&&c.etapaReprovacao!=='Step 2 Raysa');
-  }).length;
-  var hmRep=hmThisWeek.filter(function(c){return c.etapa==='Reprovado'&&(c.etapaReprovacao==='Step 2'||c.etapaReprovacao==='Step 2 Lucas'||c.etapaReprovacao==='Step 2 Raysa');}).length;
-
-  // Case stats
-  var caseAprov=caseThisWeek.filter(function(c){
-    return c.etapa==='Step 4 Alinhamento'||c.etapa==='Oferta'||(c.etapa==='Reprovado'&&c.etapaReprovacao==='Step 3 Case');
-  }).length;
-  var caseRep=caseThisWeek.filter(function(c){return c.etapa==='Reprovado'&&c.etapaReprovacao==='Step 3 Case';}).length;
-
-  function statVal(n,cls){return '<span class="week-stat-val '+(cls||'')+'">'+n+'</span>';}
-
-  // Pipeline cards
-  var pipeHtml='';
-
-  // TA Card
-  pipeHtml+='<div class="week-card">'
-    +'<div class="week-card-label"><div class="week-card-label-dot" style="background:#0C447C"></div>Step 1 — TA</div>'
-    +(taThisWeek.length===0?'<div class="week-empty">Nenhuma entrevista esta semana</div>'
-      :'<div class="week-stat-row"><span class="week-stat-key">Realizadas</span>'+statVal(taThisWeek.length)+'</div>'
-      +'<div class="week-stat-row"><span class="week-stat-key">Aprovados</span>'+statVal(taAprov,'green')+'</div>'
-      +'<div class="week-stat-row"><span class="week-stat-key">Reprovados</span>'+statVal(taRep,'red')+'</div>'
-      +(taThisWeek.length-taAprov-taRep>0?'<div class="week-stat-row"><span class="week-stat-key">Aguardando</span>'+statVal(taThisWeek.length-taAprov-taRep,'amber')+'</div>':''))
-    +'</div>';
-
-  // HM Card
-  pipeHtml+='<div class="week-card">'
-    +'<div class="week-card-label"><div class="week-card-label-dot" style="background:#633806"></div>Step 2 — HM</div>'
-    +(hmThisWeek.length===0?'<div class="week-empty">Nenhuma entrevista esta semana</div>'
-      :'<div class="week-stat-row"><span class="week-stat-key">Realizadas</span>'+statVal(hmThisWeek.length)+'</div>'
-      +'<div class="week-stat-row"><span class="week-stat-key">Aprovados</span>'+statVal(hmAprov,'green')+'</div>'
-      +'<div class="week-stat-row"><span class="week-stat-key">Reprovados</span>'+statVal(hmRep,'red')+'</div>'
-      +(hmThisWeek.length-hmAprov-hmRep>0?'<div class="week-stat-row"><span class="week-stat-key">Aguardando</span>'+statVal(hmThisWeek.length-hmAprov-hmRep,'amber')+'</div>':''))
-    +'</div>';
-
-  // Case Card
-  pipeHtml+='<div class="week-card">'
-    +'<div class="week-card-label"><div class="week-card-label-dot" style="background:#3C3489"></div>Step 3 — Case</div>'
-    +(caseThisWeek.length===0?'<div class="week-empty">Nenhum case esta semana</div>'
-      :'<div class="week-stat-row"><span class="week-stat-key">Realizados</span>'+statVal(caseThisWeek.length)+'</div>'
-      +'<div class="week-stat-row"><span class="week-stat-key">Aprovados</span>'+statVal(caseAprov,'green')+'</div>'
-      +'<div class="week-stat-row"><span class="week-stat-key">Reprovados</span>'+statVal(caseRep,'red')+'</div>'
-      +(caseThisWeek.length-caseAprov-caseRep>0?'<div class="week-stat-row"><span class="week-stat-key">Aguardando</span>'+statVal(caseThisWeek.length-caseAprov-caseRep,'amber')+'</div>':''))
-    +'</div>';
-
-  document.getElementById('week-pipeline').innerHTML=pipeHtml;
-
-  // Conversão cards
-  function convCard(label,aprov,total,sub){
-    if(total===0) return '<div class="conv-card"><div class="conv-card-label">'+label+'</div><div class="conv-card-pct gray">—</div><div class="conv-card-sub">sem dados esta semana</div><div class="conv-card-bar"></div></div>';
-    var pct=Math.round((aprov/total)*100);
-    var cls=pct>=70?'green':pct>=40?'amber':'red';
-    return '<div class="conv-card"><div class="conv-card-label">'+label+'</div>'
-      +'<div class="conv-card-pct '+cls+'">'+pct+'%</div>'
-      +'<div class="conv-card-sub">'+aprov+' de '+total+' '+sub+'</div>'
-      +'<div class="conv-card-bar"><div class="conv-card-bar-fill" style="width:'+pct+'%;background:'+(cls==='green'?'#3B6D11':cls==='amber'?'#BA7517':'#791F1F')+'"></div></div>'
-      +'</div>';
+  function sv(n, cls) {
+    return '<span class="week-stat-val ' + (cls || '') + '">' + n + '</span>';
   }
-  document.getElementById('week-conv').innerHTML=
-    convCard('TA → Aprovação',taAprov,taThisWeek.length,'entrevistados')
-    +convCard('HM → Aprovação',hmAprov,hmThisWeek.length,'entrevistados')
-    +convCard('Case → Aprovação',caseAprov,caseThisWeek.length,'cases');
+  function weekCard(label, color, rows, emptyMsg) {
+    var allZero = rows.every(function(r) { return r.v === 0; });
+    var rowHtml = rows.map(function(r) {
+      return '<div class="week-stat-row"><span class="week-stat-key">' + r.k + '</span>' + sv(r.v, r.cls) + '</div>';
+    }).join('');
+    return '<div class="week-card">'
+      + '<div class="week-card-label"><div class="week-card-label-dot" style="background:' + color + '"></div>' + label + '</div>'
+      + (allZero ? '<div class="week-empty">' + emptyMsg + '</div>' : rowHtml)
+      + '</div>';
+  }
+  function convCard(label, ap, total, sub) {
+    if (total === 0) {
+      return '<div class="conv-card"><div class="conv-card-label">' + label + '</div>'
+        + '<div class="conv-card-pct gray">—</div>'
+        + '<div class="conv-card-sub">sem dados</div>'
+        + '<div class="conv-card-bar"></div></div>';
+    }
+    var pct = Math.round((ap / total) * 100);
+    var cls = pct >= 70 ? 'green' : pct >= 40 ? 'amber' : 'red';
+    var barColor = cls === 'green' ? '#3B6D11' : cls === 'amber' ? '#BA7517' : '#791F1F';
+    return '<div class="conv-card"><div class="conv-card-label">' + label + '</div>'
+      + '<div class="conv-card-pct ' + cls + '">' + pct + '%</div>'
+      + '<div class="conv-card-sub">' + ap + ' de ' + total + ' ' + sub + '</div>'
+      + '<div class="conv-card-bar"><div class="conv-card-bar-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>'
+      + '</div>';
+  }
+
+  function buildVagaBlock(vaga, vagaLabel, hmStep) {
+    var vc = candidates.filter(function(c) { return c.vaga === vaga; });
+    var taW = vc.filter(function(c) { return inWeek(c.dataTA, wb); });
+    var hmW = vc.filter(function(c) { return inWeek(c.dataHM, wb); });
+    var caseW = vc.filter(function(c) { return inWeek(c.dataCase, wb); });
+
+    var taAp = taW.filter(function(c) {
+      var proc = [hmStep, 'Step 3 Case', 'Step 4 Alinhamento', 'Oferta'];
+      return proc.indexOf(c.etapa) > -1 || (c.etapa === 'Reprovado' && c.etapaReprovacao !== 'Step 1 TA');
+    }).length;
+    var taRp = taW.filter(function(c) {
+      return c.etapa === 'Reprovado' && c.etapaReprovacao === 'Step 1 TA';
+    }).length;
+    var hmAp = hmW.filter(function(c) {
+      var proc = ['Step 3 Case', 'Step 4 Alinhamento', 'Oferta'];
+      return proc.indexOf(c.etapa) > -1 || (c.etapa === 'Reprovado' && c.etapaReprovacao !== 'Step 2' && c.etapaReprovacao !== hmStep);
+    }).length;
+    var hmRp = hmW.filter(function(c) {
+      return c.etapa === 'Reprovado' && (c.etapaReprovacao === 'Step 2' || c.etapaReprovacao === hmStep);
+    }).length;
+    var caseAp = caseW.filter(function(c) {
+      return c.etapa === 'Step 4 Alinhamento' || c.etapa === 'Oferta' || (c.etapa === 'Reprovado' && c.etapaReprovacao === 'Step 3 Case');
+    }).length;
+    var caseRp = caseW.filter(function(c) {
+      return c.etapa === 'Reprovado' && c.etapaReprovacao === 'Step 3 Case';
+    }).length;
+
+    var hmLabel = vaga === 'Closer' ? 'Step 2 — Lucas' : 'Step 2 — Raysa';
+    var pipeHtml = weekCard('Step 1 — TA', '#0C447C', [
+      {k:'Realizadas', v:taW.length, cls:''},
+      {k:'Aprovados', v:taAp, cls:'green'},
+      {k:'Reprovados', v:taRp, cls:'red'},
+      {k:'Aguardando', v:Math.max(0, taW.length - taAp - taRp), cls:'amber'}
+    ], 'Nenhuma entrevista esta semana');
+    pipeHtml += weekCard(hmLabel, '#633806', [
+      {k:'Realizadas', v:hmW.length, cls:''},
+      {k:'Aprovados', v:hmAp, cls:'green'},
+      {k:'Reprovados', v:hmRp, cls:'red'},
+      {k:'Aguardando', v:Math.max(0, hmW.length - hmAp - hmRp), cls:'amber'}
+    ], 'Nenhuma entrevista esta semana');
+    pipeHtml += weekCard('Step 3 — Case', '#3C3489', [
+      {k:'Realizados', v:caseW.length, cls:''},
+      {k:'Aprovados', v:caseAp, cls:'green'},
+      {k:'Reprovados', v:caseRp, cls:'red'},
+      {k:'Aguardando', v:Math.max(0, caseW.length - caseAp - caseRp), cls:'amber'}
+    ], 'Nenhum case esta semana');
+
+    var convHtml = convCard('TA → Aprovação', taAp, taW.length, 'entrevistados')
+      + convCard('HM → Aprovação', hmAp, hmW.length, 'entrevistados')
+      + convCard('Case → Aprovação', caseAp, caseW.length, 'cases');
+
+    return '<div style="margin-bottom:1.5rem">'
+      + '<div class="vaga-section-label">' + vagaLabel + '</div>'
+      + '<div class="week-grid">' + pipeHtml + '</div>'
+      + '<div class="conv-grid">' + convHtml + '</div>'
+      + '</div>';
+  }
+
+  document.getElementById('week-pipeline').innerHTML =
+    buildVagaBlock('Closer', 'Coordenação de Closer', 'Step 2 Lucas')
+    + buildVagaBlock('SDR', 'Coordenação de SDR', 'Step 2 Raysa');
 
   // Próximos passos
-  var items=[];
-  var today=new Date(); today.setHours(0,0,0,0);
-  var nextWeek=new Date(today); nextWeek.setDate(today.getDate()+7);
+  var items = [];
+  var today = new Date(); today.setHours(0,0,0,0);
+  var nextWeek = new Date(today); nextWeek.setDate(today.getDate() + 7);
 
-  // Entrevistas TA agendadas (data futura)
-  candidates.filter(function(c){
-    if(!c.dataTA)return false;
-    var d=new Date(c.dataTA+'T00:00:00');
-    return d>=today&&d<=nextWeek;
-  }).forEach(function(c){
-    items.push({dot:'blue',badge:'next-badge-step1',text:'<strong>'+c.nome+'</strong> — entrevista TA em '+new Date(c.dataTA+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'})});
+  candidates.filter(function(c) {
+    if (!c.dataTA) return false;
+    var d = new Date(c.dataTA + 'T00:00:00');
+    return d >= today && d <= nextWeek;
+  }).forEach(function(c) {
+    var dt = new Date(c.dataTA + 'T00:00:00').toLocaleDateString('pt-BR', {weekday:'short', day:'2-digit', month:'2-digit'});
+    items.push({dot:'blue', text:'<strong>' + c.nome + '</strong> — entrevista TA em ' + dt + ' (' + vagaLbl(c.vaga) + ')'});
   });
 
-  // Entrevistas HM agendadas (data futura)
-  candidates.filter(function(c){
-    if(!c.dataHM)return false;
-    var d=new Date(c.dataHM+'T00:00:00');
-    return d>=today&&d<=nextWeek;
-  }).forEach(function(c){
-    items.push({dot:'amber',badge:'next-badge-step2',text:'<strong>'+c.nome+'</strong> — entrevista HM em '+new Date(c.dataHM+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'})});
+  candidates.filter(function(c) {
+    if (!c.dataHM) return false;
+    var d = new Date(c.dataHM + 'T00:00:00');
+    return d >= today && d <= nextWeek;
+  }).forEach(function(c) {
+    var dt = new Date(c.dataHM + 'T00:00:00').toLocaleDateString('pt-BR', {weekday:'short', day:'2-digit', month:'2-digit'});
+    items.push({dot:'amber', text:'<strong>' + c.nome + '</strong> — entrevista HM em ' + dt + ' (' + vagaLbl(c.vaga) + ')'});
   });
 
-  // Cases agendados (data futura)
-  candidates.filter(function(c){
-    if(!c.dataCase)return false;
-    var d=new Date(c.dataCase+'T00:00:00');
-    return d>=today&&d<=nextWeek;
-  }).forEach(function(c){
-    items.push({dot:'amber',badge:'next-badge-step3',text:'<strong>'+c.nome+'</strong> — case em '+new Date(c.dataCase+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'})});
+  candidates.filter(function(c) {
+    if (!c.dataCase) return false;
+    var d = new Date(c.dataCase + 'T00:00:00');
+    return d >= today && d <= nextWeek;
+  }).forEach(function(c) {
+    var dt = new Date(c.dataCase + 'T00:00:00').toLocaleDateString('pt-BR', {weekday:'short', day:'2-digit', month:'2-digit'});
+    items.push({dot:'amber', text:'<strong>' + c.nome + '</strong> — case em ' + dt + ' (' + vagaLbl(c.vaga) + ')'});
   });
 
-  // Candidatos aguardando (em etapa ativa sem próxima data)
-  var waitStep1=candidates.filter(function(c){return c.etapa==='Step 1 TA'&&!c.dataTA;});
-  var waitStep2=candidates.filter(function(c){return(c.etapa==='Step 2 Lucas'||c.etapa==='Step 2 Raysa')&&!c.dataHM;});
-  var waitStep3=candidates.filter(function(c){return c.etapa==='Step 3 Case'&&!c.dataCase;});
-  var waitStep4=candidates.filter(function(c){return c.etapa==='Step 4 Alinhamento';});
+  var waitS1 = candidates.filter(function(c) { return c.etapa === 'Step 1 TA' && !c.dataTA; });
+  var waitS2 = candidates.filter(function(c) { return (c.etapa === 'Step 2 Lucas' || c.etapa === 'Step 2 Raysa') && !c.dataHM; });
+  var waitS3 = candidates.filter(function(c) { return c.etapa === 'Step 3 Case' && !c.dataCase; });
+  var waitS4 = candidates.filter(function(c) { return c.etapa === 'Step 4 Alinhamento'; });
 
-  if(waitStep1.length) items.push({dot:'blue',badge:'next-badge-step1',text:waitStep1.length+' candidato'+( waitStep1.length>1?'s':'')+' aguardando agendamento de TA: <strong>'+waitStep1.map(function(c){return c.nome.split(' ')[0];}).join(', ')+'</strong>'});
-  if(waitStep2.length) items.push({dot:'amber',badge:'next-badge-step2',text:waitStep2.length+' candidato'+( waitStep2.length>1?'s':'')+' aguardando HM: <strong>'+waitStep2.map(function(c){return c.nome.split(' ')[0];}).join(', ')+'</strong>'});
-  if(waitStep3.length) items.push({dot:'amber',badge:'next-badge-step3',text:waitStep3.length+' candidato'+( waitStep3.length>1?'s':'')+' aguardando case: <strong>'+waitStep3.map(function(c){return c.nome.split(' ')[0];}).join(', ')+'</strong>'});
-  if(waitStep4.length) items.push({dot:'green',badge:'next-badge-step4',text:waitStep4.length+' candidato'+( waitStep4.length>1?'s':'')+' em alinhamento final: <strong>'+waitStep4.map(function(c){return c.nome.split(' ')[0];}).join(', ')+'</strong>'});
+  if (waitS1.length) items.push({dot:'blue', text:waitS1.length + ' candidato' + (waitS1.length > 1 ? 's' : '') + ' aguardando agendamento TA: <strong>' + waitS1.map(function(c){return c.nome.split(' ')[0];}).join(', ') + '</strong>'});
+  if (waitS2.length) items.push({dot:'amber', text:waitS2.length + ' candidato' + (waitS2.length > 1 ? 's' : '') + ' aguardando HM: <strong>' + waitS2.map(function(c){return c.nome.split(' ')[0];}).join(', ') + '</strong>'});
+  if (waitS3.length) items.push({dot:'amber', text:waitS3.length + ' candidato' + (waitS3.length > 1 ? 's' : '') + ' aguardando case: <strong>' + waitS3.map(function(c){return c.nome.split(' ')[0];}).join(', ') + '</strong>'});
+  if (waitS4.length) items.push({dot:'green', text:waitS4.length + ' candidato' + (waitS4.length > 1 ? 's' : '') + ' em alinhamento final: <strong>' + waitS4.map(function(c){return c.nome.split(' ')[0];}).join(', ') + '</strong>'});
 
-  var nextHtml=items.length
-    ?items.map(function(it){return'<div class="next-item"><div class="next-item-dot '+it.dot+'"></div><div class="next-item-text">'+it.text+'</div><span class="next-item-badge '+it.badge+'">'+it.badge.replace('next-badge-','').replace('step','Step ').toUpperCase()+'</span></div>';}).join('')
-    :'<div class="week-empty">Nenhuma pendência identificada para os próximos dias.</div>';
-
-  document.getElementById('week-next').innerHTML=nextHtml;
+  document.getElementById('week-next').innerHTML = items.length
+    ? items.map(function(it) {
+        return '<div class="next-item"><div class="next-item-dot ' + it.dot + '"></div><div class="next-item-text">' + it.text + '</div></div>';
+      }).join('')
+    : '<div class="week-empty">Nenhuma pendência identificada para os próximos dias.</div>';
 }
 
 function renderAll(){renderMetrics();renderTable();}
